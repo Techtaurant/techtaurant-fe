@@ -1,10 +1,19 @@
 ## Techtaurant Frontend
 
-## 개발 환경 시작
+### 환경 변수
 
-로컬 HTTPS 개발 환경을 기준으로 실행합니다.
+아래 환경 변수가 필요합니다.
 
-접속 주소:
+```bash
+NEXT_PUBLIC_API_BASE_URL = <https://백엔드도메인>
+NEXT_PUBLIC_ENV = local | development | production
+```
+
+### 개발 환경 시작
+
+로컬 HTTPS 개발 환경 기준
+
+로컬 접속 주소:
 
 - `https://local.techtaurant.com:3010`
 
@@ -15,13 +24,8 @@
 실행 순서:
 
 ```bash
-pnpm install
-pnpm setup:https
-pnpm dev:https
+pnpm install # 패키지 설치
+pnpm api:generate # API codegen
+pnpm setup:https # mkcert로 local.techtaurant.com 인증서 등록
+pnpm dev:https # https://local.techtaurant.com:3010 개발 서버 실행
 ```
-
-`pnpm setup:https`는 아래 작업을 수행합니다.
-
-- `mkcert -install`
-- `/etc/hosts`에 `local.techtaurant.com` 등록
-- 로컬 인증서 생성
