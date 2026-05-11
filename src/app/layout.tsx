@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import "./globals.css";
-import type { ReactNode } from "react";
+import './globals.css';
+
+import type { ReactNode } from 'react';
 
 type Props = {
   children: ReactNode;
