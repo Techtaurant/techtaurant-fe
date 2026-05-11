@@ -2,6 +2,7 @@
   "name": "techtaurant-fe",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "setup:https": "sh scripts/setup-local-https.sh",
     "dev:https": "node scripts/start-local-https.mjs",
