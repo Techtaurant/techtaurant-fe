@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup:https": "sh scripts/setup-local-https.sh",
+    "dev:https": "node scripts/start-local-https.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
