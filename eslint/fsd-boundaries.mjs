@@ -1,3 +1,41 @@
+import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+
+const SRC_ROOT = path.resolve(process.cwd(), 'src');
+const LAYER_ORDER = ['app', 'views', 'widgets', 'features', 'entities', 'shared'];
+const LAYERS_WITH_SLICES = ['views', 'widgets', 'features', 'entities'];
+
+const getSliceNames = (layer) => {
+  const layerPath = path.join(SRC_ROOT, layer);
+
+  if (!existsSync(layerPath)) return [];
+
+  return readdirSync(layerPath, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+};
+
+const createSameLayerImportZones = () =>
+  LAYERS_WITH_SLICES.flatMap((layer) => {
+    const sliceNames = getSliceNames(layer);
+    return sliceNames.map((slice) => ({
+      target: `./src/${layer}/${slice}`,
+      from: `./src/${layer}`,
+      except: [`./${slice}`],
+    }));
+  });
+
+const createUpperLayerImportZones = () =>
+  LAYER_ORDER.slice(1).map((layer, index) => {
+    const restrictedLayers = LAYER_ORDER.slice(0, index + 1);
+    const from = restrictedLayers.map((restrictedLayer) => `./src/${restrictedLayer}`);
+
+    return {
+      target: `./src/${layer}`,
+      from: from.length === 1 ? from[0] : from,
+    };
+  });
+
 export const fsdImportBoundaryConfig = {
   files: ['**/*.{js,jsx,ts,tsx,mjs,mts}'],
   settings: {
@@ -12,33 +50,7 @@ export const fsdImportBoundaryConfig = {
       'error',
       {
         basePath: process.cwd(),
-        zones: [
-          {
-            target: './src/views',
-            from: './src/app',
-            message: 'views 레이어는 app 레이어를 import할 수 없습니다.',
-          },
-          {
-            target: './src/widgets',
-            from: ['./src/app', './src/views'],
-            message: 'widgets 레이어는 상위 레이어(app, views)를 import할 수 없습니다.',
-          },
-          {
-            target: './src/features',
-            from: ['./src/app', './src/views', './src/widgets'],
-            message: 'features 레이어는 상위 레이어(app, views, widgets)를 import할 수 없습니다.',
-          },
-          {
-            target: './src/entities',
-            from: ['./src/app', './src/views', './src/widgets', './src/features'],
-            message: 'entities 레이어는 상위 레이어(app, views, widgets, features)를 import할 수 없습니다.',
-          },
-          {
-            target: './src/shared',
-            from: ['./src/app', './src/views', './src/widgets', './src/features', './src/entities'],
-            message: 'shared 레이어는 상위 레이어(app, views, widgets, features, entities)를 import할 수 없습니다.',
-          },
-        ],
+        zones: [...createUpperLayerImportZones(), ...createSameLayerImportZones()],
       },
     ],
   },
