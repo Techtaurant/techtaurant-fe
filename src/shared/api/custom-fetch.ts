@@ -1,4 +1,4 @@
-import { IS_SERVER } from '@/shared/configs';
+import { IS_SERVER } from '@/shared/config';
 
 let isRefreshing: Promise<boolean> | null = null;
 

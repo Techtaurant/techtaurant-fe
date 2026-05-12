@@ -14,7 +14,7 @@ export default defineConfig({
     },
     output: {
       mode: 'single',
-      target: './src/shared/apis/generated/index.ts',
+      target: './src/shared/api/generated/index.ts',
       client: 'fetch',
       clean: true,
       baseUrl: {
@@ -23,7 +23,7 @@ export default defineConfig({
       override: {
         useTypeOverInterfaces: true,
         mutator: {
-          path: './src/shared/apis/custom-fetch.ts',
+          path: './src/shared/api/custom-fetch.ts',
           name: 'customFetch',
         },
       },
