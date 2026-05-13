@@ -3,6 +3,8 @@ import './globals.css';
 import { Montserrat } from 'next/font/google';
 import type { ReactNode } from 'react';
 
+import { cn } from '@/shared/lib/cn';
+
 const montserrat = Montserrat({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
@@ -16,7 +18,7 @@ type Props = {
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="ko">
-      <body className={`${montserrat.variable} antialiased`}>{children}</body>
+      <body className={cn('bg-background text-foreground antialiased', montserrat.variable)}>{children}</body>
     </html>
   );
 }
