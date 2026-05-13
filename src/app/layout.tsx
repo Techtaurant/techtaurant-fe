@@ -4,6 +4,7 @@ import { Montserrat } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/cn';
+import { ModalProvider } from '@/shared/ui/modal';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -18,7 +19,9 @@ type Props = {
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="ko">
-      <body className={cn('bg-background text-foreground antialiased', montserrat.variable)}>{children}</body>
+      <body className={cn('bg-background text-foreground antialiased', montserrat.variable)}>
+        <ModalProvider>{children}</ModalProvider>
+      </body>
     </html>
   );
 }
