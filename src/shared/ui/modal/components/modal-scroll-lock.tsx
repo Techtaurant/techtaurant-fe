@@ -5,9 +5,9 @@ import { useLockBodyScroll } from '@/shared/lib/use-lock-body-scroll';
 
 export function ModalScrollLock({ children }: PropsWithChildren) {
   const data = useOverlayData();
-  const currentModalCount = Object.keys(data).length;
+  const openedModalCount = Object.values(data).filter(({ isOpen }) => isOpen).length;
 
-  useLockBodyScroll({ enabled: currentModalCount > 0 });
+  useLockBodyScroll({ enabled: openedModalCount > 0 });
 
   return children;
 }
