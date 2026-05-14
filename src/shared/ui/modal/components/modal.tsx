@@ -43,7 +43,7 @@ export function Modal({ id, isOpen, onClose, ...props }: Props) {
     >
       <div
         className={cn(
-          'border-border/80 bg-background text-foreground max-h-[calc(100dvh-2rem)] w-full max-w-140 overflow-hidden rounded-3xl border shadow-2xl backdrop-blur-sm',
+          'border-border/80 bg-background text-foreground max-h-[calc(100dvh-2rem)] w-full max-w-140 overflow-hidden rounded-3xl border shadow-2xl',
           className,
         )}
         {...restProps}
