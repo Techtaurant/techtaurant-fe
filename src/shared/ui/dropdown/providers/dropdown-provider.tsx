@@ -1,6 +1,6 @@
 'use client';
 
-import type { Dispatch, PropsWithChildren, RefObject, SetStateAction } from 'react';
+import type { Dispatch, HTMLAttributes, RefObject, SetStateAction } from 'react';
 import { createContext, useContext, useRef, useState } from 'react';
 
 import { DropdownRoot } from '../components/dropdown-root';
@@ -12,16 +12,18 @@ type DropdownContextValue = {
   contentRef: RefObject<HTMLDivElement | null>;
 };
 
+type Props = HTMLAttributes<HTMLDivElement>;
+
 const DropdownContext = createContext<DropdownContextValue | null>(null);
 
-export const DropdownProvider = ({ children }: PropsWithChildren) => {
+export const DropdownProvider = ({ children, ...props }: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <DropdownContext.Provider value={{ isOpen, setIsOpen, triggerRef, contentRef }}>
-      <DropdownRoot>{children}</DropdownRoot>
+      <DropdownRoot {...props}>{children}</DropdownRoot>
     </DropdownContext.Provider>
   );
 };
