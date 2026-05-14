@@ -1,5 +1,6 @@
 import './globals.css';
 
+import { ThemeProvider } from 'next-themes';
 import type { ReactNode } from 'react';
 
 import { montserrat, pretendard } from '@/shared/config/fonts';
@@ -12,9 +13,15 @@ type Props = {
 
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="ko">
-      <body className={cn('bg-background text-foreground antialiased', pretendard.className, montserrat.variable)}>
-        <ModalProvider>{children}</ModalProvider>
+    <html lang="ko" suppressHydrationWarning>
+      <body className={cn('antialiased', pretendard.className, montserrat.variable)}>
+        <ThemeProvider attribute="data-mode">
+          <ModalProvider>
+            <main className="bg-background text-foreground">
+              <div className="pt-16">{children}</div>
+            </main>
+          </ModalProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
