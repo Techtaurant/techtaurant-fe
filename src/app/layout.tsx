@@ -17,11 +17,11 @@ type Props = {
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={cn('antialiased', pretendard.className, montserrat.variable)}>
+      <body className={cn('bg-background text-foreground antialiased', pretendard.className, montserrat.variable)}>
         <ThemeProvider attribute="data-mode">
           <AuthProvider>
             <ModalProvider>
-              <main className="bg-background text-foreground">
+              <main>
                 <Header />
                 <div className={cn('min-h-screen py-16', 'md:pb-0')}>{children}</div>
                 <BottomNavigation />
