@@ -3,6 +3,7 @@ import './globals.css';
 import { ThemeProvider } from 'next-themes';
 import type { ReactNode } from 'react';
 
+import { AuthProvider } from '@/features/auth/model/auth-provider';
 import { montserrat, pretendard } from '@/shared/config/fonts';
 import { cn } from '@/shared/lib/cn';
 import { ModalProvider } from '@/shared/ui/modal';
@@ -18,13 +19,15 @@ export default function RootLayout({ children }: Props) {
     <html lang="ko" suppressHydrationWarning>
       <body className={cn('antialiased', pretendard.className, montserrat.variable)}>
         <ThemeProvider attribute="data-mode">
-          <ModalProvider>
-            <main className="bg-background text-foreground">
-              <Header />
-              <div className={cn('py-16', 'md:pb-0')}>{children}</div>
-              <BottomNavigation />
-            </main>
-          </ModalProvider>
+          <AuthProvider>
+            <ModalProvider>
+              <main className="bg-background text-foreground">
+                <Header />
+                <div className={cn('min-h-screen py-16', 'md:pb-0')}>{children}</div>
+                <BottomNavigation />
+              </main>
+            </ModalProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
