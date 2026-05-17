@@ -3,7 +3,7 @@
 import type { Dispatch, HTMLAttributes, RefObject, SetStateAction } from 'react';
 import { createContext, useContext, useRef, useState } from 'react';
 
-import { DropdownRoot } from '../components/dropdown-root';
+import { DropdownRoot } from '@/shared/ui/dropdown/components/dropdown-root';
 
 type DropdownContextValue = {
   isOpen: boolean;

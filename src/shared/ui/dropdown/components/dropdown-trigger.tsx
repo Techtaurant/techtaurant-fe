@@ -3,8 +3,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 
 import { cn } from '@/shared/lib/cn';
-
-import { useDropdownContext } from '../providers/dropdown-provider';
+import { useDropdownContext } from '@/shared/ui/dropdown/providers/dropdown-provider';
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
 

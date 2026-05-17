@@ -1,1 +1,1 @@
-export { BottomNavigation } from './ui/bottom-navigation';
+export { BottomNavigation } from '@/widgets/bottom-navigation/ui/bottom-navigation';

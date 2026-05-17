@@ -2,8 +2,7 @@
 
 import { useAuth } from '@/features/auth/model/auth-provider';
 import { LoginButton } from '@/features/auth/ui/login-button';
-
-import { UserMenu } from './user-menu';
+import { UserMenu } from '@/widgets/header/ui/user-menu';
 
 export function AuthSection() {
   const auth = useAuth();

@@ -1,9 +1,8 @@
 import { UserRound } from 'lucide-react';
 
+import { startGoogleLogin } from '@/features/auth/lib/login';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
-
-import { startGoogleLogin } from '../lib/login';
 
 export function LoginButton() {
   return (

@@ -6,8 +6,7 @@ import type { MouseEvent } from 'react';
 import { startGoogleLogin } from '@/features/auth/lib/login';
 import { useAuth } from '@/features/auth/model/auth-provider';
 import { cn } from '@/shared/lib/cn';
-
-import { BottomNavigationLink } from './bottom-navigation-link';
+import { BottomNavigationLink } from '@/widgets/bottom-navigation/ui/bottom-navigation-link';
 
 export function BottomNavigation() {
   const auth = useAuth();

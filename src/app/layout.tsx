@@ -1,4 +1,4 @@
-import './globals.css';
+import '@/app/globals.css';
 
 import { ThemeProvider } from 'next-themes';
 import type { ReactNode } from 'react';
