@@ -15,7 +15,8 @@ export default defineConfig({
     output: {
       mode: 'single',
       target: './src/shared/api/generated/index.ts',
-      client: 'fetch',
+      httpClient: 'fetch',
+      client: 'react-query',
       clean: true,
       baseUrl: {
         runtime: 'process.env.NEXT_PUBLIC_API_BASE_URL',
@@ -25,6 +26,11 @@ export default defineConfig({
         mutator: {
           path: './src/shared/api/custom-fetch.ts',
           name: 'customFetch',
+        },
+        query: {
+          useQuery: true,
+          usePrefetch: true,
+          useInfinite: true,
         },
       },
     },

@@ -1,15 +1,17 @@
 'use client';
 
-import { useAuth } from '@/features/auth/model/auth-provider';
+import { useQuery } from '@tanstack/react-query';
+
+import { meQueryOptions } from '@/entities/user';
 import { LoginButton } from '@/features/auth/ui/login-button';
 import { UserMenu } from '@/widgets/header/ui/user-menu';
 
 export function AuthSection() {
-  const auth = useAuth();
+  const { data: me } = useQuery(meQueryOptions());
 
-  if (auth.status !== 'authenticated') {
+  if (!me) {
     return <LoginButton />;
   }
 
-  return <UserMenu user={auth.user} />;
+  return <UserMenu user={me} />;
 }

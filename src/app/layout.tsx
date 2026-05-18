@@ -3,7 +3,7 @@ import '@/app/globals.css';
 import { ThemeProvider } from 'next-themes';
 import type { ReactNode } from 'react';
 
-import { AuthProvider } from '@/features/auth/model/auth-provider';
+import { ReactQueryProvider } from '@/shared/api/react-query-provider';
 import { montserrat, pretendard } from '@/shared/config/fonts';
 import { cn } from '@/shared/lib/cn';
 import { ModalProvider } from '@/shared/ui/modal';
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Props) {
     <html lang="ko" suppressHydrationWarning>
       <body className={cn('bg-background text-foreground antialiased', pretendard.className, montserrat.variable)}>
         <ThemeProvider attribute="data-mode">
-          <AuthProvider>
+          <ReactQueryProvider>
             <ModalProvider>
               <main>
                 <Header />
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: Props) {
                 <BottomNavigation />
               </main>
             </ModalProvider>
-          </AuthProvider>
+          </ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>
