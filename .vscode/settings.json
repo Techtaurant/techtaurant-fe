@@ -8,5 +8,6 @@
     "source.removeUnusedImports": "always",
     "source.organizeImports": "never",
     "source.addMissingImports": "always"
-  }
+  },
+  "js/ts.preferences.importModuleSpecifier": "shortest"
 }
