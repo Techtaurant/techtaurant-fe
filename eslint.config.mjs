@@ -1,18 +1,24 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
+import prettierConfig from 'eslint-config-prettier';
+
+import { fsdImportBoundaryConfig } from './eslint/fsd-boundaries.mjs';
+import { importSortConfig } from './eslint/import-sort.mjs';
+import { namedExportOnlyConfig } from './eslint/named-export-only.mjs';
+import { noUnusedVarsConfig } from './eslint/no-unused-vars.mjs';
+import { typeImportConfig } from './eslint/type-imports.mjs';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+  importSortConfig,
+  typeImportConfig,
+  noUnusedVarsConfig,
+  fsdImportBoundaryConfig,
+  namedExportOnlyConfig,
+  prettierConfig,
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
 ]);
 
 export default eslintConfig;
