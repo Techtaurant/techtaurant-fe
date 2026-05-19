@@ -25,6 +25,7 @@ export const useGetPostList = ({ params, options }: Params) => {
       initialPageParam: undefined as string | undefined,
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       queryKey: getPostListQueryKey(params),
+      select: (data) => data.pages.flatMap(({ data }) => data?.content ?? []),
     },
   });
 };
