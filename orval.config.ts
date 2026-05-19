@@ -23,6 +23,10 @@ export default defineConfig({
       },
       override: {
         useTypeOverInterfaces: true,
+        operationName: (operation) => `${operation.operationId}Api`,
+        fetch: {
+          includeHttpResponseReturnType: false,
+        },
         mutator: {
           path: './src/shared/api/custom-fetch.ts',
           name: 'customFetch',
@@ -31,11 +35,12 @@ export default defineConfig({
           useQuery: true,
           usePrefetch: true,
           useInfinite: true,
+          useInfiniteQueryParam: 'cursor',
         },
       },
     },
     hooks: {
-      afterAllFilesWrite: ['eslint --fix', 'prettier --write'],
+      afterAllFilesWrite: ['eslint --fix --no-warn-ignored', 'prettier --write --ignore-path .prettierignore'],
     },
   },
 });
