@@ -13,6 +13,7 @@ const createQueryClient = () => {
       queries: {
         staleTime: STALE_TIME,
         refetchOnMount: 'always',
+        retry: 0,
       },
     },
   });
