@@ -1,16 +1,15 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { FileText, Search, SquarePen, UserRound } from 'lucide-react';
 import type { MouseEvent } from 'react';
 
-import { meQueryOptions } from '@/entities/user';
+import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth/lib/login';
 import { cn } from '@/shared/lib/cn';
 import { BottomNavigationLink } from '@/widgets/bottom-navigation/ui/bottom-navigation-link';
 
 export function BottomNavigation() {
-  const { data: me } = useQuery(meQueryOptions());
+  const { data: me } = useGetMe();
 
   const handleAuthRequiredClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (me) return true;

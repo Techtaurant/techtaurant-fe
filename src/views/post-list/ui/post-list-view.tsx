@@ -1,21 +1,17 @@
 'use client';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-
-import { DEFAULT_POST_LIST_SIZE, postListInfiniteQueryOptions } from '@/entities/post-list';
+import { DEFAULT_POST_LIST_SIZE, useGetPostList } from '@/entities/post-list';
 import { PostCard } from '@/widgets/post-card';
 
 export function PostListView() {
-  const { data } = useInfiniteQuery(
-    postListInfiniteQueryOptions({
-      params: {
-        // TODO: useSearchParams를 통해 period, sort 등 주입
-        size: DEFAULT_POST_LIST_SIZE,
-      },
-    }),
-  );
+  const { data } = useGetPostList({
+    params: {
+      // TODO: useSearchParams를 통해 period, sort 등 주입
+      size: DEFAULT_POST_LIST_SIZE,
+    },
+  });
 
-  const postList = data?.pages.flatMap((posts) => posts.content) ?? [];
+  const postList = data?.pages.flatMap(({ data }) => data?.content ?? []) ?? [];
 
   if (postList.length <= 0)
     return (
