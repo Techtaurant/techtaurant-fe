@@ -34,8 +34,15 @@ export default defineConfig({
         query: {
           useQuery: true,
           usePrefetch: true,
-          useInfinite: true,
-          useInfiniteQueryParam: 'cursor',
+        },
+        operations: {
+          // infiniteQuery가 필요한 API에 한해서 추가
+          getPosts: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
         },
       },
     },
