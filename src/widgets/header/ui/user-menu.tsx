@@ -1,0 +1,64 @@
+'use client';
+
+import { FileText, LogOut, Settings } from 'lucide-react';
+
+import type { User } from '@/entities/user/model/use-get-me';
+import { UserAvatar } from '@/entities/user/ui/user-avatar';
+import { requestLogout } from '@/features/auth/lib/logout';
+import { openSettingModal } from '@/features/setting/lib/open-setting-modal';
+import { cn } from '@/shared/lib/cn';
+import {
+  DropdownContent,
+  DropdownDivider,
+  DropdownItem,
+  DropdownProvider,
+  DropdownTrigger,
+} from '@/shared/ui/dropdown';
+
+type Props = {
+  user: User;
+};
+
+export function UserMenu({ user }: Props) {
+  const handleMyPageClick = () => {
+    // TODO: 작성자 게시글 리스트 페이지로 이동 router.push
+  };
+
+  const handleLogout = async () => {
+    try {
+      await requestLogout();
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <DropdownProvider className="flex shrink-0">
+      <DropdownTrigger className={cn('gap-2 transition-opacity duration-200', 'hover:opacity-80')}>
+        <UserAvatar name={user.name} profileImageUrl={user.profileImageUrl} className="h-8 w-8" />
+        <p className={cn('hidden text-sm font-medium', 'md:inline')}>{user.name}</p>
+      </DropdownTrigger>
+      <DropdownContent align="end" className="w-52">
+        <div className="px-3 py-1">
+          <p className="truncate text-sm font-semibold">{user.name}</p>
+          <p className="text-muted-foreground truncate pt-1 text-xs">{user.email}</p>
+        </div>
+        <DropdownDivider />
+        <DropdownItem onClick={handleMyPageClick}>
+          <FileText className="h-4 w-4" />
+          <p>내 글</p>
+        </DropdownItem>
+        <DropdownItem onClick={openSettingModal}>
+          <Settings className="h-4 w-4" />
+          <p>설정</p>
+        </DropdownItem>
+        <DropdownDivider />
+        <DropdownItem onClick={handleLogout}>
+          <LogOut className="h-4 w-4" />
+          <p>로그아웃</p>
+        </DropdownItem>
+      </DropdownContent>
+    </DropdownProvider>
+  );
+}

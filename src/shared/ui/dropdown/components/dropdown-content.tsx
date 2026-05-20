@@ -28,7 +28,7 @@ export function DropdownContent({ children, className, align = 'center', ...prop
     <div
       ref={contentRef}
       className={cn(
-        'border-border/80 bg-background/95 text-foreground shadow-floating-sm fixed z-50 min-w-48 overflow-hidden rounded-2xl border p-1.5 backdrop-blur-sm',
+        'border-border bg-background text-foreground fixed z-50 min-w-48 overflow-hidden rounded-lg border p-1.5 shadow-sm backdrop-blur-sm',
         className,
       )}
       {...props}

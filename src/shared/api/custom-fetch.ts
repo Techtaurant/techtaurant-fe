@@ -1,4 +1,4 @@
-import { IS_SERVER } from '@/shared/config';
+import { API_BASE_URL, IS_SERVER } from '@/shared/config';
 
 let isRefreshing: Promise<boolean> | null = null;
 
@@ -24,7 +24,7 @@ export const customFetch = async <T>(url: string, init: RequestInit = {}): Promi
 
   if (!IS_SERVER && response.status === 401) {
     if (!isRefreshing) {
-      isRefreshing = fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/open-api/auth/refresh`, {
+      isRefreshing = fetch(`${API_BASE_URL}/open-api/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
       })
