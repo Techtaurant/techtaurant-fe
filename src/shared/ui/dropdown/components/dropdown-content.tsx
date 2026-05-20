@@ -5,8 +5,7 @@ import { createPortal } from 'react-dom';
 
 import { cn } from '@/shared/lib/cn';
 import { type FloatingAlign, useFloatingPosition } from '@/shared/lib/use-floating-position';
-
-import { useDropdownContext } from '../providers/dropdown-provider';
+import { useDropdownContext } from '@/shared/ui/dropdown/providers/dropdown-provider';
 
 type Props = HTMLAttributes<HTMLDivElement> & {
   align?: FloatingAlign;

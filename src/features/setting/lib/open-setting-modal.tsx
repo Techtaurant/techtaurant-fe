@@ -2,7 +2,7 @@
 
 import { overlay } from 'overlay-kit';
 
-import { SettingModal } from '../ui/setting-modal';
+import { SettingModal } from '@/features/setting/ui/setting-modal';
 
 export const openSettingModal = () => {
   overlay.open(({ overlayId, isOpen, unmount }) => (

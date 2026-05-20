@@ -9,5 +9,5 @@
     "source.organizeImports": "never",
     "source.addMissingImports": "always"
   },
-  "js/ts.preferences.importModuleSpecifier": "shortest"
+  "js/ts.preferences.importModuleSpecifier": "non-relative"
 }

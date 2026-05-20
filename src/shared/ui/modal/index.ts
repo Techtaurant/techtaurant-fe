@@ -1,2 +1,2 @@
-export { Modal } from './components/modal';
-export { ModalProvider } from './providers/modal-provider';
+export { Modal } from '@/shared/ui/modal/components/modal';
+export { ModalProvider } from '@/shared/ui/modal/providers/modal-provider';

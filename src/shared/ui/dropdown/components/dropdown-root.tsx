@@ -4,8 +4,7 @@ import type { HTMLAttributes } from 'react';
 
 import { cn } from '@/shared/lib/cn';
 import { useOutsideClick } from '@/shared/lib/use-outside-click';
-
-import { useDropdownContext } from '../providers/dropdown-provider';
+import { useDropdownContext } from '@/shared/ui/dropdown/providers/dropdown-provider';
 
 type Props = HTMLAttributes<HTMLDivElement>;
 
