@@ -15,21 +15,39 @@ export default defineConfig({
     output: {
       mode: 'single',
       target: './src/shared/api/generated/index.ts',
-      client: 'fetch',
+      httpClient: 'fetch',
+      client: 'react-query',
       clean: true,
       baseUrl: {
         runtime: 'process.env.NEXT_PUBLIC_API_BASE_URL',
       },
       override: {
         useTypeOverInterfaces: true,
+        operationName: (operation) => `${operation.operationId}Api`,
+        fetch: {
+          includeHttpResponseReturnType: false,
+        },
         mutator: {
           path: './src/shared/api/custom-fetch.ts',
           name: 'customFetch',
         },
+        query: {
+          useQuery: true,
+          usePrefetch: true,
+        },
+        operations: {
+          // infiniteQuery가 필요한 API에 한해서 추가
+          getPosts: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
+        },
       },
     },
     hooks: {
-      afterAllFilesWrite: ['eslint --fix', 'prettier --write'],
+      afterAllFilesWrite: ['eslint --fix --no-warn-ignored', 'prettier --write --ignore-path .prettierignore'],
     },
   },
 });

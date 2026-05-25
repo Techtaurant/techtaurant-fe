@@ -3,16 +3,16 @@
 import { FileText, Search, SquarePen, UserRound } from 'lucide-react';
 import type { MouseEvent } from 'react';
 
+import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth/lib/login';
-import { useAuth } from '@/features/auth/model/auth-provider';
 import { cn } from '@/shared/lib/cn';
 import { BottomNavigationLink } from '@/widgets/bottom-navigation/ui/bottom-navigation-link';
 
 export function BottomNavigation() {
-  const auth = useAuth();
+  const { data: me } = useGetMe();
 
   const handleAuthRequiredClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (auth.status === 'authenticated') return true;
+    if (me) return true;
 
     event.preventDefault();
     startGoogleLogin();

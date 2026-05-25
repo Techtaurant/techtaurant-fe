@@ -2,10 +2,10 @@
 
 import { FileText, LogOut, Settings } from 'lucide-react';
 
-import type { User } from '@/entities/user/model/use-get-me';
-import { UserAvatar } from '@/entities/user/ui/user-avatar';
+import { UserAvatar } from '@/entities/user';
 import { requestLogout } from '@/features/auth/lib/logout';
 import { openSettingModal } from '@/features/setting/lib/open-setting-modal';
+import type { UserResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import {
   DropdownContent,
@@ -16,7 +16,7 @@ import {
 } from '@/shared/ui/dropdown';
 
 type Props = {
-  user: User;
+  user: UserResponse;
 };
 
 export function UserMenu({ user }: Props) {

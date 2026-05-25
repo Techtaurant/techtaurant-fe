@@ -1,15 +1,15 @@
 'use client';
 
-import { useAuth } from '@/features/auth/model/auth-provider';
+import { useGetMe } from '@/entities/user';
 import { LoginButton } from '@/features/auth/ui/login-button';
 import { UserMenu } from '@/widgets/header/ui/user-menu';
 
 export function AuthSection() {
-  const auth = useAuth();
+  const { data: me } = useGetMe();
 
-  if (auth.status !== 'authenticated') {
+  if (!me) {
     return <LoginButton />;
   }
 
-  return <UserMenu user={auth.user} />;
+  return <UserMenu user={me} />;
 }

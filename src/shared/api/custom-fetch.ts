@@ -39,9 +39,9 @@ export const customFetch = async <T>(url: string, init: RequestInit = {}): Promi
     }
   }
 
-  return {
-    data: await parseBody(response),
-    status: response.status,
-    headers: response.headers,
-  } as T;
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.status}`);
+  }
+
+  return parseBody(response) as Promise<T>;
 };
