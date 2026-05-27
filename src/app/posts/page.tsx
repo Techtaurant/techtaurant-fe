@@ -1,18 +1,26 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
-import { DEFAULT_POST_LIST_SIZE, prefetchGetPostList } from '@/entities/post-list';
+import {
+  DEFAULT_POST_LIST_SIZE,
+  parsePostListFilters,
+  prefetchGetPostList,
+  toPostListApiParams,
+} from '@/entities/post-list';
 import { PostListView } from '@/views/post-list';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Page() {
+type Props = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function Page({ searchParams }: Props) {
   const queryClient = new QueryClient();
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const filters = parsePostListFilters(resolvedSearchParams);
 
   await prefetchGetPostList(queryClient, {
-    // TODO: 쿼리 스트링을 통해 period, sort 등 필터를 관리하고 주입
-    params: {
-      size: DEFAULT_POST_LIST_SIZE,
-    },
+    params: toPostListApiParams(filters, DEFAULT_POST_LIST_SIZE),
     // 1시간마다 최신화, SSR 시에는 캐시 사용
     options: {
       cache: 'force-cache',
