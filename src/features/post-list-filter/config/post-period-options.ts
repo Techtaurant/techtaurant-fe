@@ -1,8 +1,9 @@
 import type { PostListPeriodFilter } from '@/entities/post-list';
+import { GetPostsApiPeriod } from '@/shared/api/generated';
 
-export const POST_PERIOD_OPTIONS: Array<{ label: string; value: PostListPeriodFilter }> = [
-  { label: '7일', value: 'WEEK' },
-  { label: '30일', value: 'MONTH' },
-  { label: '365일', value: 'YEAR' },
-  { label: '전체', value: 'ALL' },
-];
+export const POST_PERIOD_OPTIONS = [
+  { label: '7일', value: GetPostsApiPeriod.WEEK },
+  { label: '30일', value: GetPostsApiPeriod.MONTH },
+  { label: '365일', value: GetPostsApiPeriod.YEAR },
+  { label: '전체', value: GetPostsApiPeriod.ALL },
+] satisfies Array<{ label: string; value: PostListPeriodFilter }>;

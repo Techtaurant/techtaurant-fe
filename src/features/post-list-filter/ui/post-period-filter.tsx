@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { buildPostListSearchParams, parsePostListFilters, type PostListPeriodFilter } from '@/entities/post-list';
+import { parsePostListFilters, type PostListPeriodFilter } from '@/entities/post-list';
 import { POST_PERIOD_OPTIONS } from '@/features/post-list-filter/config/post-period-options';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
@@ -14,7 +14,9 @@ export function PostPeriodFilter() {
   const filters = parsePostListFilters(searchParams);
 
   const handlePeriodChange = (period: PostListPeriodFilter) => {
-    const nextSearchParams = buildPostListSearchParams(searchParams, { period });
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.set('period', period);
+
     router.push(`${pathname}?${nextSearchParams.toString()}`);
   };
 

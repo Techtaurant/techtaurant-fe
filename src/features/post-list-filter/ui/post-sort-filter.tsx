@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { buildPostListSearchParams, parsePostListFilters, type PostListSortFilter } from '@/entities/post-list';
+import { parsePostListFilters, type PostListSortFilter } from '@/entities/post-list';
 import { POST_SORT_OPTIONS } from '@/features/post-list-filter/config/post-sort-options';
 import { cn } from '@/shared/lib/cn';
 
@@ -13,7 +13,9 @@ export function PostSortFilter() {
   const filters = parsePostListFilters(searchParams);
 
   const handleSortChange = (sort: PostListSortFilter) => {
-    const nextSearchParams = buildPostListSearchParams(searchParams, { sort });
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.set('sort', sort);
+
     router.push(`${pathname}?${nextSearchParams.toString()}`);
   };
 
