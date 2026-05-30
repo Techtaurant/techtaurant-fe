@@ -11,13 +11,12 @@ import { PostListView } from '@/views/post-list';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function Page({ searchParams }: Props) {
   const queryClient = new QueryClient();
-  const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const filters = parsePostListFilters(resolvedSearchParams);
+  const filters = parsePostListFilters(await searchParams);
 
   await prefetchGetPostList(queryClient, {
     params: toPostListApiParams(filters, DEFAULT_POST_LIST_SIZE),

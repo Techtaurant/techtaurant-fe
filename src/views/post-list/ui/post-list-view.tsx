@@ -10,8 +10,7 @@ import {
 } from '@/entities/post-list';
 import { Observer } from '@/shared/ui/intersection-observer';
 import { PostCard } from '@/widgets/post-card';
-
-import { PostListFilterBar } from './post-list-filter-bar';
+import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 
 export function PostListView() {
   const searchParams = useSearchParams();
