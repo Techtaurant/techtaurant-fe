@@ -7,14 +7,6 @@ import { POST_PERIOD_OPTIONS } from '@/features/post-list-filter/config/post-per
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 
-const getButtonClassName = (isActive: boolean) =>
-  cn(
-    'h-7 rounded-full px-2.5',
-    isActive
-      ? 'bg-muted font-semibold text-foreground hover:bg-muted'
-      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-  );
-
 export function PostPeriodFilter() {
   const router = useRouter();
   const pathname = usePathname();
@@ -33,7 +25,12 @@ export function PostPeriodFilter() {
           key={option.value}
           variant="ghost"
           size="sm"
-          className={getButtonClassName(filters.period === option.value)}
+          className={cn(
+            'h-7 rounded-full px-2.5',
+            filters.period === option.value
+              ? 'bg-muted text-foreground hover:bg-muted font-semibold'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+          )}
           onClick={() => handlePeriodChange(option.value)}
         >
           {option.label}

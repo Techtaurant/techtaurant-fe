@@ -6,12 +6,6 @@ import { buildPostListSearchParams, parsePostListFilters, type PostListSortFilte
 import { POST_SORT_OPTIONS } from '@/features/post-list-filter/config/post-sort-options';
 import { cn } from '@/shared/lib/cn';
 
-const getSortClassName = (isActive: boolean) =>
-  cn(
-    'text-sm transition-colors hover:text-foreground',
-    isActive ? 'font-semibold text-foreground' : 'text-muted-foreground',
-  );
-
 export function PostSortFilter() {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,7 +23,10 @@ export function PostSortFilter() {
         <button
           key={option.value}
           type="button"
-          className={getSortClassName(filters.sort === option.value)}
+          className={cn(
+            'hover:text-foreground text-sm transition-colors',
+            filters.sort === option.value ? 'text-foreground font-semibold' : 'text-muted-foreground',
+          )}
           onClick={() => handleSortChange(option.value)}
         >
           {option.label}
