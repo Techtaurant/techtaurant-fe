@@ -2,12 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 
-import {
-  DEFAULT_POST_LIST_SIZE,
-  parsePostListFilters,
-  toPostListApiParams,
-  useGetPostList,
-} from '@/entities/post-list';
+import { parsePostListFilters, toPostListApiParams, useGetPostList } from '@/entities/post-list';
 import { Observer } from '@/shared/ui/intersection-observer';
 import { PostCard } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
@@ -16,7 +11,7 @@ export function PostListView() {
   const searchParams = useSearchParams();
   const filters = parsePostListFilters(searchParams);
   const { isFetchingNextPage, data, fetchNextPage } = useGetPostList({
-    params: toPostListApiParams(filters, DEFAULT_POST_LIST_SIZE),
+    params: toPostListApiParams(filters),
   });
   const posts = data ?? [];
 
