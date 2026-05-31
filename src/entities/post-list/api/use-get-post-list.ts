@@ -1,20 +1,18 @@
 import type { QueryClient } from '@tanstack/react-query';
 
+import type { PostListApiParams } from '@/entities/post-list/model/post-list-filters';
 import {
   getGetPostsApiInfiniteQueryKey,
-  type GetPostsApiParams,
   prefetchGetPostsApiInfiniteQuery,
   useGetPostsApiInfinite,
 } from '@/shared/api/generated';
 
-type OmitCursorParams = Omit<GetPostsApiParams, 'cursor'>;
-
 type Params = {
-  params?: OmitCursorParams;
+  params?: PostListApiParams;
   options?: RequestInit;
 };
 
-export const getPostListQueryKey = (params?: OmitCursorParams) => {
+export const getPostListQueryKey = (params?: PostListApiParams) => {
   return getGetPostsApiInfiniteQueryKey(params);
 };
 

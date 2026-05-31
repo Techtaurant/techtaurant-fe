@@ -1,34 +1,40 @@
 'use client';
 
-import { DEFAULT_POST_LIST_SIZE, useGetPostList } from '@/entities/post-list';
+import { useSearchParams } from 'next/navigation';
+
+import { parsePostListFilters, toPostListApiParams, useGetPostList } from '@/entities/post-list';
 import { Observer } from '@/shared/ui/intersection-observer';
 import { PostCard } from '@/widgets/post-card';
+import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 
 export function PostListView() {
+  const searchParams = useSearchParams();
+  const filters = parsePostListFilters(searchParams);
   const { isFetchingNextPage, data, fetchNextPage } = useGetPostList({
-    params: {
-      // TODO: useSearchParams를 통해 period, sort 등 주입
-      size: DEFAULT_POST_LIST_SIZE,
-    },
+    params: toPostListApiParams(filters),
   });
+  const posts = data ?? [];
 
   const handleObserverEnter = () => {
     if (isFetchingNextPage) return;
     fetchNextPage();
   };
 
-  if (!data || data.length <= 0) {
+  if (posts.length <= 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-muted-foreground text-lg">조건에 맞는 게시물이 없습니다.</p>
-      </div>
+      <section className="mx-auto flex-1 px-4 py-6 md:max-w-182 md:px-6">
+        <PostListFilterBar />
+        <div className="flex flex-col items-center justify-center py-20">
+          <p className="text-muted-foreground text-lg">조건에 맞는 게시물이 없습니다.</p>
+        </div>
+      </section>
     );
   }
 
-  // TODO: 다른 위젯 (정렬, 필터) 등 조립 필요
   return (
     <section className="mx-auto flex-1 px-4 py-6 md:max-w-182 md:px-6">
-      {data.map((post) => (
+      <PostListFilterBar />
+      {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
       <Observer onEnter={handleObserverEnter} />
