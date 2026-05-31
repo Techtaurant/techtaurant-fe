@@ -6,7 +6,7 @@ import { PostListView } from '@/views/post-list';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function Page({ searchParams }: Props) {

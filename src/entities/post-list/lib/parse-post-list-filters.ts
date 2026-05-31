@@ -8,20 +8,12 @@ import {
 import { GetPostsApiPeriod, GetPostsApiSort } from '@/shared/api/generated';
 import { getSearchParamValue, type SearchParamsLike } from '@/shared/lib/search-params';
 
-const filterValidPostListPeriodParam = (period?: string | null): PostListPeriodFilter | undefined => {
-  if (period && POST_LIST_PERIOD_VALUES.has(period as PostListPeriodFilter)) {
-    return period as PostListPeriodFilter;
-  }
-
-  return undefined;
+const isValidPeriodValue = (value: string | null | undefined): value is PostListPeriodFilter => {
+  return Boolean(value && POST_LIST_PERIOD_VALUES.has(value as PostListPeriodFilter));
 };
 
-const filterValidPostListSortParam = (sort?: string | null): PostListSortFilter | undefined => {
-  if (sort && POST_LIST_SORT_VALUES.has(sort as PostListSortFilter)) {
-    return sort as PostListSortFilter;
-  }
-
-  return undefined;
+const isValidSortValue = (value: string | null | undefined): value is PostListSortFilter => {
+  return Boolean(value && POST_LIST_SORT_VALUES.has(value as PostListSortFilter));
 };
 
 export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListFilters => {
@@ -29,7 +21,7 @@ export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListF
   const sort = getSearchParamValue(searchParams, 'sort');
 
   return {
-    period: filterValidPostListPeriodParam(period) ?? GetPostsApiPeriod.ALL,
-    sort: filterValidPostListSortParam(sort) ?? GetPostsApiSort.LATEST,
+    period: isValidPeriodValue(period) ? period : GetPostsApiPeriod.ALL,
+    sort: isValidSortValue(sort) ? sort : GetPostsApiSort.LATEST,
   };
 };

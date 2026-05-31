@@ -1,11 +1,11 @@
 export { getPostListQueryKey, prefetchGetPostList, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
 export { toPostListApiParams } from '@/entities/post-list/lib/to-post-list-api-params';
-export {
-  type PostListApiParams,
-  type PostListFilters,
-  type PostListPeriodFilter,
-  type PostListSortFilter,
+export type {
+  PostListApiParams,
+  PostListFilters,
+  PostListPeriodFilter,
+  PostListSortFilter,
 } from '@/entities/post-list/model/post-list-filters';
 export { PostPreview } from '@/entities/post-list/ui/post-preview';
 export { PostStatList } from '@/entities/post-list/ui/post-stat-list';
