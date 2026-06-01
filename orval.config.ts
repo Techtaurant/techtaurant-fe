@@ -37,7 +37,7 @@ export default defineConfig({
         },
         operations: {
           // infiniteQuery가 필요한 API에 한해서 추가
-          getPosts: {
+          getPostContents: {
             query: {
               useInfinite: true,
               useInfiniteQueryParam: 'cursor',
