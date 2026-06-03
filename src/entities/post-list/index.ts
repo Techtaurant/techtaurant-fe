@@ -1,4 +1,4 @@
-export { getPostListQueryKey, prefetchGetPostList, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
+export { fetchPostList, getPostListQueryKey, useGetPostList } from '@/entities/post-list/api/use-get-post-list';
 export {
   prefetchGetPostListMetadatas,
   useGetPostListMetadatas,

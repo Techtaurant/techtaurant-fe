@@ -1,10 +1,10 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import {
+  fetchPostList,
   getPostListAuthorIdGroups,
   getPostListPostIdGroups,
   parsePostListFilters,
-  prefetchGetPostList,
   prefetchGetPostListMetadatas,
   prefetchGetPostListProfileImages,
   toPostListApiParams,
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: Props) {
   const queryClient = new QueryClient();
   const filters = parsePostListFilters(await searchParams);
 
-  const postListData = await prefetchGetPostList(queryClient, {
+  const postListData = await fetchPostList(queryClient, {
     params: toPostListApiParams(filters),
     // 1시간마다 최신화, SSR 시에는 캐시 사용
     options: {

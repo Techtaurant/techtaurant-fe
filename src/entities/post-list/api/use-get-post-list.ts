@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 
 import { getPostListContentData } from '@/entities/post-list/lib/get-post-list-relations';
 import type { PostListApiParams } from '@/entities/post-list/model/post-list-filters';
+import type { PostContentListItemResponse } from '@/shared/api/generated';
 import {
   getGetPostContentsApiInfiniteQueryKey,
   getGetPostContentsApiInfiniteQueryOptions,
@@ -11,6 +12,14 @@ import {
 type Params = {
   params?: PostListApiParams;
   options?: RequestInit;
+};
+
+const EMPTY_POST_LIST_CONTENT_DATA = {
+  pages: [],
+  posts: [],
+} satisfies {
+  pages: PostContentListItemResponse[][];
+  posts: PostContentListItemResponse[];
 };
 
 export const getPostListQueryKey = (params?: PostListApiParams) => {
@@ -29,17 +38,21 @@ export const useGetPostList = ({ options, params }: Params) => {
   });
 };
 
-export const prefetchGetPostList = async (queryClient: QueryClient, { options, params }: Params) => {
-  const data = await queryClient.fetchInfiniteQuery({
-    ...getGetPostContentsApiInfiniteQueryOptions(params, {
-      request: options,
-      query: {
-        initialPageParam: undefined as string | undefined,
-        getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
-        queryKey: getPostListQueryKey(params),
-      },
-    }),
-  });
+export const fetchPostList = async (queryClient: QueryClient, { options, params }: Params) => {
+  try {
+    const data = await queryClient.fetchInfiniteQuery({
+      ...getGetPostContentsApiInfiniteQueryOptions(params, {
+        request: options,
+        query: {
+          initialPageParam: undefined as string | undefined,
+          getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
+          queryKey: getPostListQueryKey(params),
+        },
+      }),
+    });
 
-  return getPostListContentData(data.pages);
+    return getPostListContentData(data.pages);
+  } catch {
+    return EMPTY_POST_LIST_CONTENT_DATA;
+  }
 };
