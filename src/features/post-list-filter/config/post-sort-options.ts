@@ -6,4 +6,4 @@ export const POST_SORT_OPTIONS = [
   { label: '조회순', value: GetPostContentsApiSort.VIEW },
   { label: '추천순', value: GetPostContentsApiSort.LIKE },
   { label: '댓글순', value: GetPostContentsApiSort.COMMENT },
-] satisfies Array<{ label: string; value: PostListSortFilter }>;
+] satisfies { label: string; value: PostListSortFilter }[];

@@ -6,4 +6,4 @@ export const POST_PERIOD_OPTIONS = [
   { label: '30일', value: GetPostContentsApiPeriod.MONTH },
   { label: '365일', value: GetPostContentsApiPeriod.YEAR },
   { label: '전체', value: GetPostContentsApiPeriod.ALL },
-] satisfies Array<{ label: string; value: PostListPeriodFilter }>;
+] satisfies { label: string; value: PostListPeriodFilter }[];
