@@ -1,8 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { useQueries } from '@tanstack/react-query';
 
-import { chunkPostListRequestValues } from '@/entities/post-list/lib/chunk-post-list-request-values';
+import { POST_LIST_REQUEST_BATCH_SIZE } from '@/entities/post-list/config/constants';
 import { getGetUserProfileImagesApiQueryOptions, prefetchGetUserProfileImagesApiQuery } from '@/shared/api/generated';
+import { chunkArray } from '@/shared/lib/chunk-array';
 
 type Params = {
   authorIdGroups: string[][];
@@ -10,7 +11,7 @@ type Params = {
 };
 
 export const useGetPostListProfileImages = ({ authorIdGroups, options }: Params) => {
-  const userIdChunks = authorIdGroups.flatMap(chunkPostListRequestValues);
+  const userIdChunks = authorIdGroups.flatMap((userIds) => chunkArray(userIds, POST_LIST_REQUEST_BATCH_SIZE));
   const queries = useQueries({
     queries: userIdChunks.map((userIdChunk) =>
       getGetUserProfileImagesApiQueryOptions(
@@ -31,7 +32,7 @@ export const prefetchGetPostListProfileImages = async (
   queryClient: QueryClient,
   { authorIdGroups, options }: Params,
 ) => {
-  const userIdChunks = authorIdGroups.flatMap(chunkPostListRequestValues);
+  const userIdChunks = authorIdGroups.flatMap((userIds) => chunkArray(userIds, POST_LIST_REQUEST_BATCH_SIZE));
 
   if (userIdChunks.length <= 0) return queryClient;
 

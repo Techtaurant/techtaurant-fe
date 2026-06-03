@@ -1,7 +1,8 @@
 import { useQueries } from '@tanstack/react-query';
 
-import { chunkPostListRequestValues } from '@/entities/post-list/lib/chunk-post-list-request-values';
+import { POST_LIST_REQUEST_BATCH_SIZE } from '@/entities/post-list/config/constants';
 import { getGetPostViewerStatesApiQueryOptions } from '@/shared/api/generated';
+import { chunkArray } from '@/shared/lib/chunk-array';
 
 type Params = {
   enabled: boolean;
@@ -10,7 +11,9 @@ type Params = {
 };
 
 export const useGetPostListViewerStates = ({ enabled, options, postIdGroups }: Params) => {
-  const postIdChunks = enabled ? postIdGroups.flatMap(chunkPostListRequestValues) : [];
+  const postIdChunks = enabled
+    ? postIdGroups.flatMap((postIds) => chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE))
+    : [];
   const queries = useQueries({
     queries: postIdChunks.map((postIdChunk) =>
       getGetPostViewerStatesApiQueryOptions(

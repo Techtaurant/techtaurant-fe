@@ -1,8 +1,9 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { useQueries } from '@tanstack/react-query';
 
-import { chunkPostListRequestValues } from '@/entities/post-list/lib/chunk-post-list-request-values';
+import { POST_LIST_REQUEST_BATCH_SIZE } from '@/entities/post-list/config/constants';
 import { getGetPostMetadatasApiQueryOptions, prefetchGetPostMetadatasApiQuery } from '@/shared/api/generated';
+import { chunkArray } from '@/shared/lib/chunk-array';
 
 type Params = {
   options?: RequestInit;
@@ -10,7 +11,7 @@ type Params = {
 };
 
 export const useGetPostListMetadatas = ({ options, postIdGroups }: Params) => {
-  const postIdChunks = postIdGroups.flatMap(chunkPostListRequestValues);
+  const postIdChunks = postIdGroups.flatMap((postIds) => chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE));
   const queries = useQueries({
     queries: postIdChunks.map((postIdChunk) =>
       getGetPostMetadatasApiQueryOptions(
@@ -28,7 +29,7 @@ export const useGetPostListMetadatas = ({ options, postIdGroups }: Params) => {
 };
 
 export const prefetchGetPostListMetadatas = async (queryClient: QueryClient, { options, postIdGroups }: Params) => {
-  const postIdChunks = postIdGroups.flatMap(chunkPostListRequestValues);
+  const postIdChunks = postIdGroups.flatMap((postIds) => chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE));
 
   if (postIdChunks.length <= 0) return queryClient;
 
