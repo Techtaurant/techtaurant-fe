@@ -1,19 +1,12 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-
-import { parsePostListFilters, toPostListApiParams, useGetPostList } from '@/entities/post-list';
 import { Observer } from '@/shared/ui/intersection-observer';
+import { usePostListViewData } from '@/views/post-list/model/use-post-list-view-data';
 import { PostCard } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 
 export function PostListView() {
-  const searchParams = useSearchParams();
-  const filters = parsePostListFilters(searchParams);
-  const { isFetchingNextPage, data, fetchNextPage } = useGetPostList({
-    params: toPostListApiParams(filters),
-  });
-  const posts = data ?? [];
+  const { fetchNextPage, isFetchingNextPage, posts } = usePostListViewData();
 
   const handleObserverEnter = () => {
     if (isFetchingNextPage) return;

@@ -12,6 +12,8 @@ type Props = {
 
 // TODO: 작성자 클릭, 게시물 클릭 시 읽음 처리, 태그 클릭 구현 필요
 export function PostCard({ post }: Props) {
+  const thumbnailUrl = post.thumbnailUrl?.trim();
+
   return (
     <article
       className={cn(
@@ -37,7 +39,7 @@ export function PostCard({ post }: Props) {
             <PostStatList viewCount={post.viewCount} likeCount={post.likeCount} commentCount={post.commentCount} />
           </div>
         </div>
-        <PostThumbnail src={post.thumbnailUrl} alt={post.title} />
+        {thumbnailUrl && <PostThumbnail src={thumbnailUrl} alt={post.title} />}
       </Link>
     </article>
   );

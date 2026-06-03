@@ -1,1 +1,2 @@
 export const DEFAULT_POST_LIST_SIZE = 20;
+export const POST_LIST_REQUEST_BATCH_SIZE = 100;

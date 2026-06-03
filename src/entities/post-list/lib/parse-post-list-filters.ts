@@ -5,7 +5,7 @@ import {
   type PostListPeriodFilter,
   type PostListSortFilter,
 } from '@/entities/post-list/model/post-list-filters';
-import { GetPostsApiPeriod, GetPostsApiSort } from '@/shared/api/generated';
+import { GetPostContentsApiPeriod, GetPostContentsApiSort } from '@/shared/api/generated';
 import { getSearchParamValue, type SearchParamsLike } from '@/shared/lib/search-params';
 
 const isValidPeriodValue = (value: string | null | undefined): value is PostListPeriodFilter => {
@@ -21,7 +21,7 @@ export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListF
   const sort = getSearchParamValue(searchParams, 'sort');
 
   return {
-    period: isValidPeriodValue(period) ? period : GetPostsApiPeriod.ALL,
-    sort: isValidSortValue(sort) ? sort : GetPostsApiSort.LATEST,
+    period: isValidPeriodValue(period) ? period : GetPostContentsApiPeriod.ALL,
+    sort: isValidSortValue(sort) ? sort : GetPostContentsApiSort.LATEST,
   };
 };
