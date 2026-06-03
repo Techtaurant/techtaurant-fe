@@ -1,8 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 
-import { getPostListContentData } from '@/entities/post-list/lib/get-post-list-relations';
 import type { PostListApiParams } from '@/entities/post-list/model/post-list-filters';
-import type { PostContentListItemResponse } from '@/shared/api/generated';
 import {
   getGetPostContentsApiInfiniteQueryKey,
   getGetPostContentsApiInfiniteQueryOptions,
@@ -12,14 +10,6 @@ import {
 type Params = {
   params?: PostListApiParams;
   options?: RequestInit;
-};
-
-const EMPTY_POST_LIST_CONTENT_DATA = {
-  pages: [],
-  posts: [],
-} satisfies {
-  pages: PostContentListItemResponse[][];
-  posts: PostContentListItemResponse[];
 };
 
 export const getPostListQueryKey = (params?: PostListApiParams) => {
@@ -33,7 +23,7 @@ export const useGetPostList = ({ options, params }: Params) => {
       initialPageParam: undefined as string | undefined,
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       queryKey: getPostListQueryKey(params),
-      select: (data) => getPostListContentData(data.pages),
+      select: (data) => data.pages.flatMap(({ data }) => data?.content ?? []),
     },
   });
 };
@@ -51,8 +41,8 @@ export const fetchPostList = async (queryClient: QueryClient, { options, params 
       }),
     });
 
-    return getPostListContentData(data.pages);
+    return data.pages.flatMap(({ data }) => data?.content ?? []);
   } catch {
-    return EMPTY_POST_LIST_CONTENT_DATA;
+    return [];
   }
 };

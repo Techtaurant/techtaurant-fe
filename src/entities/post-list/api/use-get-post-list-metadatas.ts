@@ -7,11 +7,11 @@ import { chunkArray } from '@/shared/lib/chunk-array';
 
 type Params = {
   options?: RequestInit;
-  postIdGroups: string[][];
+  postIds: string[];
 };
 
-export const useGetPostListMetadatas = ({ options, postIdGroups }: Params) => {
-  const postIdChunks = postIdGroups.flatMap((postIds) => chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE));
+export const useGetPostListMetadatas = ({ options, postIds }: Params) => {
+  const postIdChunks = chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE);
   const queries = useQueries({
     queries: postIdChunks.map((postIdChunk) =>
       getGetPostMetadatasApiQueryOptions(
@@ -28,8 +28,8 @@ export const useGetPostListMetadatas = ({ options, postIdGroups }: Params) => {
   };
 };
 
-export const prefetchGetPostListMetadatas = async (queryClient: QueryClient, { options, postIdGroups }: Params) => {
-  const postIdChunks = postIdGroups.flatMap((postIds) => chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE));
+export const prefetchGetPostListMetadatas = async (queryClient: QueryClient, { options, postIds }: Params) => {
+  const postIdChunks = chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE);
 
   if (postIdChunks.length <= 0) return queryClient;
 

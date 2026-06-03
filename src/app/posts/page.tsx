@@ -2,8 +2,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 
 import {
   fetchPostList,
-  getPostListAuthorIdGroups,
-  getPostListPostIdGroups,
+  getPostListAuthorIds,
+  getPostListPostIds,
   parsePostListFilters,
   prefetchGetPostListMetadatas,
   prefetchGetPostListProfileImages,
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: Props) {
   const queryClient = new QueryClient();
   const filters = parsePostListFilters(await searchParams);
 
-  const postListData = await fetchPostList(queryClient, {
+  const postContents = await fetchPostList(queryClient, {
     params: toPostListApiParams(filters),
     // 1시간마다 최신화, SSR 시에는 캐시 사용
     options: {
@@ -29,18 +29,18 @@ export default async function Page({ searchParams }: Props) {
       next: { revalidate: 60 * 60 },
     },
   });
-  const postIdGroups = getPostListPostIdGroups(postListData.pages);
-  const authorIdGroups = getPostListAuthorIdGroups(postListData.pages);
+  const postIds = getPostListPostIds(postContents);
+  const authorIds = getPostListAuthorIds(postContents);
 
   await Promise.all([
     prefetchGetPostListMetadatas(queryClient, {
-      postIdGroups,
+      postIds,
       options: {
         cache: 'no-store',
       },
     }),
     prefetchGetPostListProfileImages(queryClient, {
-      authorIdGroups,
+      authorIds,
       options: {
         cache: 'force-cache',
         next: { revalidate: 60 * 60 },

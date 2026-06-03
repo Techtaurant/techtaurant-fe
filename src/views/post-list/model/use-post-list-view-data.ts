@@ -3,8 +3,8 @@
 import { useSearchParams } from 'next/navigation';
 
 import {
-  getPostListAuthorIdGroups,
-  getPostListPostIdGroups,
+  getPostListAuthorIds,
+  getPostListPostIds,
   mergePostListItems,
   parsePostListFilters,
   toPostListApiParams,
@@ -22,15 +22,14 @@ export const usePostListViewData = () => {
   const { isFetchingNextPage, data, fetchNextPage } = useGetPostList({
     params: toPostListApiParams(filters),
   });
-  const postContents = data?.posts ?? [];
-  const postContentPages = data?.pages ?? [];
-  const postIdGroups = getPostListPostIdGroups(postContentPages);
-  const authorIdGroups = getPostListAuthorIdGroups(postContentPages);
-  const { data: metadatas } = useGetPostListMetadatas({ postIdGroups });
-  const { data: profileImages } = useGetPostListProfileImages({ authorIdGroups });
+  const postContents = data ?? [];
+  const postIds = getPostListPostIds(postContents);
+  const authorIds = getPostListAuthorIds(postContents);
+  const { data: metadatas } = useGetPostListMetadatas({ postIds });
+  const { data: profileImages } = useGetPostListProfileImages({ authorIds });
   const { data: viewerStates } = useGetPostListViewerStates({
     enabled: Boolean(me),
-    postIdGroups,
+    postIds,
   });
   const posts = mergePostListItems({
     metadatas,

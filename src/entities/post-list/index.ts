@@ -8,7 +8,7 @@ export {
   useGetPostListProfileImages,
 } from '@/entities/post-list/api/use-get-post-list-profile-images';
 export { useGetPostListViewerStates } from '@/entities/post-list/api/use-get-post-list-viewer-states';
-export { getPostListAuthorIdGroups, getPostListPostIdGroups } from '@/entities/post-list/lib/get-post-list-relations';
+export { getPostListAuthorIds, getPostListPostIds } from '@/entities/post-list/lib/get-post-list-relations';
 export { mergePostListItems } from '@/entities/post-list/lib/merge-post-list-items';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
 export { toPostListApiParams } from '@/entities/post-list/lib/to-post-list-api-params';

@@ -7,13 +7,11 @@ import { chunkArray } from '@/shared/lib/chunk-array';
 type Params = {
   enabled: boolean;
   options?: RequestInit;
-  postIdGroups: string[][];
+  postIds: string[];
 };
 
-export const useGetPostListViewerStates = ({ enabled, options, postIdGroups }: Params) => {
-  const postIdChunks = enabled
-    ? postIdGroups.flatMap((postIds) => chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE))
-    : [];
+export const useGetPostListViewerStates = ({ enabled, options, postIds }: Params) => {
+  const postIdChunks = enabled ? chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE) : [];
   const queries = useQueries({
     queries: postIdChunks.map((postIdChunk) =>
       getGetPostViewerStatesApiQueryOptions(

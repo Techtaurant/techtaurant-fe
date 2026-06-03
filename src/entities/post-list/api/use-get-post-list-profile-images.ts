@@ -6,12 +6,12 @@ import { getGetUserProfileImagesApiQueryOptions, prefetchGetUserProfileImagesApi
 import { chunkArray } from '@/shared/lib/chunk-array';
 
 type Params = {
-  authorIdGroups: string[][];
+  authorIds: string[];
   options?: RequestInit;
 };
 
-export const useGetPostListProfileImages = ({ authorIdGroups, options }: Params) => {
-  const userIdChunks = authorIdGroups.flatMap((userIds) => chunkArray(userIds, POST_LIST_REQUEST_BATCH_SIZE));
+export const useGetPostListProfileImages = ({ authorIds, options }: Params) => {
+  const userIdChunks = chunkArray(authorIds, POST_LIST_REQUEST_BATCH_SIZE);
   const queries = useQueries({
     queries: userIdChunks.map((userIdChunk) =>
       getGetUserProfileImagesApiQueryOptions(
@@ -28,11 +28,8 @@ export const useGetPostListProfileImages = ({ authorIdGroups, options }: Params)
   };
 };
 
-export const prefetchGetPostListProfileImages = async (
-  queryClient: QueryClient,
-  { authorIdGroups, options }: Params,
-) => {
-  const userIdChunks = authorIdGroups.flatMap((userIds) => chunkArray(userIds, POST_LIST_REQUEST_BATCH_SIZE));
+export const prefetchGetPostListProfileImages = async (queryClient: QueryClient, { authorIds, options }: Params) => {
+  const userIdChunks = chunkArray(authorIds, POST_LIST_REQUEST_BATCH_SIZE);
 
   if (userIdChunks.length <= 0) return queryClient;
 
