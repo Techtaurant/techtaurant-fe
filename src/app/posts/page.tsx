@@ -2,8 +2,6 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 
 import {
   fetchPostList,
-  getPostListAuthorIds,
-  getPostListPostIds,
   parsePostListFilters,
   prefetchGetPostListMetadatas,
   prefetchGetPostListProfileImages,
@@ -29,8 +27,8 @@ export default async function Page({ searchParams }: Props) {
       next: { revalidate: 60 * 60 },
     },
   });
-  const postIds = getPostListPostIds(postContents);
-  const authorIds = getPostListAuthorIds(postContents);
+  const postIds = postContents.map((post) => post.id);
+  const authorIds = Array.from(new Set(postContents.map((post) => post.authorId)));
 
   await Promise.all([
     prefetchGetPostListMetadatas(queryClient, {
