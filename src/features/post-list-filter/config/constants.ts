@@ -1,0 +1,1 @@
+export const MAX_COLLAPSED_TAG_FILTER_ITEMS = 5;
