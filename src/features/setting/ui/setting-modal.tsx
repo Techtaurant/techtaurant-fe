@@ -1,7 +1,15 @@
 'use client';
 
+import { X } from 'lucide-react';
+import { useState } from 'react';
+
+import { SETTING_TABS, type SettingTab } from '@/features/setting/config/setting-tabs';
+import { LanguageSection } from '@/features/setting/ui/language-section';
+import { ManagementPanel } from '@/features/setting/ui/management-panel';
+import { SettingTabNav } from '@/features/setting/ui/setting-tab-nav';
+import { ThemeSection } from '@/features/setting/ui/theme-section';
 import { Button } from '@/shared/ui/button';
-import { Modal } from '@/shared/ui/modal/components/modal';
+import { Modal } from '@/shared/ui/modal';
 
 type Props = {
   overlayId: string;
@@ -9,29 +17,31 @@ type Props = {
   onClose: () => void;
 };
 
-// TODO: 설정 기능 구현 시점에 작업 필요
 export function SettingModal({ overlayId, isOpen, onClose }: Props) {
+  const [activeTab, setActiveTab] = useState<SettingTab>('general');
+
+  const activeTabLabel = SETTING_TABS.find((tab) => tab.value === activeTab)?.label ?? '';
+
   return (
-    <Modal id={overlayId} isOpen={isOpen} onClose={onClose}>
-      <div>
-        <div className="border-border/70 flex items-start justify-between border-b px-6 py-5">
-          <div>
-            <p className="text-lg font-semibold">설정</p>
-            <p className="text-muted-foreground mt-1 text-sm">상세 설정 화면은 후속 스펙에서 확장할 예정입니다.</p>
+    <Modal id={overlayId} isOpen={isOpen} onClose={onClose} className="max-w-165">
+      <div className="grid h-140 grid-cols-[200px_1fr]">
+        <SettingTabNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <section className="h-full overflow-y-auto p-5">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-xl font-semibold">{activeTabLabel}</h2>
+            <Button variant="icon" size="sm" className="h-9 w-9 rounded-full px-0" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-          <Button variant="icon" size="sm" className="h-9 w-9 rounded-full" onClick={onClose}>
-            <span className="text-lg leading-none">×</span>
-          </Button>
-        </div>
-        <div className="space-y-3 px-6 py-5">
-          <section className="bg-muted rounded-2xl px-4 py-4">
-            <p className="text-sm font-semibold">기본 환경</p>
-            <p className="text-muted-foreground mt-1 text-sm leading-6">
-              헤더에서는 설정 모달 진입까지만 책임지고, features/setting 내 구현체를 사용해 해당 모달 내에서 탭 관리,
-              중첩 모달 오픈 등을 책임집니다.
-            </p>
-          </section>
-        </div>
+          {activeTab === 'general' ? (
+            <div>
+              <ThemeSection />
+              <LanguageSection />
+            </div>
+          ) : (
+            <ManagementPanel />
+          )}
+        </section>
       </div>
     </Modal>
   );
