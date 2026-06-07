@@ -10,7 +10,7 @@ export function BannedUsersContent() {
 
   const deleteMyBannedUser = useDeleteMyBannedUser();
 
-  const unbanningUserId = deleteMyBannedUser.variables?.targetUserId ?? null;
+  const unbanningUserId = deleteMyBannedUser.isPending ? deleteMyBannedUser.variables?.targetUserId : null;
 
   const handleUnbanClick = (targetUserId: string) => {
     if (deleteMyBannedUser.isPending) return;
