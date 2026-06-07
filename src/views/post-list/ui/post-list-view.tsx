@@ -13,7 +13,8 @@ export function PostListView() {
   const shouldShowEmpty = !isRefreshingPostList && !hasPosts;
 
   const handleObserverEnter = () => {
-    if (isFetchingNextPage) return;
+    if (isRefreshingPostList || isFetchingNextPage) return;
+
     fetchNextPage();
   };
 
