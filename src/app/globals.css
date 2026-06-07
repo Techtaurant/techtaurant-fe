@@ -9,6 +9,8 @@
   --color-border: var(--border);
   --color-button-primary: var(--button-primary);
   --color-button-primary-hover: var(--button-primary-hover);
+  --color-button-primary-surface: var(--button-primary-surface);
+  --color-button-primary-surface-hover: var(--button-primary-surface-hover);
   --color-button-neutral-surface: var(--button-neutral-surface);
   --color-button-neutral-surface-hover: var(--button-neutral-surface-hover);
   --shadow-floating-sm: var(--floating-shadow-sm);
@@ -23,6 +25,8 @@
   --border: #dadce0;
   --button-primary: #111827;
   --button-primary-hover: #1f2937;
+  --button-primary-surface: rgb(56, 139, 252);
+  --button-primary-surface-hover: rgb(43, 124, 235);
   --button-neutral-surface: #eef1f4;
   --button-neutral-surface-hover: #e5e9ee;
   --floating-shadow-sm: 0 16px 36px rgb(15 23 42 / 0.12);
