@@ -1,4 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 
 import type { PostListApiParams } from '@/entities/post-list/model/post-list-filters';
 import {
@@ -22,6 +23,7 @@ export const useGetPostList = ({ options, params }: Params) => {
     query: {
       initialPageParam: undefined as string | undefined,
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
+      placeholderData: keepPreviousData,
       queryKey: getPostListQueryKey(params),
       select: (data) => data.pages.flatMap(({ data }) => data?.content ?? []),
     },
