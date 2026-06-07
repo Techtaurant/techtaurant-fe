@@ -6,9 +6,11 @@ type Props = {
   name: string;
   profileImageUrl: string;
   className?: string;
+  fallbackClassName?: string;
+  unoptimized?: boolean;
 };
 
-export function UserAvatar({ className, name, profileImageUrl }: Props) {
+export function UserAvatar({ className, name, profileImageUrl, fallbackClassName, unoptimized }: Props) {
   const hasProfileImageUrl = profileImageUrl.trim().length > 0;
   const fallbackText = name.charAt(0).toUpperCase() || '?';
 
@@ -21,9 +23,9 @@ export function UserAvatar({ className, name, profileImageUrl }: Props) {
       )}
     >
       {hasProfileImageUrl ? (
-        <Image src={profileImageUrl} alt={name} fill className="object-cover" />
+        <Image src={profileImageUrl} alt={name} fill unoptimized={unoptimized ?? false} className="object-cover" />
       ) : (
-        <span className="text-xs font-medium">{fallbackText}</span>
+        <span className={cn('text-xs font-medium', fallbackClassName)}>{fallbackText}</span>
       )}
     </div>
   );
