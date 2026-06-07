@@ -71,3 +71,14 @@
     background-color: color-mix(in oklch, var(--border) 70%, var(--foreground));
   }
 }
+
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
