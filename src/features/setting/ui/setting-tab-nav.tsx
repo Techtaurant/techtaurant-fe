@@ -1,6 +1,7 @@
 'use client';
 
-import { SETTING_TABS, type SettingTab } from '@/features/setting/config/setting-tabs';
+import type { SettingTab } from '@/features/setting/config/setting-tabs';
+import { SETTING_TABS } from '@/features/setting/config/setting-tabs';
 import { cn } from '@/shared/lib/cn';
 
 type Props = {

@@ -1,7 +1,8 @@
 'use client';
 
 import { Camera } from 'lucide-react';
-import { type ChangeEvent, useId } from 'react';
+import type { ChangeEvent } from 'react';
+import { useId } from 'react';
 
 import { UserAvatar } from '@/entities/user';
 import { cn } from '@/shared/lib/cn';

@@ -1,5 +1,6 @@
 import { uploadFileToPresignedUrl } from '@/entities/attachment/api/upload-file-to-presigned-url';
-import { issuePresignedUploadUrlApi, type PresignedUrlRequestReferenceType } from '@/shared/api/generated';
+import type { PresignedUrlRequestReferenceType } from '@/shared/api/generated';
+import { issuePresignedUploadUrlApi } from '@/shared/api/generated';
 
 type Params = {
   file?: File | null;

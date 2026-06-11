@@ -2,7 +2,8 @@
 
 import { useTheme } from 'next-themes';
 
-import { THEME_OPTIONS, type ThemeMode } from '@/features/setting/config/theme-options';
+import type { ThemeMode } from '@/features/setting/config/theme-options';
+import { THEME_OPTIONS } from '@/features/setting/config/theme-options';
 import { ThemePreview } from '@/features/setting/ui/theme-preview';
 import { cn } from '@/shared/lib/cn';
 
