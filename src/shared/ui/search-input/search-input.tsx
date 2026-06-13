@@ -24,6 +24,9 @@ export function SearchInput({
   value,
   ...props
 }: Props) {
+  const hasValue = value.trim().length > 0;
+  const shouldShowClearButton = hasClearButton && value.length > 0;
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     onValueChange(event.target.value);
   };
@@ -40,8 +43,6 @@ export function SearchInput({
     event.preventDefault();
     onEnter();
   };
-  const hasValue = value.trim().length > 0;
-  const shouldShowClearButton = hasClearButton && value.length > 0;
 
   return (
     <label
@@ -66,7 +67,10 @@ export function SearchInput({
       {shouldShowClearButton && (
         <button
           type="button"
-          className="text-muted-foreground hover:bg-muted hover:text-foreground ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors"
+          className={cn(
+            'text-muted-foreground ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors',
+            'hover:bg-muted hover:text-foreground',
+          )}
           aria-label="검색어 지우기"
           onClick={handleClearButtonClick}
         >

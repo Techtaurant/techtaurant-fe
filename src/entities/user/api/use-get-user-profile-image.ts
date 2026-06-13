@@ -1,4 +1,3 @@
-import type { UserProfileImageResponse } from '@/shared/api/generated';
 import { useGetUserProfileImagesApi } from '@/shared/api/generated';
 
 type Params = {
@@ -13,7 +12,7 @@ export const useGetUserProfileImage = ({ options, userId }: Params) => {
       request: options,
       query: {
         enabled: Boolean(userId),
-        select: (response): UserProfileImageResponse | undefined => response.data?.[0],
+        select: (response) => response.data?.[0],
       },
     },
   );
