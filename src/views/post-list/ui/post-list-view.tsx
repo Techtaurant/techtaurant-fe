@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { cn } from '@/shared/lib/cn';
 import { Observer } from '@/shared/ui/intersection-observer';
 import { usePostListViewData } from '@/views/post-list/model/use-post-list-view-data';
@@ -7,10 +9,27 @@ import { PostCard } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 import { PostListSidebar } from '@/widgets/post-list-sidebar';
 
+type PostListItem = ReturnType<typeof usePostListViewData>['posts'][number];
+
+type PostListProps = {
+  isRefreshing: boolean;
+  posts: PostListItem[];
+  renderEmpty: () => ReactNode;
+  renderPosts: (posts: PostListItem[], state: { isRefreshing: boolean }) => ReactNode;
+};
+
+function PostList({ isRefreshing, posts, renderEmpty, renderPosts }: PostListProps) {
+  if (posts.length > 0) {
+    return renderPosts(posts, { isRefreshing });
+  }
+
+  if (isRefreshing) return null;
+
+  return renderEmpty();
+}
+
 export function PostListView() {
   const { fetchNextPage, isFetchingNextPage, isRefreshingPostList, posts } = usePostListViewData();
-  const hasPosts = posts.length > 0;
-  const shouldShowEmpty = !isRefreshingPostList && !hasPosts;
 
   const handleObserverEnter = () => {
     if (isRefreshingPostList || isFetchingNextPage) return;
@@ -23,20 +42,25 @@ export function PostListView() {
       <PostListSidebar />
       <section className="mx-auto w-full max-w-182 min-w-0">
         <PostListFilterBar />
-        {hasPosts ? (
-          <>
-            <div className={cn('transition-opacity', isRefreshingPostList && 'opacity-60')}>
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
+        <PostList
+          posts={posts}
+          isRefreshing={isRefreshingPostList}
+          renderPosts={(posts, { isRefreshing }) => (
+            <>
+              <div className={cn('transition-opacity', isRefreshing && 'opacity-60')}>
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
+              </div>
+              <Observer onEnter={handleObserverEnter} />
+            </>
+          )}
+          renderEmpty={() => (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="text-muted-foreground text-lg">조건에 맞는 게시물이 없습니다.</p>
             </div>
-            <Observer onEnter={handleObserverEnter} />
-          </>
-        ) : shouldShowEmpty ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-muted-foreground text-lg">조건에 맞는 게시물이 없습니다.</p>
-          </div>
-        ) : null}
+          )}
+        />
       </section>
     </div>
   );
