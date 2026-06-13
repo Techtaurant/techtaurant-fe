@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import type { PostListPeriodFilter, PostListSortFilter } from '@/entities/post-list';
-import { parsePostListFilters, POST_LIST_FILTER_QUERY_KEYS } from '@/entities/post-list';
+import { parsePostListFilters, POST_LIST_FILTER_SEARCH_PARAM_KEYS } from '@/entities/post-list';
 
 export const usePostListFilters = () => {
   const router = useRouter();
@@ -24,24 +24,24 @@ export const usePostListFilters = () => {
 
   const setPeriodFilter = (period: PostListPeriodFilter) => {
     updateSearchParams((nextSearchParams) => {
-      nextSearchParams.set(POST_LIST_FILTER_QUERY_KEYS.period, period);
+      nextSearchParams.set(POST_LIST_FILTER_SEARCH_PARAM_KEYS.period, period);
     });
   };
 
   const setSortFilter = (sort: PostListSortFilter) => {
     updateSearchParams((nextSearchParams) => {
-      nextSearchParams.set(POST_LIST_FILTER_QUERY_KEYS.sort, sort);
+      nextSearchParams.set(POST_LIST_FILTER_SEARCH_PARAM_KEYS.sort, sort);
     });
   };
 
   const setAuthorFilter = (authorId?: string) => {
     updateSearchParams((nextSearchParams) => {
       if (!authorId) {
-        nextSearchParams.delete(POST_LIST_FILTER_QUERY_KEYS.authorId);
+        nextSearchParams.delete(POST_LIST_FILTER_SEARCH_PARAM_KEYS.authorId);
         return;
       }
 
-      nextSearchParams.set(POST_LIST_FILTER_QUERY_KEYS.authorId, authorId);
+      nextSearchParams.set(POST_LIST_FILTER_SEARCH_PARAM_KEYS.authorId, authorId);
     });
   };
 
@@ -51,9 +51,9 @@ export const usePostListFilters = () => {
         ? filters.tagIds.filter((selectedTagId) => selectedTagId !== tagId)
         : [tagId, ...filters.tagIds];
 
-      nextSearchParams.delete(POST_LIST_FILTER_QUERY_KEYS.tagIds);
+      nextSearchParams.delete(POST_LIST_FILTER_SEARCH_PARAM_KEYS.tagIds);
       nextTagIds.forEach((selectedTagId) => {
-        nextSearchParams.append(POST_LIST_FILTER_QUERY_KEYS.tagIds, selectedTagId);
+        nextSearchParams.append(POST_LIST_FILTER_SEARCH_PARAM_KEYS.tagIds, selectedTagId);
       });
     });
   };

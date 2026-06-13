@@ -4,7 +4,7 @@ import type {
   PostListSortFilter,
 } from '@/entities/post-list/model/post-list-filters';
 import {
-  POST_LIST_FILTER_QUERY_KEYS,
+  POST_LIST_FILTER_SEARCH_PARAM_KEYS,
   POST_LIST_PERIOD_VALUES,
   POST_LIST_SORT_VALUES,
 } from '@/entities/post-list/model/post-list-filters';
@@ -25,10 +25,10 @@ const getPostListFilterIds = (values: string[]) => {
 };
 
 export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListFilters => {
-  const authorId = getSearchParamValue(searchParams, POST_LIST_FILTER_QUERY_KEYS.authorId)?.trim();
-  const period = getSearchParamValue(searchParams, POST_LIST_FILTER_QUERY_KEYS.period);
-  const sort = getSearchParamValue(searchParams, POST_LIST_FILTER_QUERY_KEYS.sort);
-  const tagIds = getPostListFilterIds(getSearchParamValues(searchParams, POST_LIST_FILTER_QUERY_KEYS.tagIds));
+  const authorId = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.authorId)?.trim();
+  const period = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.period);
+  const sort = getSearchParamValue(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.sort);
+  const tagIds = getPostListFilterIds(getSearchParamValues(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.tagIds));
 
   return {
     ...(authorId ? { authorId } : {}),

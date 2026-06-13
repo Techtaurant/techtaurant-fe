@@ -1,7 +1,7 @@
 import type { GetPostContentsApiParams } from '@/shared/api/generated';
 import { GetPostContentsApiPeriod, GetPostContentsApiSort } from '@/shared/api/generated';
 
-export const POST_LIST_FILTER_QUERY_KEYS = {
+export const POST_LIST_FILTER_SEARCH_PARAM_KEYS = {
   authorId: 'authorId',
   period: 'period',
   sort: 'sort',
