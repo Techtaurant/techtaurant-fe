@@ -37,6 +37,4 @@ export const prefetchGetTags = async (queryClient: QueryClient, { options, param
     },
     request: options,
   });
-
-  return queryClient;
 };
