@@ -1,11 +1,14 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { useState } from 'react';
 
 import type { TagResponse } from '@/entities/tag';
 import { MAX_COLLAPSED_TAG_FILTER_ITEMS } from '@/features/post-list-filter/config/constants';
-import { useTagPositionTransition } from '@/features/post-list-filter/ui/use-tag-position-transition';
 import { cn } from '@/shared/lib/cn';
+
+const TAG_POSITION_TRANSITION_DURATION_SECONDS = 0.34;
+const TAG_POSITION_TRANSITION_EASE: [number, number, number, number] = [0.2, 0, 0, 1];
 
 type Props = {
   onToggleTag: (tagId: string) => void;
@@ -24,8 +27,6 @@ export function TagFilterList({ onToggleTag, selectedTagIds, shouldShowEmptyMess
   });
   const orderedTags = [...selectedTags, ...tags.filter((tag) => !selectedTagIdSet.has(tag.id))];
   const visibleTags = isExpanded ? orderedTags : orderedTags.slice(0, MAX_COLLAPSED_TAG_FILTER_ITEMS);
-  const visibleTagOrderKey = visibleTags.map((tag) => tag.id).join('|');
-  const { setTagElement } = useTagPositionTransition(visibleTagOrderKey);
 
   const handleToggleExpanded = () => {
     setIsExpanded((prev) => !prev);
@@ -40,9 +41,13 @@ export function TagFilterList({ onToggleTag, selectedTagIds, shouldShowEmptyMess
   return (
     <div className="flex flex-col gap-1.5">
       {visibleTags.map((tag) => (
-        <label
+        <motion.label
           key={tag.id}
-          ref={(element) => setTagElement(tag.id, element)}
+          layout
+          transition={{
+            duration: TAG_POSITION_TRANSITION_DURATION_SECONDS,
+            ease: TAG_POSITION_TRANSITION_EASE,
+          }}
           className={cn(
             'hover:bg-muted flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors',
             selectedTagIdSet.has(tag.id) && 'bg-muted',
@@ -56,7 +61,7 @@ export function TagFilterList({ onToggleTag, selectedTagIds, shouldShowEmptyMess
           />
           <span className="text-foreground min-w-0 flex-1 truncate text-sm">#{tag.name}</span>
           <span className="text-muted-foreground text-xs">{tag.postCount}</span>
-        </label>
+        </motion.label>
       ))}
       {orderedTags.length > MAX_COLLAPSED_TAG_FILTER_ITEMS && (
         <button
