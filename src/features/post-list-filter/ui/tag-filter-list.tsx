@@ -31,12 +31,10 @@ export function TagFilterList({ onToggleTag, selectedTagIds, shouldShowEmptyMess
     setIsExpanded((prev) => !prev);
   };
 
-  if (orderedTags.length <= 0 && shouldShowEmptyMessage) {
-    return <p className="text-muted-foreground px-2 py-3 text-sm">검색된 태그가 없습니다.</p>;
-  }
-
   if (orderedTags.length <= 0) {
-    return null;
+    return shouldShowEmptyMessage ? (
+      <p className="text-muted-foreground px-2 py-3 text-sm">검색된 태그가 없습니다.</p>
+    ) : null;
   }
 
   return (

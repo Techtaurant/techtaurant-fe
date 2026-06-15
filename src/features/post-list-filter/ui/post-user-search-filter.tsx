@@ -53,9 +53,7 @@ export function PostUserSearchFilter() {
       )}
       {shouldShowUserSearchResults && (
         <div className="bg-button-neutral-surface-hover overflow-hidden rounded-lg shadow-sm">
-          {isPending ? (
-            <p className="text-muted-foreground px-2.5 py-2 text-xs">검색 중입니다.</p>
-          ) : (
+          {!isPending && (
             <UserSearchResultList
               users={users}
               selectedAuthorId={selectedAuthorId}
