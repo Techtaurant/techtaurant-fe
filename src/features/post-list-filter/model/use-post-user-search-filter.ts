@@ -8,11 +8,49 @@ import { usePostListFilters } from '@/features/post-list-filter/model/use-post-l
 
 type SelectedAuthor = Pick<UserResponse, 'id' | 'name' | 'profileImageUrl'>;
 
+type UseSelectedAuthorFromFilterParams = {
+  authorId?: string;
+  selectedAuthor?: SelectedAuthor;
+};
+
+type UseUserSearchResultsParams = {
+  isOpen: boolean;
+  searchQuery: string;
+};
+
 const toSelectedAuthor = (userProfileImage: UserProfileImageResponse): SelectedAuthor => ({
   id: userProfileImage.userId,
   name: userProfileImage.authorName,
   profileImageUrl: userProfileImage.profileImageUrl,
 });
+
+const useSelectedAuthorFromFilter = ({ authorId, selectedAuthor }: UseSelectedAuthorFromFilterParams) => {
+  const { data: restoredAuthorProfile } = useGetUserProfileImage({
+    userId: authorId,
+  });
+  const restoredAuthor =
+    restoredAuthorProfile && restoredAuthorProfile.userId === authorId
+      ? toSelectedAuthor(restoredAuthorProfile)
+      : undefined;
+
+  return selectedAuthor?.id === authorId ? selectedAuthor : restoredAuthor;
+};
+
+const useUserSearchResults = ({ isOpen, searchQuery }: UseUserSearchResultsParams) => {
+  const deferredUserSearchQuery = useDeferredValue(searchQuery);
+  const shouldShowUserSearchResults = isOpen && deferredUserSearchQuery.length > 0;
+
+  const { data: users = [], isPending } = useSearchUsers({
+    enabled: shouldShowUserSearchResults,
+    name: deferredUserSearchQuery,
+  });
+
+  return {
+    isPending,
+    shouldShowUserSearchResults,
+    users,
+  };
+};
 
 export const usePostUserSearchFilter = () => {
   const [userSearchQuery, setUserSearchQuery] = useState<string>();
@@ -20,25 +58,17 @@ export const usePostUserSearchFilter = () => {
   const [selectedAuthor, setSelectedAuthor] = useState<SelectedAuthor>();
 
   const { filters, setAuthorFilter } = usePostListFilters();
-
-  const { data: restoredAuthorProfile } = useGetUserProfileImage({
-    userId: filters.authorId,
+  const selectedAuthorFromFilter = useSelectedAuthorFromFilter({
+    authorId: filters.authorId,
+    selectedAuthor,
   });
-  const restoredAuthor =
-    restoredAuthorProfile && restoredAuthorProfile.userId === filters.authorId
-      ? toSelectedAuthor(restoredAuthorProfile)
-      : undefined;
-  const selectedAuthorFromFilter = selectedAuthor?.id === filters.authorId ? selectedAuthor : restoredAuthor;
   const userSearchInputValue = userSearchQuery ?? selectedAuthorFromFilter?.name ?? '';
   const trimmedUserSearchQuery = userSearchInputValue.trim();
-  const deferredUserSearchQuery = useDeferredValue(trimmedUserSearchQuery);
-  const shouldShowUserSearchResults = isUserSearchResultOpen && deferredUserSearchQuery.length > 0;
-
-  const { data: users = [], isPending } = useSearchUsers({
-    enabled: shouldShowUserSearchResults,
-    name: deferredUserSearchQuery,
+  const { isPending, shouldShowUserSearchResults, users } = useUserSearchResults({
+    isOpen: isUserSearchResultOpen,
+    searchQuery: trimmedUserSearchQuery,
   });
-  const isSelectedAuthorApplied = Boolean(filters.authorId && selectedAuthorFromFilter?.id === filters.authorId);
+  const isSelectedAuthorApplied = !!filters.authorId && selectedAuthorFromFilter?.id === filters.authorId;
   const selectedAuthorToShow =
     isSelectedAuthorApplied && !shouldShowUserSearchResults ? selectedAuthorFromFilter : undefined;
 
