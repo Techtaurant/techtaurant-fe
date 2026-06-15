@@ -14,11 +14,14 @@ export function PostTagFilter() {
 
   const { filters, toggleTagFilter } = usePostListFilters();
 
-  const { data: tags = [], isFetching } = useGetTags({
-    params: deferredTagSearchQuery ? { name: deferredTagSearchQuery } : undefined,
+  const {
+    data: tags = [],
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetTags({
+    ...(!!deferredTagSearchQuery && { params: { name: deferredTagSearchQuery } }),
   });
-  const shouldShowEmptyMessage =
-    trimmedTagSearchQuery.length > 0 && trimmedTagSearchQuery === deferredTagSearchQuery && !isFetching;
 
   return (
     <section className="space-y-3">
@@ -27,7 +30,9 @@ export function PostTagFilter() {
       <TagFilterList
         tags={tags}
         selectedTagIds={filters.tagIds}
-        shouldShowEmptyMessage={shouldShowEmptyMessage}
+        hasNextPage={!!hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        onFetchNextPage={fetchNextPage}
         onToggleTag={toggleTagFilter}
       />
     </section>
