@@ -1,32 +1,12 @@
 'use client';
 
-import type { ReactNode } from 'react';
-
 import { cn } from '@/shared/lib/cn';
 import { Observer } from '@/shared/ui/intersection-observer';
 import { usePostListViewData } from '@/views/post-list/model/use-post-list-view-data';
+import { PostList } from '@/views/post-list/ui/post-list';
 import { PostCard } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 import { PostListSidebar } from '@/widgets/post-list-sidebar';
-
-type PostListItem = ReturnType<typeof usePostListViewData>['posts'][number];
-
-type PostListProps = {
-  isRefreshing: boolean;
-  posts: PostListItem[];
-  renderEmpty: () => ReactNode;
-  renderPosts: (posts: PostListItem[], state: { isRefreshing: boolean }) => ReactNode;
-};
-
-function PostList({ isRefreshing, posts, renderEmpty, renderPosts }: PostListProps) {
-  if (posts.length > 0) {
-    return renderPosts(posts, { isRefreshing });
-  }
-
-  if (isRefreshing) return null;
-
-  return renderEmpty();
-}
 
 export function PostListView() {
   const { fetchNextPage, isFetchingNextPage, isRefreshingPostList, posts } = usePostListViewData();

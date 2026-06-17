@@ -31,7 +31,7 @@ export const parsePostListFilters = (searchParams?: SearchParamsLike): PostListF
   const tagIds = getPostListFilterIds(getSearchParamValues(searchParams, POST_LIST_FILTER_SEARCH_PARAM_KEYS.tagIds));
 
   return {
-    ...(authorId ? { authorId } : {}),
+    ...(!!authorId && { authorId }),
     period: isValidPeriodValue(period) ? period : GetPostContentsApiPeriod.ALL,
     sort: isValidSortValue(sort) ? sort : GetPostContentsApiSort.LATEST,
     tagIds,

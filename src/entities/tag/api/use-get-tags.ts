@@ -2,7 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { keepPreviousData } from '@tanstack/react-query';
 
 import { DEFAULT_TAG_LIST_SIZE } from '@/entities/tag/config/constants';
-import type { GetTagsApiParams, TagResponse } from '@/shared/api/generated';
+import type { GetTagsApiParams } from '@/shared/api/generated';
 import {
   getGetTagsApiInfiniteQueryKey,
   prefetchGetTagsApiInfiniteQuery,
@@ -31,7 +31,7 @@ export const useGetTags = ({ options, params }: Params = {}) => {
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       placeholderData: keepPreviousData,
       queryKey: getTagsQueryKey(params),
-      select: (data): TagResponse[] => data.pages.flatMap(({ data }) => data?.content ?? []),
+      select: (data) => data.pages.flatMap(({ data }) => data?.content ?? []),
     },
   });
 };
