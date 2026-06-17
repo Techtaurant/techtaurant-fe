@@ -1,14 +1,20 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 import type { TagResponse } from '@/entities/tag';
 import { MAX_COLLAPSED_TAG_FILTER_ITEMS } from '@/features/post-list-filter/config/constants';
 import { cn } from '@/shared/lib/cn';
 
+const POST_LIST_FILTER_SCROLL_CONTAINER_SELECTOR = '[data-post-list-filter-scroll-container]';
 const TAG_POSITION_TRANSITION_DURATION_SECONDS = 0.34;
 const TAG_POSITION_TRANSITION_EASE: [number, number, number, number] = [0.2, 0, 0, 1];
+
+type ScrollRestoreSnapshot = {
+  scrollContainer: HTMLElement;
+  scrollTop: number;
+};
 
 type Props = {
   hasNextPage: boolean;
@@ -28,6 +34,7 @@ export function TagFilterList({
   tags,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const scrollRestoreRef = useRef<ScrollRestoreSnapshot | null>(null);
   const selectedTagIdSet = new Set(selectedTagIds);
   const tagMap = new Map(tags.map((tag) => [tag.id, tag]));
   const selectedTags = selectedTagIds.flatMap((tagId) => {
@@ -40,6 +47,19 @@ export function TagFilterList({
 
   const hiddenTagCount = Math.max(orderedTags.length - MAX_COLLAPSED_TAG_FILTER_ITEMS, 0);
   const shouldShowMoreButton = hiddenTagCount > 0 || hasNextPage;
+
+  const handleTagToggle = (tagId: string, checkboxElement: HTMLInputElement) => {
+    const scrollContainer = checkboxElement.closest(POST_LIST_FILTER_SCROLL_CONTAINER_SELECTOR);
+
+    if (scrollContainer instanceof HTMLElement) {
+      scrollRestoreRef.current = {
+        scrollContainer,
+        scrollTop: scrollContainer.scrollTop,
+      };
+    }
+
+    onToggleTag(tagId);
+  };
 
   const handleMoreButtonClick = () => {
     if (!isExpanded && hiddenTagCount > 0) {
@@ -61,6 +81,25 @@ export function TagFilterList({
     return '더보기';
   };
 
+  useLayoutEffect(() => {
+    const scrollSnapshot = scrollRestoreRef.current;
+
+    if (!scrollSnapshot) return;
+
+    const { scrollContainer, scrollTop } = scrollSnapshot;
+
+    scrollContainer.scrollTop = scrollTop;
+
+    const animationFrameId = requestAnimationFrame(() => {
+      scrollContainer.scrollTop = scrollTop;
+      scrollRestoreRef.current = null;
+    });
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [selectedTagIds]);
+
   if (orderedTags.length <= 0) return null;
 
   return (
@@ -81,7 +120,7 @@ export function TagFilterList({
           <input
             type="checkbox"
             checked={selectedTagIdSet.has(tag.id)}
-            onChange={() => onToggleTag(tag.id)}
+            onChange={(event) => handleTagToggle(tag.id, event.currentTarget)}
             className="border-border h-4 w-4 cursor-pointer rounded"
           />
           <span className="text-foreground min-w-0 flex-1 truncate text-sm">#{tag.name}</span>
