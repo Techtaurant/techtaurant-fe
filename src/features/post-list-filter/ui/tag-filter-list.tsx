@@ -36,11 +36,7 @@ export function TagFilterList({
     return [tag];
   });
   const orderedTags = [...selectedTags, ...tags.filter((tag) => !selectedTagIdSet.has(tag.id))];
-  let visibleTags = orderedTags.slice(0, MAX_COLLAPSED_TAG_FILTER_ITEMS);
-
-  if (isExpanded) {
-    visibleTags = orderedTags;
-  }
+  const visibleTags = isExpanded ? orderedTags : orderedTags.slice(0, MAX_COLLAPSED_TAG_FILTER_ITEMS);
 
   const hiddenTagCount = Math.max(orderedTags.length - MAX_COLLAPSED_TAG_FILTER_ITEMS, 0);
   const shouldShowMoreButton = hiddenTagCount > 0 || hasNextPage;
@@ -52,6 +48,7 @@ export function TagFilterList({
     }
 
     if (hasNextPage) {
+      setIsExpanded(true);
       onFetchNextPage();
       return;
     }
@@ -60,9 +57,8 @@ export function TagFilterList({
   };
 
   const getMoreButtonLabel = () => {
-    if (!isExpanded && hiddenTagCount > 0) return `${hiddenTagCount}개 더보기`;
-    if (hasNextPage) return '더보기';
-    return '접기';
+    if (isExpanded && !hasNextPage) return '접기';
+    return '더보기';
   };
 
   if (orderedTags.length <= 0) return null;
