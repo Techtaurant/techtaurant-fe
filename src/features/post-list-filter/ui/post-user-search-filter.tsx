@@ -5,21 +5,35 @@ import { useState } from 'react';
 
 import type { UserResponse } from '@/entities/user';
 import { useGetUserProfileImage, UserAvatar, useSearchUsers } from '@/entities/user';
+import { POST_LIST_FILTER_SEARCH_DEBOUNCE_DELAY_MS } from '@/features/post-list-filter/config/constants';
 import { usePostListFilters } from '@/features/post-list-filter/model/use-post-list-filters';
 import { UserSearchResultList } from '@/features/post-list-filter/ui/user-search-result-list';
+import { cn } from '@/shared/lib/cn';
+import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
 import { SearchInput } from '@/shared/ui/search-input';
 
 export function PostUserSearchFilter() {
   const [searchUserName, setSearchUserName] = useState('');
+  const trimmedSearchUserName = searchUserName.trim();
+  const debouncedSearchUserName = useDebouncedValue({
+    delayMs: POST_LIST_FILTER_SEARCH_DEBOUNCE_DELAY_MS,
+    value: trimmedSearchUserName,
+  });
+  const shouldSearchUsers = trimmedSearchUserName.length > 0 && debouncedSearchUserName.length > 0;
+
   const { filters, setAuthorFilter } = usePostListFilters();
   const { data: selectedUserProfile } = useGetUserProfileImage({ userId: filters.authorId });
-  const { data: users = [], isPending } = useSearchUsers({
-    name: searchUserName,
+  const { data: users = [], isFetching } = useSearchUsers({
+    enabled: shouldSearchUsers,
+    name: debouncedSearchUserName,
   });
-  const shouldShowUserSearchResults = users.length > 0;
+  const shouldShowUserSearchResults = trimmedSearchUserName.length > 0 && users.length > 0;
+  const isSearchingUsers = shouldSearchUsers && isFetching;
 
   const handleSearchInputEnter = () => {
-    const selectedUser = users.find((user) => user.name === searchUserName);
+    if (trimmedSearchUserName !== debouncedSearchUserName) return;
+
+    const selectedUser = users.find((user) => user.name === trimmedSearchUserName);
 
     if (!selectedUser) return;
 
@@ -65,9 +79,9 @@ export function PostUserSearchFilter() {
       )}
       {shouldShowUserSearchResults && (
         <div className="bg-button-neutral-surface-hover overflow-hidden rounded-lg shadow-sm">
-          {!isPending && (
+          <div className={cn('transition-opacity', isSearchingUsers && 'opacity-60')}>
             <UserSearchResultList users={users} selectedAuthorId={filters.authorId} onUserSelect={handleUserSelect} />
-          )}
+          </div>
         </div>
       )}
     </section>

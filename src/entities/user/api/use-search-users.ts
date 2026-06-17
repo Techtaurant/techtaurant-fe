@@ -1,4 +1,6 @@
-import type { SearchByNameApiParams, UserResponse } from '@/shared/api/generated';
+import { keepPreviousData } from '@tanstack/react-query';
+
+import type { SearchByNameApiParams } from '@/shared/api/generated';
 import { useSearchByNameApi } from '@/shared/api/generated';
 
 type Params = {
@@ -18,7 +20,8 @@ export const useSearchUsers = ({ enabled = true, name, options }: Params) => {
     request: options,
     query: {
       enabled: enabled && params.name.length > 0,
-      select: (response): UserResponse[] => response.data ?? [],
+      placeholderData: keepPreviousData,
+      select: (response) => response.data ?? [],
     },
   });
 };

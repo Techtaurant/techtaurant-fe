@@ -1,16 +1,22 @@
 'use client';
 
-import { useDeferredValue, useState } from 'react';
+import { useState } from 'react';
 
 import { useGetTags } from '@/entities/tag';
+import { POST_LIST_FILTER_SEARCH_DEBOUNCE_DELAY_MS } from '@/features/post-list-filter/config/constants';
 import { usePostListFilters } from '@/features/post-list-filter/model/use-post-list-filters';
 import { TagFilterList } from '@/features/post-list-filter/ui/tag-filter-list';
+import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
 import { SearchInput } from '@/shared/ui/search-input';
 
 export function PostTagFilter() {
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const trimmedTagSearchQuery = tagSearchQuery.trim();
-  const deferredTagSearchQuery = useDeferredValue(trimmedTagSearchQuery);
+  const debouncedTagSearchQuery = useDebouncedValue({
+    delayMs: POST_LIST_FILTER_SEARCH_DEBOUNCE_DELAY_MS,
+    value: trimmedTagSearchQuery,
+  });
+  const shouldSearchTags = trimmedTagSearchQuery.length > 0 && debouncedTagSearchQuery.length > 0;
 
   const { filters, toggleTagFilter } = usePostListFilters();
 
@@ -20,7 +26,7 @@ export function PostTagFilter() {
     hasNextPage,
     isFetchingNextPage,
   } = useGetTags({
-    ...(!!deferredTagSearchQuery && { params: { name: deferredTagSearchQuery } }),
+    ...(shouldSearchTags && { params: { name: debouncedTagSearchQuery } }),
   });
 
   return (
