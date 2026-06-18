@@ -7,7 +7,6 @@ import {
   prefetchGetPostListProfileImages,
   toPostListApiParams,
 } from '@/entities/post-list';
-import { prefetchGetTags } from '@/entities/tag';
 import { PostListView } from '@/views/post-list';
 
 export const dynamic = 'force-dynamic';
@@ -34,12 +33,6 @@ export default async function Page({ searchParams }: Props) {
   const authorIds = Array.from(new Set(postContents.map((post) => post.authorId)));
 
   await Promise.all([
-    prefetchGetTags(queryClient, {
-      options: {
-        cache: 'force-cache',
-        next: { revalidate: POST_LIST_REVALIDATE_SECONDS },
-      },
-    }),
     prefetchGetPostListMetadatas(queryClient, {
       postIds,
       options: {

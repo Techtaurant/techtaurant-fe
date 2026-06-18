@@ -1,13 +1,8 @@
-import type { QueryClient } from '@tanstack/react-query';
 import { keepPreviousData } from '@tanstack/react-query';
 
 import { DEFAULT_TAG_LIST_SIZE } from '@/entities/tag/config/constants';
 import type { GetTagsApiParams } from '@/shared/api/generated';
-import {
-  getGetTagsApiInfiniteQueryKey,
-  prefetchGetTagsApiInfiniteQuery,
-  useGetTagsApiInfinite,
-} from '@/shared/api/generated';
+import { getGetTagsApiInfiniteQueryKey, useGetTagsApiInfinite } from '@/shared/api/generated';
 
 type Params = {
   options?: RequestInit;
@@ -33,16 +28,5 @@ export const useGetTags = ({ options, params }: Params = {}) => {
       queryKey: getTagsQueryKey(params),
       select: (data) => data.pages.flatMap(({ data }) => data?.content ?? []),
     },
-  });
-};
-
-export const prefetchGetTags = async (queryClient: QueryClient, { options, params }: Params = {}) => {
-  await prefetchGetTagsApiInfiniteQuery(queryClient, getTagListParams(params), {
-    query: {
-      initialPageParam: undefined as GetTagsApiParams['cursor'],
-      getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
-      queryKey: getTagsQueryKey(params),
-    },
-    request: options,
   });
 };
