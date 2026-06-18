@@ -4,7 +4,7 @@ import { FileText, LogOut, Settings } from 'lucide-react';
 
 import { UserAvatar } from '@/entities/user';
 import { requestLogout } from '@/features/auth/lib/logout';
-import { openSettingModal } from '@/features/setting/lib/open-setting-modal';
+import { useOpenSettingModal } from '@/features/setting';
 import type { UserResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import {
@@ -20,6 +20,8 @@ type Props = {
 };
 
 export function UserMenu({ user }: Props) {
+  const openSettingModal = useOpenSettingModal();
+
   const handleMyPageClick = () => {
     // TODO: 작성자 게시글 리스트 페이지로 이동 router.push
   };

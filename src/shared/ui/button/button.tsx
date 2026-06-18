@@ -23,6 +23,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: 'bg-button-primary text-background hover:bg-button-primary-hover rounded-full',
+        primarySurface: 'bg-button-primary-surface text-white hover:bg-button-primary-surface-hover',
         neutral: 'bg-button-neutral-surface text-foreground hover:bg-button-neutral-surface-hover',
         ghost: 'bg-transparent text-foreground hover:bg-muted',
         icon: 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground',
