@@ -31,13 +31,11 @@ export const useGetPostListProfileImages = ({ authorIds, options }: Params) => {
 export const prefetchGetPostListProfileImages = async (queryClient: QueryClient, { authorIds, options }: Params) => {
   const userIdChunks = chunkArray(authorIds, POST_LIST_REQUEST_BATCH_SIZE);
 
-  if (userIdChunks.length <= 0) return queryClient;
+  if (userIdChunks.length <= 0) return;
 
   await Promise.all(
     userIdChunks.map((userIdChunk) =>
       prefetchGetUserProfileImagesApiQuery(queryClient, { userIds: userIdChunk }, { request: options }),
     ),
   );
-
-  return queryClient;
 };
