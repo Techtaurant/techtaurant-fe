@@ -18,9 +18,10 @@ export const usePostListViewData = () => {
   const filters = parsePostListFilters(searchParams);
 
   const { data: me } = useGetMe();
-  const { isFetchingNextPage, data, fetchNextPage } = useGetPostList({
+  const { isFetching, isFetchingNextPage, data, fetchNextPage } = useGetPostList({
     params: toPostListApiParams(filters),
   });
+  const isRefreshingPostList = isFetching && !isFetchingNextPage;
 
   const postContents = data ?? [];
   const postIds = postContents.map((post) => post.id);
@@ -43,6 +44,7 @@ export const usePostListViewData = () => {
   return {
     fetchNextPage,
     isFetchingNextPage,
+    isRefreshingPostList,
     posts,
   };
 };

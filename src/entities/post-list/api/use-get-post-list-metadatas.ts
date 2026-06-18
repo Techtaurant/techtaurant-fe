@@ -31,13 +31,11 @@ export const useGetPostListMetadatas = ({ options, postIds }: Params) => {
 export const prefetchGetPostListMetadatas = async (queryClient: QueryClient, { options, postIds }: Params) => {
   const postIdChunks = chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE);
 
-  if (postIdChunks.length <= 0) return queryClient;
+  if (postIdChunks.length <= 0) return;
 
   await Promise.all(
     postIdChunks.map((postIdChunk) =>
       prefetchGetPostMetadatasApiQuery(queryClient, { postIds: postIdChunk }, { request: options }),
     ),
   );
-
-  return queryClient;
 };

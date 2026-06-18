@@ -43,6 +43,12 @@ export default defineConfig({
               useInfiniteQueryParam: 'cursor',
             },
           },
+          getTags: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
         },
       },
     },
