@@ -19,7 +19,7 @@ export function PostUserSearchFilter() {
     delayMs: POST_LIST_FILTER_SEARCH_DEBOUNCE_DELAY_MS,
     value: trimmedSearchUserName,
   });
-  const shouldSearchUsers = trimmedSearchUserName.length > 0 && debouncedSearchUserName.length > 0;
+  const shouldSearchUsers = trimmedSearchUserName.length > 0;
 
   const { filters, setAuthorFilter } = usePostListFilters();
   const { data: selectedUserProfile } = useGetUserProfileImage({ userId: filters.authorId });
