@@ -13,6 +13,8 @@
   --color-button-primary-surface-hover: var(--button-primary-surface-hover);
   --color-button-neutral-surface: var(--button-neutral-surface);
   --color-button-neutral-surface-hover: var(--button-neutral-surface-hover);
+  --color-button-danger-surface: var(--button-danger-surface);
+  --color-button-danger-surface-hover: var(--button-danger-surface-hover);
   --shadow-floating-sm: var(--floating-shadow-sm);
   --shadow-floating-lg: var(--floating-shadow-lg);
 }
@@ -29,6 +31,8 @@
   --button-primary-surface-hover: rgb(43, 124, 235);
   --button-neutral-surface: #eef1f4;
   --button-neutral-surface-hover: #e5e9ee;
+  --button-danger-surface: #f04452;
+  --button-danger-surface-hover: #d92d3a;
   --floating-shadow-sm: 0 16px 36px rgb(15 23 42 / 0.12);
   --floating-shadow-lg: 0 24px 70px rgb(15 23 42 / 0.16);
 }
