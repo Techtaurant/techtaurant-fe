@@ -31,7 +31,9 @@ export function PostCard({ post }: Props) {
             <UserAvatar name={post.authorName} profileImageUrl={post.authorProfileImageUrl} className="h-5 w-5" />
             <p className={cn('text-sm font-medium', 'hover:underline')}>{post.authorName}</p>
             <span>·</span>
-            <span className="text-muted-foreground text-xs">{formatDisplayTime(post.updatedAt)}</span>
+            <time className="text-muted-foreground text-xs" dateTime={post.updatedAt}>
+              {formatDisplayTime(post.updatedAt)}
+            </time>
           </div>
           <PostPreview title={post.title} content={post.content} />
           <div className={cn('flex flex-wrap items-center gap-3', 'md:gap-4')}>
