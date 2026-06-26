@@ -9,11 +9,18 @@ type AuthorFollowResult = 'followed' | 'unfollowed';
 type Params = {
   authorId?: string;
   currentUserId?: string;
+  isAuthPending: boolean;
   isLoggedIn: boolean;
   onRequireLogin: () => void;
 };
 
-export const usePostDetailAuthorFollow = ({ authorId, currentUserId, isLoggedIn, onRequireLogin }: Params) => {
+export const usePostDetailAuthorFollow = ({
+  authorId,
+  currentUserId,
+  isAuthPending,
+  isLoggedIn,
+  onRequireLogin,
+}: Params) => {
   const queryClient = useQueryClient();
   const followMutation = useFollowUser();
   const unfollowMutation = useUnfollowUser();
@@ -29,6 +36,7 @@ export const usePostDetailAuthorFollow = ({ authorId, currentUserId, isLoggedIn,
   const isFollowingUpdating = followMutation.isPending || unfollowMutation.isPending || followingsQuery.isFetching;
 
   const toggleAuthorFollow = async (): Promise<AuthorFollowResult | undefined> => {
+    if (isAuthPending) return;
     if (!authorId || isOwnAuthor) return;
 
     if (!isLoggedIn || !currentUserId) {

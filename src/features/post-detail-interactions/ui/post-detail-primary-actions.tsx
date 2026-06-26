@@ -9,6 +9,7 @@ const COUNT_THOUSAND_UNIT = 1000;
 type Props = {
   commentCount: number;
   isDisliked: boolean;
+  isAuthPending: boolean;
   isLikePending: boolean;
   isLiked: boolean;
   likeCount: number;
@@ -20,6 +21,7 @@ type Props = {
 export function PostDetailPrimaryActions({
   commentCount,
   isDisliked,
+  isAuthPending,
   isLikePending,
   isLiked,
   likeCount,
@@ -38,7 +40,7 @@ export function PostDetailPrimaryActions({
             isLiked && 'bg-button-danger-surface/15 text-button-danger-surface hover:bg-button-danger-surface-hover/20',
             !isLiked && 'hover:bg-muted/80 hover:text-foreground',
           )}
-          disabled={isLikePending}
+          disabled={isAuthPending || isLikePending}
           onClick={onToggleLike}
         >
           <ThumbsUp className="h-5 w-5" />
@@ -53,7 +55,7 @@ export function PostDetailPrimaryActions({
               'bg-button-primary-surface/15 text-button-primary-surface hover:bg-button-primary-surface-hover/20',
             !isDisliked && 'hover:bg-muted/80 hover:text-foreground',
           )}
-          disabled={isLikePending}
+          disabled={isAuthPending || isLikePending}
           onClick={onToggleDislike}
         >
           <ThumbsDown className="h-5 w-5" />

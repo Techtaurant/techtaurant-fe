@@ -12,13 +12,14 @@ import { Button } from '@/shared/ui/button';
 const READ_TOGGLE_GUIDE_TEXT = '해당 아이콘을 눌러 읽음 상태를 바꿔보세요!';
 
 type Props = {
+  isAuthPending: boolean;
   isLoggedIn: boolean;
   isRead: boolean;
   isReadPending: boolean;
   onToggleRead: () => void;
 };
 
-export function PostDetailReadToggleButton({ isLoggedIn, isRead, isReadPending, onToggleRead }: Props) {
+export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, isReadPending, onToggleRead }: Props) {
   const showReadCheckedIconRef = useRef(isRead);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const readStatusLabel = getReadStatusLabel(isRead);
@@ -90,7 +91,7 @@ export function PostDetailReadToggleButton({ isLoggedIn, isRead, isReadPending, 
           isPressingReadToggle && 'scale-[0.94]',
           !isPressingReadToggle && 'scale-100',
         )}
-        disabled={isReadPending}
+        disabled={isAuthPending || isReadPending}
         title={readStatusLabel}
         onClick={handleToggleRead}
         onPointerCancel={handleReadPointerUp}

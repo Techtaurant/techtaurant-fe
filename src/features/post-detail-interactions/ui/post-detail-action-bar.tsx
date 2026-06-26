@@ -7,6 +7,7 @@ import { PostDetailShareButton } from '@/features/post-detail-interactions/ui/po
 type Props = {
   commentCount: number;
   isDisliked: boolean;
+  isAuthPending: boolean;
   isLoggedIn: boolean;
   isLikePending: boolean;
   isLiked: boolean;
@@ -23,6 +24,7 @@ type Props = {
 export function PostDetailActionBar({
   commentCount,
   isDisliked,
+  isAuthPending,
   isLoggedIn,
   isLikePending,
   isLiked,
@@ -41,6 +43,7 @@ export function PostDetailActionBar({
         <PostDetailPrimaryActions
           commentCount={commentCount}
           isDisliked={isDisliked}
+          isAuthPending={isAuthPending}
           isLikePending={isLikePending}
           isLiked={isLiked}
           likeCount={likeCount}
@@ -52,6 +55,7 @@ export function PostDetailActionBar({
 
       <div className="flex shrink-0 items-center justify-end gap-1 md:gap-3">
         <PostDetailReadToggleButton
+          isAuthPending={isAuthPending}
           isLoggedIn={isLoggedIn}
           isRead={isRead}
           isReadPending={isReadPending}

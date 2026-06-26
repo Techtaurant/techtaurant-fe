@@ -15,6 +15,7 @@ type Props = {
   categoryName?: string;
   createdAt: string;
   isAuthorBlockPending: boolean;
+  isAuthPending: boolean;
   isFollowingAuthor: boolean;
   isFollowingUpdating: boolean;
   isOwnAuthor: boolean;
@@ -31,6 +32,7 @@ export function PostDetailArticleHeader({
   categoryName,
   createdAt,
   isAuthorBlockPending,
+  isAuthPending,
   isFollowingAuthor,
   isFollowingUpdating,
   isOwnAuthor,
@@ -58,7 +60,7 @@ export function PostDetailArticleHeader({
           {categoryName}
         </span>
       )}
-      <h1 className={cn('text-foreground wrap-break-words mb-6 text-2xl leading-tight font-bold', 'md:text-4xl')}>
+      <h1 className={cn('text-foreground mb-6 text-2xl leading-tight font-bold wrap-break-word', 'md:text-4xl')}>
         {title}
       </h1>
       <div className="mb-1 flex items-center justify-between gap-3">
@@ -82,6 +84,7 @@ export function PostDetailArticleHeader({
         </div>
         <PostDetailHeaderActions
           isAuthorBlockPending={isAuthorBlockPending}
+          isAuthPending={isAuthPending}
           isFollowingAuthor={isFollowingAuthor}
           isFollowingUpdating={isFollowingUpdating}
           isOwnAuthor={isOwnAuthor}

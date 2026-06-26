@@ -13,6 +13,7 @@ import {
 import { getPostListQueryKey } from '@/entities/post-list';
 
 type Params = {
+  isAuthPending: boolean;
   isLoggedIn: boolean;
   isRead: boolean;
   likeStatus: PostLikeStatus;
@@ -20,12 +21,20 @@ type Params = {
   postId: string;
 };
 
-export const usePostDetailInteractions = ({ isLoggedIn, isRead, likeStatus, onRequireLogin, postId }: Params) => {
+export const usePostDetailInteractions = ({
+  isAuthPending,
+  isLoggedIn,
+  isRead,
+  likeStatus,
+  onRequireLogin,
+  postId,
+}: Params) => {
   const queryClient = useQueryClient();
   const likeMutation = useUpdatePostLikeStatus();
   const readMutation = useUpdatePostReadStatus();
 
   const ensureLoggedIn = () => {
+    if (isAuthPending) return false;
     if (isLoggedIn) return true;
 
     onRequireLogin();

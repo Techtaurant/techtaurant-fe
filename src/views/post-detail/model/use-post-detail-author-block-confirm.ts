@@ -5,6 +5,7 @@ import type { PostDetailActionSnackbarState } from '@/views/post-detail/model/us
 type Params = {
   authorName?: string;
   blockAuthor: () => Promise<boolean>;
+  isAuthPending: boolean;
   isLoggedIn: boolean;
   onRequireLogin: () => void;
   showActionSnackbar: (nextActionSnackbar: PostDetailActionSnackbarState) => void;
@@ -20,6 +21,7 @@ const AUTHOR_BLOCK_SUCCESS_MESSAGE = '사용자를 차단했어요.';
 export const usePostDetailAuthorBlockConfirm = ({
   authorName,
   blockAuthor,
+  isAuthPending,
   isLoggedIn,
   onRequireLogin,
   showActionSnackbar,
@@ -27,6 +29,8 @@ export const usePostDetailAuthorBlockConfirm = ({
   const [isAuthorBlockConfirmOpen, setIsAuthorBlockConfirmOpen] = useState(false);
 
   const requestAuthorBlockConfirm = () => {
+    if (isAuthPending) return;
+
     if (!isLoggedIn) {
       onRequireLogin();
       return;

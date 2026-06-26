@@ -7,6 +7,7 @@ import { Button } from '@/shared/ui/button';
 
 type Props = {
   isAuthorBlockPending: boolean;
+  isAuthPending: boolean;
   isFollowingAuthor: boolean;
   isFollowingUpdating: boolean;
   isOwnAuthor: boolean;
@@ -26,6 +27,7 @@ const BLOCK_AUTHOR_MENU_LABEL = '차단하기';
 
 export function PostDetailHeaderActions({
   isAuthorBlockPending,
+  isAuthPending,
   isFollowingAuthor,
   isFollowingUpdating,
   isOwnAuthor,
@@ -36,10 +38,14 @@ export function PostDetailHeaderActions({
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleMenuToggle = () => {
+    if (isAuthPending) return;
+
     setIsMenuOpen((prev) => !prev);
   };
 
   const handleToggleAuthorFollow = () => {
+    if (isAuthPending) return;
+
     void onToggleAuthorFollow();
   };
 
@@ -73,6 +79,7 @@ export function PostDetailHeaderActions({
         variant="icon"
         size="sm"
         className="h-9 w-9 rounded-full px-0 hover:bg-transparent"
+        disabled={isAuthPending}
         onClick={handleMenuToggle}
       >
         <MoreHorizontal className="h-5 w-5" />
@@ -82,7 +89,7 @@ export function PostDetailHeaderActions({
         variant="ghost"
         size="sm"
         className={isFollowingAuthor ? FOLLOWING_BUTTON_CLASS_NAME : FOLLOW_BUTTON_CLASS_NAME}
-        disabled={isFollowingUpdating}
+        disabled={isAuthPending || isFollowingUpdating}
         onClick={handleToggleAuthorFollow}
       >
         {isFollowingAuthor ? FOLLOWING_BUTTON_LABEL : FOLLOW_BUTTON_LABEL}
@@ -94,7 +101,7 @@ export function PostDetailHeaderActions({
             variant="ghost"
             size="sm"
             className={MENU_ITEM_CLASS_NAME}
-            disabled={isAuthorBlockPending}
+            disabled={isAuthPending || isAuthorBlockPending}
             onClick={handleRequestBlockAuthor}
           >
             <span className="inline-flex items-center gap-2">
