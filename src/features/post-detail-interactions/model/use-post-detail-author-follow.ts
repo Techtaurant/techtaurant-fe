@@ -4,6 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { getUserFollowingsQueryKey, useFollowUser, useGetUserFollowings, useUnfollowUser } from '@/entities/user';
 
+type AuthorFollowResult = 'followed' | 'unfollowed';
+
 type Params = {
   authorId?: string;
   currentUserId?: string;
@@ -26,7 +28,7 @@ export const usePostDetailAuthorFollow = ({ authorId, currentUserId, isLoggedIn,
   );
   const isFollowingUpdating = followMutation.isPending || unfollowMutation.isPending || followingsQuery.isFetching;
 
-  const toggleAuthorFollow = async () => {
+  const toggleAuthorFollow = async (): Promise<AuthorFollowResult | undefined> => {
     if (!authorId || isOwnAuthor) return;
 
     if (!isLoggedIn || !currentUserId) {
@@ -36,11 +38,13 @@ export const usePostDetailAuthorFollow = ({ authorId, currentUserId, isLoggedIn,
 
     if (isFollowingAuthor) {
       await unfollowMutation.mutateAsync({ targetUserId: authorId });
-    } else {
-      await followMutation.mutateAsync({ targetUserId: authorId });
+      await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
+      return 'unfollowed';
     }
 
+    await followMutation.mutateAsync({ targetUserId: authorId });
     await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
+    return 'followed';
   };
 
   return {

@@ -13,7 +13,6 @@ type Props = {
   isRead: boolean;
   isReadPending: boolean;
   likeCount: number;
-  onFocusComment: () => void;
   onShare: () => void;
   onToggleDislike: () => void;
   onToggleLike: () => void;
@@ -30,7 +29,6 @@ export function PostDetailActionBar({
   isRead,
   isReadPending,
   likeCount,
-  onFocusComment,
   onShare,
   onToggleDislike,
   onToggleLike,
@@ -38,18 +36,19 @@ export function PostDetailActionBar({
   viewCount,
 }: Props) {
   return (
-    <div className="border-border scrollbar-hidden mb-3 flex items-center justify-between gap-2 overflow-x-auto border-t py-3 md:gap-3">
-      <PostDetailPrimaryActions
-        commentCount={commentCount}
-        isDisliked={isDisliked}
-        isLikePending={isLikePending}
-        isLiked={isLiked}
-        likeCount={likeCount}
-        viewCount={viewCount}
-        onFocusComment={onFocusComment}
-        onToggleDislike={onToggleDislike}
-        onToggleLike={onToggleLike}
-      />
+    <div className="border-border mb-3 flex items-center justify-between gap-2 border-t py-3 md:gap-3">
+      <div className="scrollbar-hidden min-w-0 flex-1 overflow-x-auto">
+        <PostDetailPrimaryActions
+          commentCount={commentCount}
+          isDisliked={isDisliked}
+          isLikePending={isLikePending}
+          isLiked={isLiked}
+          likeCount={likeCount}
+          viewCount={viewCount}
+          onToggleDislike={onToggleDislike}
+          onToggleLike={onToggleLike}
+        />
+      </div>
 
       <div className="flex shrink-0 items-center justify-end gap-1 md:gap-3">
         <PostDetailReadToggleButton

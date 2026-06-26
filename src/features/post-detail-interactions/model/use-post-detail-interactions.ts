@@ -1,6 +1,5 @@
 'use client';
 
-import type { QueryClient } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 
 import type { PostLikeStatus } from '@/entities/post-detail';
@@ -44,7 +43,11 @@ export const usePostDetailInteractions = ({ isLoggedIn, isRead, likeStatus, onRe
         likeStatus: nextLikeStatus,
       },
     });
-    await invalidatePostDetailQueries({ postId, queryClient });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+    ]);
   };
 
   const toggleLike = async () => {
@@ -64,7 +67,11 @@ export const usePostDetailInteractions = ({ isLoggedIn, isRead, likeStatus, onRe
         isRead: !isRead,
       },
     });
-    await invalidatePostDetailQueries({ postId, queryClient });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+    ]);
   };
 
   return {
@@ -74,14 +81,6 @@ export const usePostDetailInteractions = ({ isLoggedIn, isRead, likeStatus, onRe
     toggleLike,
     toggleRead,
   };
-};
-
-const invalidatePostDetailQueries = async ({ postId, queryClient }: { postId: string; queryClient: QueryClient }) => {
-  await Promise.all([
-    queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-    queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
-    queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-  ]);
 };
 
 const getNextLikeStatus = ({

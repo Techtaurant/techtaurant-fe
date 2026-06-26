@@ -9,7 +9,7 @@ import readCheckAnimation from '@/shared/assets/read-check-success.json';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 
-const READ_TOGGLE_GUIDE_TEXT = '해당 아이콘을 눌러 읽음 상태를 바꿔보세요.';
+const READ_TOGGLE_GUIDE_TEXT = '해당 아이콘을 눌러 읽음 상태를 바꿔보세요!';
 
 type Props = {
   isLoggedIn: boolean;
@@ -78,7 +78,7 @@ export function PostDetailReadToggleButton({ isLoggedIn, isRead, isReadPending, 
         </p>
       )}
       {readToggleToastMessage && (
-        <p className="border-border bg-background text-foreground before:border-t-background absolute -top-16 left-1/2 z-10 -translate-x-1/2 rounded-2xl border px-3 py-1.5 text-[11px] whitespace-nowrap shadow-lg shadow-black/15 before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-[6px] before:border-transparent before:content-['']">
+        <p className="border-border bg-background text-foreground absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-2xl border px-3 py-1.5 text-[11px] whitespace-nowrap shadow-lg shadow-black/15">
           {readToggleToastMessage}
         </p>
       )}
