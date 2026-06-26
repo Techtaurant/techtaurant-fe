@@ -1,0 +1,65 @@
+'use client';
+
+import { PostDetailPrimaryActions } from '@/features/post-detail-interactions/ui/post-detail-primary-actions';
+import { PostDetailReadToggleButton } from '@/features/post-detail-interactions/ui/post-detail-read-toggle-button';
+import { PostDetailShareButton } from '@/features/post-detail-interactions/ui/post-detail-share-button';
+
+type Props = {
+  commentCount: number;
+  isDisliked: boolean;
+  isLoggedIn: boolean;
+  isLikePending: boolean;
+  isLiked: boolean;
+  isRead: boolean;
+  isReadPending: boolean;
+  likeCount: number;
+  onFocusComment: () => void;
+  onShare: () => void;
+  onToggleDislike: () => void;
+  onToggleLike: () => void;
+  onToggleRead: () => void;
+  viewCount: number;
+};
+
+export function PostDetailActionBar({
+  commentCount,
+  isDisliked,
+  isLoggedIn,
+  isLikePending,
+  isLiked,
+  isRead,
+  isReadPending,
+  likeCount,
+  onFocusComment,
+  onShare,
+  onToggleDislike,
+  onToggleLike,
+  onToggleRead,
+  viewCount,
+}: Props) {
+  return (
+    <div className="border-border scrollbar-hidden mb-3 flex items-center justify-between gap-2 overflow-x-auto border-t py-3 md:gap-3">
+      <PostDetailPrimaryActions
+        commentCount={commentCount}
+        isDisliked={isDisliked}
+        isLikePending={isLikePending}
+        isLiked={isLiked}
+        likeCount={likeCount}
+        viewCount={viewCount}
+        onFocusComment={onFocusComment}
+        onToggleDislike={onToggleDislike}
+        onToggleLike={onToggleLike}
+      />
+
+      <div className="flex shrink-0 items-center justify-end gap-1 md:gap-3">
+        <PostDetailReadToggleButton
+          isLoggedIn={isLoggedIn}
+          isRead={isRead}
+          isReadPending={isReadPending}
+          onToggleRead={onToggleRead}
+        />
+        <PostDetailShareButton onShare={onShare} />
+      </div>
+    </div>
+  );
+}
