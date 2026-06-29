@@ -7,6 +7,7 @@ type Params = {
 const SHARE_LINK_COPIED_MESSAGE = '링크가 복사되었습니다!';
 const SHARE_LINK_COPY_FAILED_MESSAGE = '링크 복사에 실패했습니다.';
 
+// TODO: 토스트 기반 공유 피드백 로직은 추후 별도 PR에서 변경합니다.
 export const usePostDetailShare = ({ showActionSnackbar }: Params) => {
   const sharePostDetail = async () => {
     try {

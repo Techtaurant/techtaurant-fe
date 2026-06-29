@@ -12,6 +12,7 @@ type Params = {
 const FOLLOW_AUTHOR_FAILED_MESSAGE = '팔로우 처리에 실패했습니다.';
 const UNFOLLOW_AUTHOR_FAILED_MESSAGE = '팔로우 취소에 실패했습니다.';
 
+// TODO: 토스트 기반 피드백 로직은 추후 별도 PR에서 변경합니다.
 export const usePostDetailAuthorFollowFeedback = ({
   authorName,
   isFollowingAuthor,

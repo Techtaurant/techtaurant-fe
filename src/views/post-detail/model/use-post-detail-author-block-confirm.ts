@@ -18,6 +18,7 @@ const AUTHOR_BLOCK_CANCEL_ACTION = '취소';
 const AUTHOR_BLOCK_FAILED_MESSAGE = '사용자를 차단하지 못했습니다.';
 const AUTHOR_BLOCK_SUCCESS_MESSAGE = '사용자를 차단했어요.';
 
+// TODO: 토스트 기반 차단 피드백 로직은 추후 별도 PR에서 변경합니다.
 export const usePostDetailAuthorBlockConfirm = ({
   authorName,
   blockAuthor,

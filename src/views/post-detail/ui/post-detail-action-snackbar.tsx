@@ -10,6 +10,7 @@ type Props = {
   variant: PostDetailActionSnackbarVariant;
 };
 
+// TODO: 토스트 UI는 추후 별도 PR에서 변경합니다.
 export function PostDetailActionSnackbar({ isOpen, message, variant }: Props) {
   if (!isOpen) return null;
 

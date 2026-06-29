@@ -9,6 +9,7 @@ export type PostDetailActionSnackbarState = {
 
 const ACTION_SNACKBAR_DURATION_MS = 3500;
 
+// TODO: 토스트 상태 관리 로직은 추후 별도 PR에서 변경합니다.
 export const usePostDetailActionSnackbar = () => {
   const [actionSnackbar, setActionSnackbar] = useState<PostDetailActionSnackbarState | null>(null);
   const isActionSnackbarOpen = !!actionSnackbar;

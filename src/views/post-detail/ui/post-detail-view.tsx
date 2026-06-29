@@ -28,6 +28,7 @@ type Props = {
 const UNKNOWN_AUTHOR_NAME = '알 수 없음';
 
 export function PostDetailView({ postId }: Props) {
+  // TODO: 토스트 관련 상태 연결은 추후 별도 PR에서 변경합니다.
   const { actionSnackbarMessage, actionSnackbarVariant, isActionSnackbarOpen, showActionSnackbar } =
     usePostDetailActionSnackbar();
   const { authorProfile, currentUserId, isAuthPending, isLoggedIn, metadata, post, viewerState } =
@@ -140,6 +141,7 @@ export function PostDetailView({ postId }: Props) {
           onToggleRead={toggleRead}
         />
       </article>
+      {/* TODO: 토스트 UI 연결은 추후 별도 PR에서 변경합니다. */}
       <PostDetailActionSnackbar
         isOpen={isActionSnackbarOpen}
         message={actionSnackbarMessage}
