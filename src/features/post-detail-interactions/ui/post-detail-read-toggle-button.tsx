@@ -88,8 +88,7 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
         size="sm"
         className={cn(
           'relative h-10 w-10 rounded-full px-0 hover:bg-transparent',
-          isPressingReadToggle && 'scale-[0.94]',
-          !isPressingReadToggle && 'scale-100',
+          isPressingReadToggle ? 'scale-[0.94]' : 'scale-100',
         )}
         disabled={isAuthPending || isReadPending}
         title={readStatusLabel}
@@ -105,10 +104,8 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
             autoplay={false}
             className={cn(
               'block h-10 w-10 translate-y-px',
-              isRead && 'opacity-100 grayscale-0',
-              !isRead && 'opacity-[0.55] grayscale',
-              isPressingReadToggle && 'scale-[0.98]',
-              !isPressingReadToggle && 'scale-100',
+              isRead ? 'opacity-100 grayscale-0' : 'opacity-[0.55] grayscale',
+              isPressingReadToggle ? 'scale-[0.98]' : 'scale-100',
             )}
             loop={false}
             lottieRef={lottieRef}

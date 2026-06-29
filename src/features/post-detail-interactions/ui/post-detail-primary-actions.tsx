@@ -37,8 +37,9 @@ export function PostDetailPrimaryActions({
           size="sm"
           className={cn(
             'text-muted-foreground h-8 rounded-full px-2',
-            isLiked && 'bg-button-danger-surface/15 text-button-danger-surface hover:bg-button-danger-surface-hover/20',
-            !isLiked && 'hover:bg-muted/80 hover:text-foreground',
+            isLiked
+              ? 'bg-button-danger-surface/15 text-button-danger-surface hover:bg-button-danger-surface-hover/20'
+              : 'hover:bg-muted/80 hover:text-foreground',
           )}
           disabled={isAuthPending || isLikePending}
           onClick={onToggleLike}
@@ -51,9 +52,9 @@ export function PostDetailPrimaryActions({
           size="sm"
           className={cn(
             'text-muted-foreground h-8 rounded-full px-2',
-            isDisliked &&
-              'bg-button-primary-surface/15 text-button-primary-surface hover:bg-button-primary-surface-hover/20',
-            !isDisliked && 'hover:bg-muted/80 hover:text-foreground',
+            isDisliked
+              ? 'bg-button-primary-surface/15 text-button-primary-surface hover:bg-button-primary-surface-hover/20'
+              : 'hover:bg-muted/80 hover:text-foreground',
           )}
           disabled={isAuthPending || isLikePending}
           onClick={onToggleDislike}
