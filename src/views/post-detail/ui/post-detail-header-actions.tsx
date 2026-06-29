@@ -1,8 +1,9 @@
 'use client';
 
 import { MoreHorizontal, UserX } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
+import { useOutsideClick } from '@/shared/lib/use-outside-click';
 import { Button } from '@/shared/ui/button';
 
 type Props = {
@@ -54,22 +55,11 @@ export function PostDetailHeaderActions({
     onRequestBlockAuthor();
   };
 
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (!menuRef.current) return;
-      if (menuRef.current.contains(event.target as Node)) return;
-
-      setIsMenuOpen(false);
-    };
-
-    window.addEventListener('mousedown', handleOutsideClick);
-
-    return () => {
-      window.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, [isMenuOpen]);
+  useOutsideClick({
+    enabled: isMenuOpen,
+    refs: [menuRef],
+    callbackFn: () => setIsMenuOpen(false),
+  });
 
   if (isOwnAuthor) return null;
 
