@@ -8,15 +8,14 @@ import {
   usePostDetailAuthorFollow,
   usePostDetailInteractions,
 } from '@/features/post-detail-interactions';
+import { useOpenPostDetailAuthorBlockConfirmModal } from '@/views/post-detail/lib/use-open-post-detail-author-block-confirm-modal';
 import { usePostDetailActionSnackbar } from '@/views/post-detail/model/use-post-detail-action-snackbar';
-import { usePostDetailAuthorBlockConfirm } from '@/views/post-detail/model/use-post-detail-author-block-confirm';
 import { usePostDetailAuthorFollowFeedback } from '@/views/post-detail/model/use-post-detail-author-follow-feedback';
 import { usePostDetailShare } from '@/views/post-detail/model/use-post-detail-share';
 import { usePostDetailViewData } from '@/views/post-detail/model/use-post-detail-view-data';
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
 import { PostDetailActionSnackbar } from '@/views/post-detail/ui/post-detail-action-snackbar';
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
-import { PostDetailConfirmDialog } from '@/views/post-detail/ui/post-detail-confirm-dialog';
 import { PostDetailContainer } from '@/views/post-detail/ui/post-detail-container';
 import { PostDetailContent } from '@/views/post-detail/ui/post-detail-content';
 import { PostDetailFallback } from '@/views/post-detail/ui/post-detail-fallback';
@@ -66,30 +65,15 @@ export function PostDetailView({ postId }: Props) {
   const { blockAuthor, isAuthorBlockPending } = usePostDetailAuthorBlock({
     authorId,
     currentUserId,
-    isAuthPending,
-    isLoggedIn,
     isOwnAuthor,
-    onRequireLogin: startGoogleLogin,
     postId,
   });
   const { sharePostDetail } = usePostDetailShare({
     showActionSnackbar,
   });
-  const {
-    authorBlockConfirmCancelLabel,
-    authorBlockConfirmConfirmLabel,
-    authorBlockConfirmDescription,
-    authorBlockConfirmTitle,
-    closeAuthorBlockConfirm,
-    confirmAuthorBlock,
-    isAuthorBlockConfirmOpen,
-    requestAuthorBlockConfirm,
-  } = usePostDetailAuthorBlockConfirm({
+  const openPostDetailAuthorBlockConfirmModal = useOpenPostDetailAuthorBlockConfirmModal({
     authorName: authorProfile?.authorName,
     blockAuthor,
-    isAuthPending,
-    isLoggedIn,
-    onRequireLogin: startGoogleLogin,
     showActionSnackbar,
   });
 
@@ -103,6 +87,17 @@ export function PostDetailView({ postId }: Props) {
   }
 
   const profileImageUrl = authorProfile?.profileImageUrl ?? '';
+
+  const handleBlockAuthorButtonClick = () => {
+    if (isAuthPending) return;
+
+    if (!isLoggedIn) {
+      startGoogleLogin();
+      return;
+    }
+
+    openPostDetailAuthorBlockConfirmModal();
+  };
 
   return (
     <PostDetailContainer>
@@ -120,7 +115,7 @@ export function PostDetailView({ postId }: Props) {
           tags={post.tags}
           title={post.title}
           updatedAt={post.updatedAt}
-          onRequestBlockAuthor={requestAuthorBlockConfirm}
+          onRequestBlockAuthor={handleBlockAuthorButtonClick}
           onToggleAuthorFollow={toggleAuthorFollowWithFeedback}
         />
         <PostDetailContent content={post.content} />
@@ -146,16 +141,6 @@ export function PostDetailView({ postId }: Props) {
         isOpen={isActionSnackbarOpen}
         message={actionSnackbarMessage}
         variant={actionSnackbarVariant}
-      />
-      <PostDetailConfirmDialog
-        cancelLabel={authorBlockConfirmCancelLabel}
-        confirmLabel={authorBlockConfirmConfirmLabel}
-        description={authorBlockConfirmDescription}
-        isConfirming={isAuthorBlockPending}
-        isOpen={isAuthorBlockConfirmOpen}
-        title={authorBlockConfirmTitle}
-        onCancel={closeAuthorBlockConfirm}
-        onConfirm={confirmAuthorBlock}
       />
     </PostDetailContainer>
   );

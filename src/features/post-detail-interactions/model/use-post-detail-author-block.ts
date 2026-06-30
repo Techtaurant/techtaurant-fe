@@ -9,33 +9,16 @@ import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser } from 
 type Params = {
   authorId?: string;
   currentUserId?: string;
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   isOwnAuthor: boolean;
-  onRequireLogin: () => void;
   postId: string;
 };
 
-export const usePostDetailAuthorBlock = ({
-  authorId,
-  currentUserId,
-  isAuthPending,
-  isLoggedIn,
-  isOwnAuthor,
-  onRequireLogin,
-  postId,
-}: Params) => {
+export const usePostDetailAuthorBlock = ({ authorId, currentUserId, isOwnAuthor, postId }: Params) => {
   const queryClient = useQueryClient();
   const banMutation = useBanUser();
 
   const blockAuthor = async () => {
-    if (isAuthPending) return false;
-    if (!authorId || isOwnAuthor) return false;
-
-    if (!isLoggedIn || !currentUserId) {
-      onRequireLogin();
-      return false;
-    }
+    if (!authorId || !currentUserId || isOwnAuthor) return false;
 
     await banMutation.mutateAsync({ targetUserId: authorId });
 
