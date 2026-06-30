@@ -10,6 +10,7 @@ import { usePostListFilters } from '@/features/post-list-filter/model/use-post-l
 import { UserSearchResultList } from '@/features/post-list-filter/ui/user-search-result-list';
 import { cn } from '@/shared/lib/cn';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
+import { Button } from '@/shared/ui/button';
 import { SearchInput } from '@/shared/ui/search-input';
 
 export function PostUserSearchFilter() {
@@ -61,10 +62,10 @@ export function PostUserSearchFilter() {
       />
       {selectedUserProfile && (
         <div className="bg-button-neutral-surface-hover overflow-hidden rounded-lg shadow-sm">
-          <button
-            type="button"
-            className="hover:bg-muted flex w-full items-center gap-2 px-2 py-1.5 text-left text-xs transition-colors"
-            aria-label="작성자 필터 해제"
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hover:bg-muted h-auto w-full justify-start rounded-none px-2 py-1.5 text-left text-xs font-normal"
             onClick={deleteSelectedUser}
           >
             <UserAvatar
@@ -74,7 +75,7 @@ export function PostUserSearchFilter() {
             />
             <span className="text-foreground min-w-0 flex-1 truncate">{selectedUserProfile.authorName}</span>
             <X className="text-muted-foreground h-3.5 w-3.5 shrink-0" aria-hidden />
-          </button>
+          </Button>
         </div>
       )}
       {shouldShowUserSearchResults && (
