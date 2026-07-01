@@ -33,6 +33,14 @@ export const usePostDetailInteractions = ({
   const likeMutation = useUpdatePostLikeStatus();
   const readMutation = useUpdatePostReadStatus();
 
+  const invalidatePostInteractionQueries = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+    ]);
+  };
+
   const ensureLoggedIn = () => {
     if (isAuthPending) return false;
     if (isLoggedIn) return true;
@@ -41,46 +49,46 @@ export const usePostDetailInteractions = ({
     return false;
   };
 
-  const togglePostReaction = async (targetLikeStatus: PostLikeStatus) => {
+  const togglePostReaction = (targetLikeStatus: PostLikeStatus) => {
     if (!ensureLoggedIn()) return;
 
     const nextLikeStatus = getNextLikeStatus({ currentLikeStatus: likeStatus, targetLikeStatus });
 
-    await likeMutation.mutateAsync({
-      postId,
-      data: {
-        likeStatus: nextLikeStatus,
+    likeMutation.mutate(
+      {
+        postId,
+        data: {
+          likeStatus: nextLikeStatus,
+        },
       },
-    });
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-    ]);
+      {
+        onSuccess: invalidatePostInteractionQueries,
+      },
+    );
   };
 
-  const toggleLike = async () => {
-    await togglePostReaction(POST_LIKE_STATUS.LIKE);
+  const toggleLike = () => {
+    togglePostReaction(POST_LIKE_STATUS.LIKE);
   };
 
-  const toggleDislike = async () => {
-    await togglePostReaction(POST_LIKE_STATUS.DISLIKE);
+  const toggleDislike = () => {
+    togglePostReaction(POST_LIKE_STATUS.DISLIKE);
   };
 
-  const toggleRead = async () => {
+  const toggleRead = () => {
     if (!ensureLoggedIn()) return;
 
-    await readMutation.mutateAsync({
-      postId,
-      data: {
-        isRead: !isRead,
+    readMutation.mutate(
+      {
+        postId,
+        data: {
+          isRead: !isRead,
+        },
       },
-    });
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-    ]);
+      {
+        onSuccess: invalidatePostInteractionQueries,
+      },
+    );
   };
 
   return {

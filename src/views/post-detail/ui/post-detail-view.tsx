@@ -8,8 +8,8 @@ import {
   usePostDetailAuthorFollow,
   usePostDetailInteractions,
 } from '@/features/post-detail-interactions';
-import { useOpenPostDetailAuthorBlockConfirmModal } from '@/views/post-detail/lib/use-open-post-detail-author-block-confirm-modal';
 import { usePostDetailActionSnackbar } from '@/views/post-detail/model/use-post-detail-action-snackbar';
+import { usePostDetailAuthorBlockConfirmFeedback } from '@/views/post-detail/model/use-post-detail-author-block-confirm-feedback';
 import { usePostDetailAuthorFollowFeedback } from '@/views/post-detail/model/use-post-detail-author-follow-feedback';
 import { usePostDetailShare } from '@/views/post-detail/model/use-post-detail-share';
 import { usePostDetailViewData } from '@/views/post-detail/model/use-post-detail-view-data';
@@ -70,7 +70,7 @@ export function PostDetailView({ postId }: Props) {
   const { sharePostDetail } = usePostDetailShare({
     showActionSnackbar,
   });
-  const openPostDetailAuthorBlockConfirmModal = useOpenPostDetailAuthorBlockConfirmModal({
+  const openPostDetailAuthorBlockConfirmModal = usePostDetailAuthorBlockConfirmFeedback({
     authorName: authorProfile?.authorName,
     blockAuthor,
     showActionSnackbar,
