@@ -1,4 +1,5 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { notFound } from 'next/navigation';
 
 import { fetchPostDetail, prefetchGetPostDetailMetadata } from '@/entities/post-detail';
 import { prefetchGetUserProfileImages } from '@/entities/user';
@@ -28,11 +29,7 @@ export default async function Page({ params }: Props) {
   });
 
   if (!post) {
-    return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <PostDetailView postId={postId} />
-      </HydrationBoundary>
-    );
+    notFound();
   }
 
   await Promise.all([

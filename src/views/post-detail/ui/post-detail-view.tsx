@@ -18,7 +18,6 @@ import { PostDetailActionSnackbar } from '@/views/post-detail/ui/post-detail-act
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
 import { PostDetailContainer } from '@/views/post-detail/ui/post-detail-container';
 import { PostDetailContent } from '@/views/post-detail/ui/post-detail-content';
-import { PostDetailFallback } from '@/views/post-detail/ui/post-detail-fallback';
 
 type Props = {
   postId: string;
@@ -83,7 +82,7 @@ export function PostDetailView({ postId }: Props) {
   });
 
   if (!post) {
-    return <PostDetailFallback />;
+    return null;
   }
 
   const profileImageUrl = authorProfile?.profileImageUrl ?? '';
