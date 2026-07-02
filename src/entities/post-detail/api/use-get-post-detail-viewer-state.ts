@@ -22,7 +22,6 @@ export const useGetPostDetailViewerState = ({ enabled, options, postId }: Params
     query: {
       enabled: enabled && Boolean(postId),
       queryKey: getPostDetailViewerStateQueryKey(postId),
-      retry: false,
       select: (response) => response.data?.[0],
     },
   });
