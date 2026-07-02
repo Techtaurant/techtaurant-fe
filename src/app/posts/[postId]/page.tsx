@@ -2,7 +2,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { notFound } from 'next/navigation';
 
 import { fetchPostDetail, prefetchGetPostDetailMetadata } from '@/entities/post-detail';
-import { prefetchGetUserProfileImages } from '@/entities/user';
+import { prefetchGetUserProfileImage } from '@/entities/user';
 import { PostDetailView } from '@/views/post-detail';
 
 export const dynamic = 'force-dynamic';
@@ -39,8 +39,8 @@ export default async function Page({ params }: Props) {
         cache: 'no-store',
       },
     }),
-    prefetchGetUserProfileImages(queryClient, {
-      userIds: [post.author.id],
+    prefetchGetUserProfileImage(queryClient, {
+      userId: post.author.id,
       options: {
         cache: 'force-cache',
         next: { revalidate: POST_DETAIL_REVALIDATE_SECONDS },
