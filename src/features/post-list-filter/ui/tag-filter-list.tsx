@@ -6,6 +6,7 @@ import { useState } from 'react';
 import type { TagResponse } from '@/entities/tag';
 import { MAX_COLLAPSED_TAG_FILTER_ITEMS } from '@/features/post-list-filter/config/constants';
 import { cn } from '@/shared/lib/cn';
+import { Button } from '@/shared/ui/button';
 
 const TAG_POSITION_TRANSITION_DURATION_SECONDS = 0.34;
 const TAG_POSITION_TRANSITION_EASE: [number, number, number, number] = [0.2, 0, 0, 1];
@@ -89,17 +90,15 @@ export function TagFilterList({
         </motion.label>
       ))}
       {shouldShowMoreButton && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           disabled={isFetchingNextPage}
-          className={cn(
-            'text-muted-foreground hover:bg-muted mt-1 rounded-lg px-2 py-1.5 text-left text-sm transition-[background-color,opacity] disabled:cursor-not-allowed',
-            isFetchingNextPage && 'opacity-60',
-          )}
+          className="text-muted-foreground hover:bg-muted mt-1 h-auto justify-start rounded-lg px-2 py-1.5 text-left font-normal transition-[background-color,opacity]"
           onClick={handleMoreButtonClick}
         >
           {getMoreButtonLabel()}
-        </button>
+        </Button>
       )}
     </div>
   );

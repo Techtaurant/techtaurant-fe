@@ -13,6 +13,19 @@
   --color-button-primary-surface-hover: var(--button-primary-surface-hover);
   --color-button-neutral-surface: var(--button-neutral-surface);
   --color-button-neutral-surface-hover: var(--button-neutral-surface-hover);
+  --color-button-danger-surface: var(--button-danger-surface);
+  --color-button-danger-surface-hover: var(--button-danger-surface-hover);
+  --color-follow-button-surface: var(--follow-button-surface);
+  --color-follow-button-surface-hover: var(--follow-button-surface-hover);
+  --color-follow-button-foreground: var(--follow-button-foreground);
+  --color-following-button-surface: var(--following-button-surface);
+  --color-following-button-surface-hover: var(--following-button-surface-hover);
+  --color-following-button-foreground: var(--following-button-foreground);
+  --color-toast-surface: var(--toast-surface);
+  --color-toast-block-icon: var(--toast-block-icon);
+  --color-toast-block-badge: var(--toast-block-badge);
+  --color-toast-error-icon-surface: var(--toast-error-icon-surface);
+  --color-toast-success-icon-surface: var(--toast-success-icon-surface);
   --shadow-floating-sm: var(--floating-shadow-sm);
   --shadow-floating-lg: var(--floating-shadow-lg);
 }
@@ -29,6 +42,19 @@
   --button-primary-surface-hover: rgb(43, 124, 235);
   --button-neutral-surface: #eef1f4;
   --button-neutral-surface-hover: #e5e9ee;
+  --button-danger-surface: #f04452;
+  --button-danger-surface-hover: #d92d3a;
+  --follow-button-surface: #e8f2ff;
+  --follow-button-surface-hover: #d8e9ff;
+  --follow-button-foreground: #277af0;
+  --following-button-surface: #f3f4f5;
+  --following-button-surface-hover: #ebecef;
+  --following-button-foreground: #303949;
+  --toast-surface: #000000;
+  --toast-block-icon: #b7c0cf;
+  --toast-block-badge: #ff5a6d;
+  --toast-error-icon-surface: #f24857;
+  --toast-success-icon-surface: #03a87c;
   --floating-shadow-sm: 0 16px 36px rgb(15 23 42 / 0.12);
   --floating-shadow-lg: 0 24px 70px rgb(15 23 42 / 0.16);
 }
@@ -43,6 +69,13 @@
   --button-primary-hover: #dfdfdf;
   --button-neutral-surface: #3a3a3a;
   --button-neutral-surface-hover: #454545;
+  --follow-button-surface: #1e2d49;
+  --follow-button-surface-hover: #203455;
+  --follow-button-foreground: #459bff;
+  --following-button-surface: #2c2c36;
+  --following-button-surface-hover: #353540;
+  --following-button-foreground: #e6e6e7;
+  --toast-surface: #2c2c35;
   --floating-shadow-sm: 0 16px 36px rgb(0 0 0 / 0.24);
   --floating-shadow-lg: 0 24px 70px rgb(0 0 0 / 0.28);
 }

@@ -25,8 +25,10 @@ const buttonVariants = cva(
         primary: 'bg-button-primary text-background hover:bg-button-primary-hover rounded-full',
         primarySurface: 'bg-button-primary-surface text-white hover:bg-button-primary-surface-hover',
         neutral: 'bg-button-neutral-surface text-foreground hover:bg-button-neutral-surface-hover',
+        danger: 'bg-button-danger-surface text-white hover:bg-button-danger-surface-hover',
         ghost: 'bg-transparent text-foreground hover:bg-muted',
         icon: 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground',
+        outline: 'border-border text-muted-foreground hover:text-foreground hover:bg-muted/85 border bg-transparent',
       },
       size: {
         sm: 'h-8 px-3 text-sm',
