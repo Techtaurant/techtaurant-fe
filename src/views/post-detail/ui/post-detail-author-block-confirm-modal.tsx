@@ -1,12 +1,12 @@
 'use client';
 
-import { useCurrentOverlay } from 'overlay-kit';
 import { useState } from 'react';
 
 import { Button } from '@/shared/ui/button';
 import { Modal } from '@/shared/ui/modal';
 
 type Props = {
+  overlayId: string;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => Promise<boolean>;
@@ -14,16 +14,13 @@ type Props = {
 
 const DIALOG_BUTTON_CLASS_NAME =
   'h-10 min-w-[136px] flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap';
-const POST_DETAIL_AUTHOR_BLOCK_CONFIRM_MODAL_ID = 'post-detail-author-block-confirm-modal';
 const AUTHOR_BLOCK_CONFIRM_TITLE = '이 사용자를 차단할까요?';
 const AUTHOR_BLOCK_CONFIRM_DESCRIPTION = '이 사용자를 차단한 계정 목록에 추가합니다.';
 const AUTHOR_BLOCK_CONFIRM_ACTION = '차단하기';
 const AUTHOR_BLOCK_CANCEL_ACTION = '취소';
 
-export function PostDetailAuthorBlockConfirmModal({ isOpen, onClose, onConfirm }: Props) {
-  const currentOverlayId = useCurrentOverlay();
+export function PostDetailAuthorBlockConfirmModal({ overlayId, isOpen, onClose, onConfirm }: Props) {
   const [isConfirming, setIsConfirming] = useState(false);
-  const modalId = currentOverlayId ?? POST_DETAIL_AUTHOR_BLOCK_CONFIRM_MODAL_ID;
 
   const handleModalClose = () => {
     if (isConfirming) return;
@@ -53,7 +50,7 @@ export function PostDetailAuthorBlockConfirmModal({ isOpen, onClose, onConfirm }
 
   return (
     <Modal
-      id={modalId}
+      id={overlayId}
       isOpen={isOpen}
       onClose={handleModalClose}
       className="max-w-xs rounded-2xl border-0 p-5 shadow-xl"

@@ -43,8 +43,13 @@ export const usePostDetailAuthorBlockConfirmFeedback = ({ authorName, blockAutho
   };
 
   const openPostDetailAuthorBlockConfirmModal = () => {
-    return overlay.open(({ isOpen, unmount }) => (
-      <PostDetailAuthorBlockConfirmModal isOpen={isOpen} onClose={unmount} onConfirm={handleAuthorBlockConfirm} />
+    return overlay.open(({ overlayId, isOpen, unmount }) => (
+      <PostDetailAuthorBlockConfirmModal
+        overlayId={overlayId}
+        isOpen={isOpen}
+        onClose={unmount}
+        onConfirm={handleAuthorBlockConfirm}
+      />
     ));
   };
 
