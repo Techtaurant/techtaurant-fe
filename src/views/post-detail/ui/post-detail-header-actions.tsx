@@ -16,12 +16,10 @@ type Props = {
   onToggleAuthorFollow: () => Promise<void>;
 };
 
-const MENU_ITEM_CLASS_NAME =
-  'text-foreground hover:bg-muted/80 w-full justify-start rounded-md px-3 py-2 text-left text-sm font-semibold';
 const FOLLOW_BUTTON_CLASS_NAME =
-  'bg-follow-button-surface text-follow-button-foreground hover:bg-follow-button-surface-hover inline-flex h-[34px] items-center justify-center rounded-md px-4 text-sm font-medium whitespace-nowrap transition-colors';
+  'bg-follow-button-surface text-follow-button-foreground hover:bg-follow-button-surface-hover h-[34px] rounded-md px-4 whitespace-nowrap';
 const FOLLOWING_BUTTON_CLASS_NAME =
-  'bg-following-button-surface text-following-button-foreground hover:bg-following-button-surface-hover h-[34px] rounded-md px-4 text-sm font-medium transition-colors';
+  'bg-following-button-surface text-following-button-foreground hover:bg-following-button-surface-hover h-[34px] rounded-md px-4 whitespace-nowrap';
 const FOLLOW_BUTTON_LABEL = '팔로우';
 const FOLLOWING_BUTTON_LABEL = '팔로잉';
 const BLOCK_AUTHOR_MENU_LABEL = '차단하기';
@@ -90,7 +88,7 @@ export function PostDetailHeaderActions({
           <Button
             variant="ghost"
             size="sm"
-            className={MENU_ITEM_CLASS_NAME}
+            className="text-foreground hover:bg-muted/80 w-full justify-start rounded-md px-3 py-2 text-left text-sm font-semibold"
             disabled={isAuthPending || isAuthorBlockPending}
             onClick={handleRequestBlockAuthor}
           >

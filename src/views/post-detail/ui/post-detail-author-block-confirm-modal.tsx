@@ -12,8 +12,6 @@ type Props = {
   onConfirm: () => Promise<boolean>;
 };
 
-const DIALOG_BUTTON_CLASS_NAME =
-  'h-10 min-w-[136px] flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap';
 const AUTHOR_BLOCK_CONFIRM_TITLE = '이 사용자를 차단할까요?';
 const AUTHOR_BLOCK_CONFIRM_DESCRIPTION = '이 사용자를 차단한 계정 목록에 추가합니다.';
 const AUTHOR_BLOCK_CONFIRM_ACTION = '차단하기';
@@ -62,7 +60,7 @@ export function PostDetailAuthorBlockConfirmModal({ overlayId, isOpen, onClose, 
         <div className="flex w-full min-w-0 flex-wrap gap-2">
           <Button
             variant="neutral"
-            className={DIALOG_BUTTON_CLASS_NAME}
+            className="h-10 min-w-[136px] flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap"
             disabled={isConfirming}
             onClick={handleModalClose}
           >
@@ -70,7 +68,7 @@ export function PostDetailAuthorBlockConfirmModal({ overlayId, isOpen, onClose, 
           </Button>
           <Button
             variant="danger"
-            className={DIALOG_BUTTON_CLASS_NAME}
+            className="h-10 min-w-[136px] flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap"
             disabled={isConfirming}
             onClick={() => {
               void handleConfirmButtonClick();
