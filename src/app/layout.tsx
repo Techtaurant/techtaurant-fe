@@ -7,6 +7,7 @@ import { ReactQueryProvider } from '@/shared/api/react-query-provider';
 import { montserrat, pretendard } from '@/shared/config/fonts';
 import { cn } from '@/shared/lib/cn';
 import { ModalProvider } from '@/shared/ui/modal';
+import { ToastsRoot } from '@/shared/ui/toast';
 import { BottomNavigation } from '@/widgets/bottom-navigation';
 import { Header } from '@/widgets/header';
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: Props) {
                 <div className={cn('min-h-screen py-16', 'md:pb-0')}>{children}</div>
                 <BottomNavigation />
               </main>
+              <ToastsRoot />
             </ModalProvider>
           </ReactQueryProvider>
         </ThemeProvider>

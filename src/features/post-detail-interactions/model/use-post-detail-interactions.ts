@@ -8,38 +8,26 @@ import {
   getPostDetailViewerStateQueryKey,
   POST_LIKE_STATUS,
   useUpdatePostLikeStatus,
-  useUpdatePostReadStatus,
 } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 
 type Params = {
+  postId: string;
   isAuthPending: boolean;
   isLoggedIn: boolean;
-  isRead: boolean;
   likeStatus: PostLikeStatus;
   onRequireLogin: () => void;
-  postId: string;
 };
 
 export const usePostDetailInteractions = ({
+  postId,
   isAuthPending,
   isLoggedIn,
-  isRead,
   likeStatus,
   onRequireLogin,
-  postId,
 }: Params) => {
   const queryClient = useQueryClient();
   const likeMutation = useUpdatePostLikeStatus();
-  const readMutation = useUpdatePostReadStatus();
-
-  const invalidatePostInteractionQueries = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-    ]);
-  };
 
   const ensureLoggedIn = () => {
     if (isAuthPending) return false;
@@ -52,7 +40,7 @@ export const usePostDetailInteractions = ({
   const togglePostReaction = (targetLikeStatus: PostLikeStatus) => {
     if (!ensureLoggedIn()) return;
 
-    const nextLikeStatus = getNextLikeStatus({ currentLikeStatus: likeStatus, targetLikeStatus });
+    const nextLikeStatus = getNextLikeStatus(likeStatus, targetLikeStatus);
 
     likeMutation.mutate(
       {
@@ -62,7 +50,13 @@ export const usePostDetailInteractions = ({
         },
       },
       {
-        onSuccess: invalidatePostInteractionQueries,
+        onSuccess: async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+            queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+          ]);
+        },
       },
     );
   };
@@ -75,39 +69,14 @@ export const usePostDetailInteractions = ({
     togglePostReaction(POST_LIKE_STATUS.DISLIKE);
   };
 
-  const toggleRead = () => {
-    if (!ensureLoggedIn()) return;
-
-    readMutation.mutate(
-      {
-        postId,
-        data: {
-          isRead: !isRead,
-        },
-      },
-      {
-        onSuccess: invalidatePostInteractionQueries,
-      },
-    );
-  };
-
   return {
     isLikePending: likeMutation.isPending,
-    isReadPending: readMutation.isPending,
     toggleDislike,
     toggleLike,
-    toggleRead,
   };
 };
 
-const getNextLikeStatus = ({
-  currentLikeStatus,
-  targetLikeStatus,
-}: {
-  currentLikeStatus: PostLikeStatus;
-  targetLikeStatus: PostLikeStatus;
-}) => {
+const getNextLikeStatus = (currentLikeStatus: PostLikeStatus, targetLikeStatus: PostLikeStatus) => {
   if (currentLikeStatus === targetLikeStatus) return POST_LIKE_STATUS.NONE;
-
   return targetLikeStatus;
 };

@@ -7,13 +7,12 @@ import { useOutsideClick } from '@/shared/lib/use-outside-click';
 import { Button } from '@/shared/ui/button';
 
 type Props = {
-  isAuthorBlockPending: boolean;
   isAuthPending: boolean;
   isFollowingAuthor: boolean;
   isFollowingUpdating: boolean;
   isOwnAuthor: boolean;
   onRequestBlockAuthor: () => void;
-  onToggleAuthorFollow: () => Promise<void>;
+  onToggleAuthorFollow: () => void;
 };
 
 const MENU_ITEM_CLASS_NAME =
@@ -27,7 +26,6 @@ const FOLLOWING_BUTTON_LABEL = '팔로잉';
 const BLOCK_AUTHOR_MENU_LABEL = '차단하기';
 
 export function PostDetailHeaderActions({
-  isAuthorBlockPending,
   isAuthPending,
   isFollowingAuthor,
   isFollowingUpdating,
@@ -47,7 +45,7 @@ export function PostDetailHeaderActions({
   const handleToggleAuthorFollow = () => {
     if (isAuthPending) return;
 
-    void onToggleAuthorFollow();
+    onToggleAuthorFollow();
   };
 
   const handleRequestBlockAuthor = () => {
@@ -91,7 +89,7 @@ export function PostDetailHeaderActions({
             variant="ghost"
             size="sm"
             className={MENU_ITEM_CLASS_NAME}
-            disabled={isAuthPending || isAuthorBlockPending}
+            disabled={isAuthPending}
             onClick={handleRequestBlockAuthor}
           >
             <span className="inline-flex items-center gap-2">

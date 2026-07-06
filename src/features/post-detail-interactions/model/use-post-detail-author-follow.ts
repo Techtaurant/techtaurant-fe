@@ -3,11 +3,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getUserFollowingsQueryKey, useFollowUser, useGetUserFollowings, useUnfollowUser } from '@/entities/user';
-
-type AuthorFollowResult = 'followed' | 'unfollowed';
+import { toast } from '@/shared/ui/toast';
 
 type Params = {
   authorId?: string;
+  authorName: string;
   currentUserId?: string;
   isAuthPending: boolean;
   isLoggedIn: boolean;
@@ -16,6 +16,7 @@ type Params = {
 
 export const usePostDetailAuthorFollow = ({
   authorId,
+  authorName,
   currentUserId,
   isAuthPending,
   isLoggedIn,
@@ -35,7 +36,12 @@ export const usePostDetailAuthorFollow = ({
   );
   const isFollowingUpdating = followMutation.isPending || unfollowMutation.isPending || followingsQuery.isFetching;
 
-  const toggleAuthorFollow = async (): Promise<AuthorFollowResult | undefined> => {
+  const invalidateFollowingQueries = async () => {
+    if (!currentUserId) return;
+    await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
+  };
+
+  const toggleAuthorFollow = () => {
     if (isAuthPending) return;
     if (!authorId || isOwnAuthor) return;
 
@@ -44,15 +50,22 @@ export const usePostDetailAuthorFollow = ({
       return;
     }
 
-    if (isFollowingAuthor) {
-      await unfollowMutation.mutateAsync({ targetUserId: authorId });
-      await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
-      return 'unfollowed';
-    }
+    const mutation = isFollowingAuthor ? unfollowMutation : followMutation;
+    const successMessage = isFollowingAuthor ? `${authorName}님 팔로우를 해제했어요` : `${authorName}님을 팔로우했어요`;
+    const errorMessage = isFollowingAuthor ? '팔로우 취소에 실패했어요' : '팔로우에 실패했어요';
 
-    await followMutation.mutateAsync({ targetUserId: authorId });
-    await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
-    return 'followed';
+    mutation.mutate(
+      { targetUserId: authorId },
+      {
+        onSuccess: async () => {
+          await invalidateFollowingQueries();
+          toast.success(successMessage);
+        },
+        onError: () => {
+          toast.error(errorMessage);
+        },
+      },
+    );
   };
 
   return {

@@ -14,13 +14,12 @@ type Props = {
   authorName: string;
   categoryName?: string;
   createdAt: string;
-  isAuthorBlockPending: boolean;
   isAuthPending: boolean;
   isFollowingAuthor: boolean;
   isFollowingUpdating: boolean;
   isOwnAuthor: boolean;
   onRequestBlockAuthor: () => void;
-  onToggleAuthorFollow: () => Promise<void>;
+  onToggleAuthorFollow: () => void;
   profileImageUrl: string;
   tags: PostListTagResponse[];
   title: string;
@@ -31,7 +30,6 @@ export function PostDetailArticleHeader({
   authorName,
   categoryName,
   createdAt,
-  isAuthorBlockPending,
   isAuthPending,
   isFollowingAuthor,
   isFollowingUpdating,
@@ -83,7 +81,6 @@ export function PostDetailArticleHeader({
           </div>
         </div>
         <PostDetailHeaderActions
-          isAuthorBlockPending={isAuthorBlockPending}
           isAuthPending={isAuthPending}
           isFollowingAuthor={isFollowingAuthor}
           isFollowingUpdating={isFollowingUpdating}
