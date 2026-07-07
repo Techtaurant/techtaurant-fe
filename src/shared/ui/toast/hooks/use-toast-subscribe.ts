@@ -9,24 +9,25 @@ export const useToastSubscribe = () => {
   const [toastList, setToastList] = useState<Toast[]>([]);
 
   useEffect(() => {
-    const timerList: ReturnType<typeof setTimeout>[] = [];
+    const timerSet = new Set<ReturnType<typeof setTimeout>>();
     const toastSubject = ToastSubject.getInstance();
 
     const toastObserver = (toast: Toast) => {
       setToastList((prevToastList) => [...prevToastList, toast]);
 
-      const timer = setTimeout(() => {
+      const newTimer = setTimeout(() => {
         setToastList((prevToastList) => prevToastList.filter(({ id }) => id !== toast.id));
+        timerSet.delete(newTimer);
       }, toast.options.duration);
 
-      timerList.push(timer);
+      timerSet.add(newTimer);
     };
 
     toastSubject.subscribe(toastObserver);
 
     return () => {
       toastSubject.unsubscribe(toastObserver);
-      timerList.forEach((timer) => clearTimeout(timer));
+      timerSet.forEach((timer) => clearTimeout(timer));
     };
   }, []);
 
