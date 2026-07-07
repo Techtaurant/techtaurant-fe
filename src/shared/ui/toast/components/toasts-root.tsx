@@ -11,7 +11,12 @@ export function ToastsRoot() {
   }
 
   return (
-    <div className="pointer-events-none fixed top-20 left-1/2 z-430 flex w-[min(400px,92vw)] -translate-x-1/2 flex-col gap-2">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="pointer-events-none fixed top-20 left-1/2 z-430 flex w-[min(400px,92vw)] -translate-x-1/2 flex-col gap-2"
+    >
       {toastList.map(({ id, message, options }) => (
         <ToastItem key={id} message={message} options={options} />
       ))}
