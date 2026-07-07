@@ -8,6 +8,7 @@ import { toast } from '@/shared/ui/toast';
 
 const MARK_READ_TOAST_MESSAGE = '👏 읽음 표시했어요';
 const MARK_UNREAD_TOAST_MESSAGE = '미읽음으로 표시했어요';
+const READ_TOGGLE_ERROR_TOAST_MESSAGE = '읽음 표시에 실패했어요';
 const READ_TOGGLE_PRESS_RESET_MS = 320;
 
 type Params = {
@@ -34,6 +35,9 @@ export const usePostDetailReadToggleFeedback = ({
     isAuthPending,
     isLoggedIn,
     isRead,
+    onError: () => {
+      toast.error(READ_TOGGLE_ERROR_TOAST_MESSAGE);
+    },
     onRequireLogin,
     onSuccess: (nextReadState) => {
       toast.success(nextReadState ? MARK_READ_TOAST_MESSAGE : MARK_UNREAD_TOAST_MESSAGE);
