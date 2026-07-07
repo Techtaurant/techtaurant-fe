@@ -1,11 +1,17 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { Ban } from 'lucide-react';
 
+import { getPostListQueryKey, getPostListViewerStatesQueryKey } from '@/entities/post-list';
 import { useDeleteMyBannedUser, useGetMyBannedUsers } from '@/entities/user';
 import { BannedUserItem } from '@/features/setting/ui/banned-user-item';
 
+const BANNED_USERS_LOADING_MESSAGE = '차단한 계정을 불러오는 중입니다.';
+const EMPTY_BANNED_USERS_MESSAGE = '차단한 계정이 없어요';
+
 export function BannedUsersContent() {
+  const queryClient = useQueryClient();
   const { data: bannedUsers = [], isPending } = useGetMyBannedUsers();
 
   const deleteMyBannedUser = useDeleteMyBannedUser();
@@ -14,13 +20,22 @@ export function BannedUsersContent() {
 
   const handleUnbanClick = (targetUserId: string) => {
     if (deleteMyBannedUser.isPending) return;
-    deleteMyBannedUser.mutate({ targetUserId });
+    deleteMyBannedUser.mutate(
+      { targetUserId },
+      {
+        onSuccess: () =>
+          Promise.all([
+            queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+            queryClient.invalidateQueries({ queryKey: getPostListViewerStatesQueryKey() }),
+          ]),
+      },
+    );
   };
 
   if (isPending) {
     return (
       <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
-        차단한 계정을 불러오는 중입니다.
+        {BANNED_USERS_LOADING_MESSAGE}
       </div>
     );
   }
@@ -31,7 +46,7 @@ export function BannedUsersContent() {
         <div className="bg-muted rounded-xl p-3">
           <Ban className="h-7 w-7" />
         </div>
-        <p className="text-sm font-medium">차단한 계정이 없어요</p>
+        <p className="text-sm font-medium">{EMPTY_BANNED_USERS_MESSAGE}</p>
       </div>
     );
   }
