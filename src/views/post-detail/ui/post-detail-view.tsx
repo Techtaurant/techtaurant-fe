@@ -16,6 +16,7 @@ import { usePostDetailViewData } from '@/views/post-detail/model/use-post-detail
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
 import { PostDetailActionSnackbar } from '@/views/post-detail/ui/post-detail-action-snackbar';
 import { PostDetailArticleHeader } from '@/views/post-detail/ui/post-detail-article-header';
+import { PostDetailBlockedFallback } from '@/views/post-detail/ui/post-detail-blocked-fallback';
 import { PostDetailContainer } from '@/views/post-detail/ui/post-detail-container';
 import { PostDetailContent } from '@/views/post-detail/ui/post-detail-content';
 
@@ -29,13 +30,22 @@ export function PostDetailView({ postId }: Props) {
   // TODO: 토스트 관련 상태 연결은 추후 별도 PR에서 변경합니다.
   const { actionSnackbarMessage, actionSnackbarVariant, isActionSnackbarOpen, showActionSnackbar } =
     usePostDetailActionSnackbar();
-  const { authorProfile, currentUserId, isAuthPending, isLoggedIn, metadata, post, viewerState } =
-    usePostDetailViewData(postId);
+  const {
+    authorProfile,
+    currentUserId,
+    isAuthPending,
+    isLoggedIn,
+    isViewerStateResolved,
+    metadata,
+    post,
+    viewerState,
+  } = usePostDetailViewData(postId);
   const authorId = post?.author.id;
   const authorName = authorProfile?.authorName ?? UNKNOWN_AUTHOR_NAME;
   const likeStatus = viewerState?.likeStatus ?? POST_LIKE_STATUS.NONE;
   const isLiked = likeStatus === POST_LIKE_STATUS.LIKE;
   const isDisliked = likeStatus === POST_LIKE_STATUS.DISLIKE;
+  const isAuthorBanned = viewerState?.isBanned ?? false;
   const isRead = viewerState?.isRead ?? false;
   const viewCount = metadata?.viewCount ?? 0;
   const likeCount = metadata?.likeCount ?? 0;
@@ -77,15 +87,9 @@ export function PostDetailView({ postId }: Props) {
   });
 
   useRecordPostViewOnce({
-    enabled: Boolean(post),
+    enabled: !!post && isViewerStateResolved && !isAuthorBanned,
     postId,
   });
-
-  if (!post) {
-    return null;
-  }
-
-  const profileImageUrl = authorProfile?.profileImageUrl ?? '';
 
   const handleBlockAuthorButtonClick = () => {
     if (isAuthPending) return;
@@ -97,6 +101,20 @@ export function PostDetailView({ postId }: Props) {
 
     openPostDetailAuthorBlockConfirmModal();
   };
+
+  if (!post) {
+    return null;
+  }
+
+  if (!isViewerStateResolved) {
+    return null;
+  }
+
+  if (isAuthorBanned) {
+    return <PostDetailBlockedFallback />;
+  }
+
+  const profileImageUrl = authorProfile?.profileImageUrl ?? '';
 
   return (
     <PostDetailContainer>

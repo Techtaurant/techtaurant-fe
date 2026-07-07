@@ -14,12 +14,15 @@ export const usePostDetailViewData = (postId: string) => {
     enabled: !!meQuery.data,
     postId,
   });
+  const isLoggedIn = !!meQuery.data;
+  const isViewerStateResolved = !meQuery.isPending && (!isLoggedIn || !viewerStateQuery.isPending);
 
   return {
     authorProfile: authorProfileQuery.data,
     currentUserId: meQuery.data?.id,
     isAuthPending: meQuery.isPending,
-    isLoggedIn: !!meQuery.data,
+    isLoggedIn,
+    isViewerStateResolved,
     metadata: metadataQuery.data,
     post,
     viewerState: viewerStateQuery.data,
