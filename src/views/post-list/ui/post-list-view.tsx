@@ -4,15 +4,16 @@ import { cn } from '@/shared/lib/cn';
 import { Observer } from '@/shared/ui/intersection-observer';
 import { usePostListViewData } from '@/views/post-list/model/use-post-list-view-data';
 import { PostList } from '@/views/post-list/ui/post-list';
+import { PostListBlockedItem } from '@/views/post-list/ui/post-list-blocked-item';
 import { PostCard } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 import { PostListSidebar } from '@/widgets/post-list-sidebar';
 
 export function PostListView() {
-  const { fetchNextPage, isFetchingNextPage, isRefreshingPostList, posts } = usePostListViewData();
+  const { fetchNextPage, hasNextPage, isFetchingNextPage, isRefreshingPostList, posts } = usePostListViewData();
 
   const handleObserverEnter = () => {
-    if (isRefreshingPostList || isFetchingNextPage) return;
+    if (!hasNextPage || isRefreshingPostList || isFetchingNextPage) return;
 
     fetchNextPage();
   };
@@ -28,11 +29,15 @@ export function PostListView() {
           renderPosts={(posts, { isRefreshing }) => (
             <>
               <div className={cn('transition-opacity', isRefreshing && 'opacity-60')}>
-                {posts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
+                {posts.map((post) => {
+                  if (post.isBanned) {
+                    return <PostListBlockedItem key={post.id} />;
+                  }
+
+                  return <PostCard key={post.id} post={post} />;
+                })}
               </div>
-              <Observer onEnter={handleObserverEnter} />
+              {hasNextPage && <Observer onEnter={handleObserverEnter} />}
             </>
           )}
           renderEmpty={() => (

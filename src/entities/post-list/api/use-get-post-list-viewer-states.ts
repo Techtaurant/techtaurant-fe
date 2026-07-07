@@ -28,5 +28,6 @@ export const useGetPostListViewerStates = ({ enabled, options, postIds }: Params
 
   return {
     data: queries.flatMap((query) => query.data?.data ?? []),
+    isPending: queries.some((query) => query.isPending),
   };
 };
