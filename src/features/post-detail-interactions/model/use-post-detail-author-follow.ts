@@ -3,24 +3,25 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { getUserFollowingsQueryKey, useFollowUser, useGetUserFollowings, useUnfollowUser } from '@/entities/user';
-import { toast } from '@/shared/ui/toast';
 
 type Params = {
   authorId?: string;
-  authorName: string;
   currentUserId?: string;
   isAuthPending: boolean;
   isLoggedIn: boolean;
+  onError?: (nextFollowingState: boolean) => void;
   onRequireLogin: () => void;
+  onSuccess?: (nextFollowingState: boolean) => void;
 };
 
 export const usePostDetailAuthorFollow = ({
   authorId,
-  authorName,
   currentUserId,
   isAuthPending,
   isLoggedIn,
+  onError,
   onRequireLogin,
+  onSuccess,
 }: Params) => {
   const queryClient = useQueryClient();
   const followMutation = useFollowUser();
@@ -51,18 +52,17 @@ export const usePostDetailAuthorFollow = ({
     }
 
     const mutation = isFollowingAuthor ? unfollowMutation : followMutation;
-    const successMessage = isFollowingAuthor ? `${authorName}님 팔로우를 해제했어요` : `${authorName}님을 팔로우했어요`;
-    const errorMessage = isFollowingAuthor ? '팔로우 취소에 실패했어요' : '팔로우에 실패했어요';
+    const nextFollowingState = !isFollowingAuthor;
 
     mutation.mutate(
       { targetUserId: authorId },
       {
         onSuccess: async () => {
           await invalidateFollowingQueries();
-          toast.success(successMessage);
+          onSuccess?.(nextFollowingState);
         },
         onError: () => {
-          toast.error(errorMessage);
+          onError?.(nextFollowingState);
         },
       },
     );

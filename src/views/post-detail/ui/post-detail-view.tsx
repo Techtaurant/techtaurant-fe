@@ -9,6 +9,7 @@ import {
   usePostDetailAuthorFollow,
   usePostDetailInteractions,
 } from '@/features/post-detail-interactions';
+import { toast } from '@/shared/ui/toast';
 import { usePostDetailShare } from '@/views/post-detail/model/use-post-detail-share';
 import { usePostDetailViewData } from '@/views/post-detail/model/use-post-detail-view-data';
 import { useRecordPostViewOnce } from '@/views/post-detail/model/use-record-post-view-once';
@@ -22,6 +23,8 @@ type Props = {
 };
 
 const UNKNOWN_AUTHOR_NAME = '알 수 없음';
+const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
+const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
 
 export function PostDetailView({ postId }: Props) {
   const { authorProfile, currentUserId, isAuthPending, isLoggedIn, metadata, post, viewerState } =
@@ -44,11 +47,16 @@ export function PostDetailView({ postId }: Props) {
   });
   const { isFollowingAuthor, isFollowingUpdating, isOwnAuthor, toggleAuthorFollow } = usePostDetailAuthorFollow({
     authorId,
-    authorName,
     currentUserId,
     isAuthPending,
     isLoggedIn,
+    onError: (nextFollowingState) => {
+      toast.error(nextFollowingState ? FOLLOW_ERROR_MESSAGE : UNFOLLOW_ERROR_MESSAGE);
+    },
     onRequireLogin: startGoogleLogin,
+    onSuccess: (nextFollowingState) => {
+      toast.success(nextFollowingState ? `${authorName}님을 팔로우했어요` : `${authorName}님 팔로우를 해제했어요`);
+    },
   });
   const { sharePostDetail } = usePostDetailShare();
 
