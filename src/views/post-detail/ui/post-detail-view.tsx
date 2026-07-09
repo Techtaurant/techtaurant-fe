@@ -106,10 +106,6 @@ export function PostDetailView({ postId }: Props) {
     return null;
   }
 
-  if (!isViewerStateResolved) {
-    return null;
-  }
-
   if (isAuthorBanned) {
     return <PostDetailBlockedFallback />;
   }

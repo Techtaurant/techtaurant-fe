@@ -6,6 +6,7 @@ export {
 } from '@/entities/post-detail/api/use-get-post-detail-metadata';
 export {
   getPostDetailViewerStateQueryKey,
+  prefetchGetPostDetailViewerState,
   useGetPostDetailViewerState,
 } from '@/entities/post-detail/api/use-get-post-detail-viewer-state';
 export { useRecordPostView } from '@/entities/post-detail/api/use-record-post-view';
