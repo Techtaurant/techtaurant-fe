@@ -24,13 +24,16 @@ export const getPostListViewerStatesQueryKey = () => {
 };
 
 export const useGetPostListViewerStates = ({ enabled, options, postIds }: UseParams) => {
-  const postIdChunks = enabled ? chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE) : [];
+  const postIdChunks = chunkArray(postIds, POST_LIST_REQUEST_BATCH_SIZE);
   const queries = useQueries({
     queries: postIdChunks.map((postIdChunk) =>
       getGetPostViewerStatesApiQueryOptions(
         { postIds: postIdChunk },
         {
           request: options,
+          query: {
+            enabled,
+          },
         },
       ),
     ),
