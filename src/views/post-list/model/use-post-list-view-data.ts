@@ -17,7 +17,7 @@ export const usePostListViewData = () => {
   const searchParams = useSearchParams();
   const filters = parsePostListFilters(searchParams);
 
-  const { data: me, isPending: isMePending } = useGetMe();
+  const { data: me } = useGetMe();
   const { isFetching, isFetchingNextPage, data, fetchNextPage, hasNextPage } = useGetPostList({
     params: toPostListApiParams(filters),
   });
@@ -28,21 +28,18 @@ export const usePostListViewData = () => {
 
   const { data: metadatas } = useGetPostListMetadatas({ postIds });
   const { data: profileImages } = useGetPostListProfileImages({ authorIds });
-  const { data: viewerStates, isPending: isViewerStatesPending } = useGetPostListViewerStates({
+  const { data: viewerStates } = useGetPostListViewerStates({
     enabled: !!me,
     postIds,
   });
-  const isWaitingForViewerStates = isMePending || (!!me && postIds.length > 0 && isViewerStatesPending);
-  const isRefreshingPostList = (isFetching && !isFetchingNextPage) || isWaitingForViewerStates;
+  const isRefreshingPostList = isFetching && !isFetchingNextPage;
 
-  const posts = isWaitingForViewerStates
-    ? []
-    : mergePostListItems({
-        metadatas,
-        posts: postContents,
-        profileImages,
-        viewerStates,
-      });
+  const posts = mergePostListItems({
+    metadatas,
+    posts: postContents,
+    profileImages,
+    viewerStates,
+  });
 
   return {
     fetchNextPage,

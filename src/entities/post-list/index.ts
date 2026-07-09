@@ -9,6 +9,7 @@ export {
 } from '@/entities/post-list/api/use-get-post-list-profile-images';
 export {
   getPostListViewerStatesQueryKey,
+  prefetchGetPostListViewerStates,
   useGetPostListViewerStates,
 } from '@/entities/post-list/api/use-get-post-list-viewer-states';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
