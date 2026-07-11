@@ -16,7 +16,7 @@ export function PostDetailActionSnackbar({ isOpen, message, variant }: Props) {
 
   return (
     <div className="fixed top-20 left-1/2 z-[430] w-[min(400px,92vw)] -translate-x-1/2">
-      <div className="bg-toast-surface flex h-[36.3px] w-full items-center justify-between gap-2 rounded-lg px-3 text-white shadow-2xl">
+      <div className="bg-toast-surface flex h-[36.3px] w-full items-center justify-between gap-2 rounded-lg px-3 text-white shadow-lg">
         <div className="flex min-w-0 items-center gap-2">
           <SnackbarIcon variant={variant} />
           <p className="truncate text-sm font-semibold text-white">{message}</p>

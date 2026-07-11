@@ -14,12 +14,16 @@ type Params = {
   viewerStates?: PostViewerStateResponse[];
 };
 
+type PostListItem = PostListItemResponse & {
+  isBanned: boolean;
+};
+
 export const mergePostListItems = ({
   metadatas = [],
   posts,
   profileImages = [],
   viewerStates = [],
-}: Params): PostListItemResponse[] => {
+}: Params): PostListItem[] => {
   const metadataMap = new Map(metadatas.map((metadata) => [metadata.postId, metadata]));
   const profileImageMap = new Map(profileImages.map((profileImage) => [profileImage.userId, profileImage]));
   const viewerStateMap = new Map(viewerStates.map((viewerState) => [viewerState.postId, viewerState]));
@@ -35,6 +39,7 @@ export const mergePostListItems = ({
       authorName: profileImage?.authorName ?? '',
       authorProfileImageUrl: profileImage?.profileImageUrl ?? '',
       thumbnailUrl: metadata?.thumbnailUrl ?? '',
+      isBanned: viewerState?.isBanned ?? false,
       isRead: viewerState?.isRead ?? false,
       viewCount: metadata?.viewCount ?? 0,
       likeCount: metadata?.likeCount ?? 0,

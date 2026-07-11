@@ -1,6 +1,20 @@
 import { API_BASE_URL, IS_SERVER } from '@/shared/config';
 
+export type CustomFetchInit = RequestInit & {
+  cookieHeader?: string;
+};
+
 let isRefreshing: Promise<boolean> | null = null;
+
+const createHeaders = (headers: HeadersInit | undefined, cookieHeader: string | undefined) => {
+  if (!IS_SERVER || !cookieHeader) {
+    return headers;
+  }
+
+  const requestHeaders = new Headers(headers);
+  requestHeaders.set('Cookie', cookieHeader);
+  return requestHeaders;
+};
 
 const parseBody = async (response: Response): Promise<unknown> => {
   if (response.status === 204) {
@@ -14,10 +28,12 @@ const parseBody = async (response: Response): Promise<unknown> => {
   return response.text();
 };
 
-export const customFetch = async <T>(url: string, init: RequestInit = {}): Promise<T> => {
+export const customFetch = async <T>(url: string, init: CustomFetchInit = {}): Promise<T> => {
+  const { cookieHeader, ...fetchInit } = init;
   const requestInit: RequestInit = {
-    ...init,
-    credentials: IS_SERVER ? 'omit' : (init.credentials ?? 'include'),
+    ...fetchInit,
+    credentials: IS_SERVER ? 'omit' : (fetchInit.credentials ?? 'include'),
+    headers: createHeaders(fetchInit.headers, cookieHeader),
   };
 
   let response = await fetch(url, requestInit);
