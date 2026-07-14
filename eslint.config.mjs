@@ -18,7 +18,7 @@ const eslintConfig = defineConfig([
   fsdImportBoundaryConfig,
   namedExportOnlyConfig,
   prettierConfig,
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores(['.next/**', '.open-next/**', 'out/**', 'build/**', 'next-env.d.ts']),
 ]);
 
 export default eslintConfig;
