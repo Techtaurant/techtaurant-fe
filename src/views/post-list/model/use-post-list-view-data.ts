@@ -18,10 +18,9 @@ export const usePostListViewData = () => {
   const filters = parsePostListFilters(searchParams);
 
   const { data: me } = useGetMe();
-  const { isFetching, isFetchingNextPage, data, fetchNextPage } = useGetPostList({
+  const { isFetching, isFetchingNextPage, data, fetchNextPage, hasNextPage } = useGetPostList({
     params: toPostListApiParams(filters),
   });
-  const isRefreshingPostList = isFetching && !isFetchingNextPage;
 
   const postContents = data ?? [];
   const postIds = postContents.map((post) => post.id);
@@ -30,9 +29,10 @@ export const usePostListViewData = () => {
   const { data: metadatas } = useGetPostListMetadatas({ postIds });
   const { data: profileImages } = useGetPostListProfileImages({ authorIds });
   const { data: viewerStates } = useGetPostListViewerStates({
-    enabled: Boolean(me),
+    enabled: !!me,
     postIds,
   });
+  const isRefreshingPostList = isFetching && !isFetchingNextPage;
 
   const posts = mergePostListItems({
     metadatas,
@@ -43,6 +43,7 @@ export const usePostListViewData = () => {
 
   return {
     fetchNextPage,
+    hasNextPage,
     isFetchingNextPage,
     isRefreshingPostList,
     posts,

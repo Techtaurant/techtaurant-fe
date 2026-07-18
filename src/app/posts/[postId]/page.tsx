@@ -1,8 +1,14 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
-import { fetchPostDetail, prefetchGetPostDetailMetadata } from '@/entities/post-detail';
-import { prefetchGetUserProfileImage } from '@/entities/user';
+import {
+  fetchPostDetail,
+  prefetchGetPostDetailMetadata,
+  prefetchGetPostDetailViewerState,
+} from '@/entities/post-detail';
+import { prefetchGetMe, prefetchGetUserProfileImage } from '@/entities/user';
+import type { CustomFetchInit } from '@/shared/api/custom-fetch';
 import { PostDetailView } from '@/views/post-detail';
 
 export const dynamic = 'force-dynamic';
@@ -19,14 +25,22 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { postId } = await params;
   const queryClient = new QueryClient();
+  const cookieHeader = (await cookies()).toString();
+  const authenticatedRequestOptions: CustomFetchInit = {
+    cache: 'no-store',
+    cookieHeader,
+  };
 
-  const post = await fetchPostDetail(queryClient, {
-    postId,
-    options: {
-      cache: 'force-cache',
-      next: { revalidate: POST_DETAIL_REVALIDATE_SECONDS },
-    },
-  });
+  const [post, me] = await Promise.all([
+    fetchPostDetail(queryClient, {
+      postId,
+      options: {
+        cache: 'force-cache',
+        next: { revalidate: POST_DETAIL_REVALIDATE_SECONDS },
+      },
+    }),
+    prefetchGetMe(queryClient, authenticatedRequestOptions),
+  ]);
 
   if (!post) {
     notFound();
@@ -46,6 +60,14 @@ export default async function Page({ params }: Props) {
         next: { revalidate: POST_DETAIL_REVALIDATE_SECONDS },
       },
     }),
+    ...(me
+      ? [
+          prefetchGetPostDetailViewerState(queryClient, {
+            postId,
+            options: authenticatedRequestOptions,
+          }),
+        ]
+      : []),
   ]);
 
   return (

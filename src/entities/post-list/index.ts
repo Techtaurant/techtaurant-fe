@@ -7,7 +7,11 @@ export {
   prefetchGetPostListProfileImages,
   useGetPostListProfileImages,
 } from '@/entities/post-list/api/use-get-post-list-profile-images';
-export { useGetPostListViewerStates } from '@/entities/post-list/api/use-get-post-list-viewer-states';
+export {
+  getPostListViewerStatesQueryKey,
+  prefetchGetPostListViewerStates,
+  useGetPostListViewerStates,
+} from '@/entities/post-list/api/use-get-post-list-viewer-states';
 export { parsePostListFilters } from '@/entities/post-list/lib/parse-post-list-filters';
 export { toPostListApiParams } from '@/entities/post-list/lib/to-post-list-api-params';
 export { mergePostListItems } from '@/entities/post-list/model/merge-post-list-items';
