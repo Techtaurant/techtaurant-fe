@@ -5,7 +5,6 @@ export type ToastCreateOptions = {
 };
 
 export type Toast = {
-  id: string;
   message: string;
   options: {
     duration: number;

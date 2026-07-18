@@ -4,9 +4,9 @@ import { ToastItem } from '@/shared/ui/toast/components/toast-item';
 import { useToastSubscribe } from '@/shared/ui/toast/hooks/use-toast-subscribe';
 
 export function ToastsRoot() {
-  const toastList = useToastSubscribe();
+  const toast = useToastSubscribe();
 
-  if (toastList.length === 0) {
+  if (!toast) {
     return null;
   }
 
@@ -15,11 +15,9 @@ export function ToastsRoot() {
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      className="pointer-events-none fixed top-20 left-1/2 z-430 flex w-[min(400px,92vw)] -translate-x-1/2 flex-col gap-2"
+      className="pointer-events-none fixed top-20 left-1/2 z-430 w-[min(400px,92vw)] -translate-x-1/2"
     >
-      {toastList.map(({ id, message, options }) => (
-        <ToastItem key={id} message={message} options={options} />
-      ))}
+      <ToastItem message={toast.message} options={toast.options} />
     </div>
   );
 }

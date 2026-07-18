@@ -6,30 +6,34 @@ import { ToastSubject } from '@/shared/ui/toast/class/toast-subject';
 import type { Toast } from '@/shared/ui/toast/types/toast-types';
 
 export const useToastSubscribe = () => {
-  const [toastList, setToastList] = useState<Toast[]>([]);
+  const [toast, setToast] = useState<Toast | null>(null);
 
   useEffect(() => {
-    const timerSet = new Set<ReturnType<typeof setTimeout>>();
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const toastSubject = ToastSubject.getInstance();
 
-    const toastObserver = (toast: Toast) => {
-      setToastList((prevToastList) => [...prevToastList, toast]);
+    const toastObserver = (nextToast: Toast) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
 
-      const newTimer = setTimeout(() => {
-        setToastList((prevToastList) => prevToastList.filter(({ id }) => id !== toast.id));
-        timerSet.delete(newTimer);
-      }, toast.options.duration);
+      setToast(nextToast);
 
-      timerSet.add(newTimer);
+      timer = setTimeout(() => {
+        setToast(null);
+        timer = null;
+      }, nextToast.options.duration);
     };
 
     toastSubject.subscribe(toastObserver);
 
     return () => {
       toastSubject.unsubscribe(toastObserver);
-      timerSet.forEach((timer) => clearTimeout(timer));
+      if (timer) {
+        clearTimeout(timer);
+      }
     };
   }, []);
 
-  return toastList;
+  return toast;
 };

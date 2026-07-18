@@ -2,14 +2,9 @@ import { ToastSubject } from '@/shared/ui/toast/class/toast-subject';
 import { DEFAULT_TOAST_DURATION } from '@/shared/ui/toast/constants/toast-constants';
 import type { Toast, ToastCreateOptions, ToastVariant } from '@/shared/ui/toast/types/toast-types';
 
-const createToastId = () => {
-  return 'toast' + Math.random().toString(36).slice(2, 11);
-};
-
 const publishToast = (message: string, variant: ToastVariant, options?: ToastCreateOptions) => {
   const toastSubject = ToastSubject.getInstance();
   const nextToast: Toast = {
-    id: createToastId(),
     message,
     options: {
       duration: options?.duration ?? DEFAULT_TOAST_DURATION,
