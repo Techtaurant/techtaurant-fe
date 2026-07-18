@@ -4,14 +4,14 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { getUserFollowingsQueryKey, useFollowUser, useGetUserFollowings, useUnfollowUser } from '@/entities/user';
 
-type AuthorFollowResult = 'followed' | 'unfollowed';
-
 type Params = {
   authorId?: string;
   currentUserId?: string;
   isAuthPending: boolean;
   isLoggedIn: boolean;
+  onError?: (nextFollowingState: boolean) => void;
   onRequireLogin: () => void;
+  onSuccess?: (nextFollowingState: boolean) => void;
 };
 
 export const usePostDetailAuthorFollow = ({
@@ -19,7 +19,9 @@ export const usePostDetailAuthorFollow = ({
   currentUserId,
   isAuthPending,
   isLoggedIn,
+  onError,
   onRequireLogin,
+  onSuccess,
 }: Params) => {
   const queryClient = useQueryClient();
   const followMutation = useFollowUser();
@@ -35,7 +37,12 @@ export const usePostDetailAuthorFollow = ({
   );
   const isFollowingUpdating = followMutation.isPending || unfollowMutation.isPending || followingsQuery.isFetching;
 
-  const toggleAuthorFollow = async (): Promise<AuthorFollowResult | undefined> => {
+  const invalidateFollowingQueries = async () => {
+    if (!currentUserId) return;
+    await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
+  };
+
+  const toggleAuthorFollow = () => {
     if (isAuthPending) return;
     if (!authorId || isOwnAuthor) return;
 
@@ -44,15 +51,21 @@ export const usePostDetailAuthorFollow = ({
       return;
     }
 
-    if (isFollowingAuthor) {
-      await unfollowMutation.mutateAsync({ targetUserId: authorId });
-      await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
-      return 'unfollowed';
-    }
+    const mutation = isFollowingAuthor ? unfollowMutation : followMutation;
+    const nextFollowingState = !isFollowingAuthor;
 
-    await followMutation.mutateAsync({ targetUserId: authorId });
-    await queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) });
-    return 'followed';
+    mutation.mutate(
+      { targetUserId: authorId },
+      {
+        onSuccess: async () => {
+          await invalidateFollowingQueries();
+          onSuccess?.(nextFollowingState);
+        },
+        onError: () => {
+          onError?.(nextFollowingState);
+        },
+      },
+    );
   };
 
   return {

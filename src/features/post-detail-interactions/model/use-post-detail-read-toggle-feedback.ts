@@ -3,47 +3,47 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePostDetailReadGuide } from '@/features/post-detail-interactions/model/use-post-detail-read-guide';
+import { usePostDetailReadToggle } from '@/features/post-detail-interactions/model/use-post-detail-read-toggle';
+import { toast } from '@/shared/ui/toast';
 
 const MARK_READ_TOAST_MESSAGE = '👏 읽음 표시했어요';
 const MARK_UNREAD_TOAST_MESSAGE = '미읽음으로 표시했어요';
+const READ_TOGGLE_ERROR_TOAST_MESSAGE = '읽음 표시에 실패했어요';
 const READ_TOGGLE_PRESS_RESET_MS = 320;
-const READ_TOGGLE_TOAST_DURATION_MS = 1100;
 
 type Params = {
+  postId: string;
+  isAuthPending: boolean;
   isLoggedIn: boolean;
   isRead: boolean;
   onMarkReadAnimationStart: () => void;
-  onToggleRead: () => void;
+  onRequireLogin: () => void;
 };
 
 export const usePostDetailReadToggleFeedback = ({
+  postId,
+  isAuthPending,
   isLoggedIn,
   isRead,
   onMarkReadAnimationStart,
-  onToggleRead,
+  onRequireLogin,
 }: Params) => {
   const [isPressingReadToggle, setIsPressingReadToggle] = useState(false);
-  const [readToggleToastMessage, setReadToggleToastMessage] = useState<string | null>(null);
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { dismissReadGuide, isReadGuideVisible } = usePostDetailReadGuide({ isLoggedIn });
-
-  const showReadToggleToast = useCallback((nextReadState: boolean) => {
-    if (nextReadState) {
-      setReadToggleToastMessage(MARK_READ_TOAST_MESSAGE);
-    } else {
-      setReadToggleToastMessage(MARK_UNREAD_TOAST_MESSAGE);
-    }
-
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current);
-    }
-
-    toastTimerRef.current = setTimeout(() => {
-      setReadToggleToastMessage(null);
-      toastTimerRef.current = null;
-    }, READ_TOGGLE_TOAST_DURATION_MS);
-  }, []);
+  const { isReadPending, toggleRead } = usePostDetailReadToggle({
+    isAuthPending,
+    isLoggedIn,
+    isRead,
+    onError: () => {
+      toast.error(READ_TOGGLE_ERROR_TOAST_MESSAGE);
+    },
+    onRequireLogin,
+    onSuccess: (nextReadState) => {
+      toast.success(nextReadState ? MARK_READ_TOAST_MESSAGE : MARK_UNREAD_TOAST_MESSAGE);
+    },
+    postId,
+  });
 
   const resetPressStateLater = useCallback(() => {
     if (pressTimerRef.current) {
@@ -56,31 +56,20 @@ export const usePostDetailReadToggleFeedback = ({
   }, []);
 
   const handleToggleRead = useCallback(() => {
-    if (!isLoggedIn) {
-      onToggleRead();
-      return;
-    }
-
     const nextReadState = !isRead;
 
-    if (nextReadState) {
+    if (isLoggedIn && nextReadState) {
       onMarkReadAnimationStart();
     }
 
-    dismissReadGuide();
-    showReadToggleToast(nextReadState);
+    if (isLoggedIn) {
+      dismissReadGuide();
+    }
+
     setIsPressingReadToggle(true);
     resetPressStateLater();
-    onToggleRead();
-  }, [
-    dismissReadGuide,
-    isLoggedIn,
-    isRead,
-    onMarkReadAnimationStart,
-    onToggleRead,
-    resetPressStateLater,
-    showReadToggleToast,
-  ]);
+    toggleRead();
+  }, [dismissReadGuide, isLoggedIn, isRead, onMarkReadAnimationStart, resetPressStateLater, toggleRead]);
 
   const handleReadPointerDown = useCallback(() => {
     if (!isLoggedIn) return;
@@ -99,10 +88,6 @@ export const usePostDetailReadToggleFeedback = ({
       if (pressTimerRef.current) {
         clearTimeout(pressTimerRef.current);
       }
-
-      if (toastTimerRef.current) {
-        clearTimeout(toastTimerRef.current);
-      }
     };
   }, []);
 
@@ -111,7 +96,7 @@ export const usePostDetailReadToggleFeedback = ({
     handleReadPointerUp,
     handleToggleRead,
     isPressingReadToggle,
+    isReadPending,
     isReadGuideVisible,
-    readToggleToastMessage,
   };
 };

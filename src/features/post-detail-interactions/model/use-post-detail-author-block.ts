@@ -7,29 +7,37 @@ import { getPostListQueryKey } from '@/entities/post-list';
 import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser } from '@/entities/user';
 
 type Params = {
+  postId: string;
   authorId?: string;
   currentUserId?: string;
-  isOwnAuthor: boolean;
-  postId: string;
+  onSuccess?: () => void;
+  onError?: () => void;
 };
 
-export const usePostDetailAuthorBlock = ({ authorId, currentUserId, isOwnAuthor, postId }: Params) => {
+export const usePostDetailAuthorBlock = ({ postId, authorId, currentUserId, onSuccess, onError }: Params) => {
   const queryClient = useQueryClient();
   const banMutation = useBanUser();
 
-  const blockAuthor = async () => {
-    if (!authorId || !currentUserId || isOwnAuthor) return false;
+  const blockAuthor = () => {
+    if (!authorId || !currentUserId || authorId === currentUserId) return;
 
-    await banMutation.mutateAsync({ targetUserId: authorId });
-
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getMyBannedUsersQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) }),
-      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
-    ]);
-
-    return true;
+    banMutation.mutate(
+      { targetUserId: authorId },
+      {
+        onSuccess: async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: getMyBannedUsersQueryKey() }),
+            queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) }),
+            queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+            queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+          ]);
+          onSuccess?.();
+        },
+        onError: () => {
+          onError?.();
+        },
+      },
+    );
   };
 
   return {

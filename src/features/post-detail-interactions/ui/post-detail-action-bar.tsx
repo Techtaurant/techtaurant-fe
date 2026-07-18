@@ -12,12 +12,12 @@ type Props = {
   isLikePending: boolean;
   isLiked: boolean;
   isRead: boolean;
-  isReadPending: boolean;
   likeCount: number;
+  onRequireLogin: () => void;
   onShare: () => void;
   onToggleDislike: () => void;
   onToggleLike: () => void;
-  onToggleRead: () => void;
+  postId: string;
   viewCount: number;
 };
 
@@ -29,12 +29,12 @@ export function PostDetailActionBar({
   isLikePending,
   isLiked,
   isRead,
-  isReadPending,
   likeCount,
+  onRequireLogin,
   onShare,
   onToggleDislike,
   onToggleLike,
-  onToggleRead,
+  postId,
   viewCount,
 }: Props) {
   return (
@@ -58,8 +58,8 @@ export function PostDetailActionBar({
           isAuthPending={isAuthPending}
           isLoggedIn={isLoggedIn}
           isRead={isRead}
-          isReadPending={isReadPending}
-          onToggleRead={onToggleRead}
+          onRequireLogin={onRequireLogin}
+          postId={postId}
         />
         <PostDetailShareButton onShare={onShare} />
       </div>

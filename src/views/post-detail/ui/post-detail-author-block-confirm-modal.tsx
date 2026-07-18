@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-
+import { usePostDetailAuthorBlock } from '@/features/post-detail-interactions';
 import { Button } from '@/shared/ui/button';
 import { Modal } from '@/shared/ui/modal';
+import { toast } from '@/shared/ui/toast';
 
 type Props = {
+  authorId?: string;
+  authorName?: string;
+  currentUserId?: string;
   overlayId: string;
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => Promise<boolean>;
+  postId: string;
 };
 
 const AUTHOR_BLOCK_CONFIRM_TITLE = '이 사용자를 차단할까요?';
@@ -17,33 +20,36 @@ const AUTHOR_BLOCK_CONFIRM_DESCRIPTION = '이 사용자를 차단한 계정 목�
 const AUTHOR_BLOCK_CONFIRM_ACTION = '차단하기';
 const AUTHOR_BLOCK_CANCEL_ACTION = '취소';
 
-export function PostDetailAuthorBlockConfirmModal({ overlayId, isOpen, onClose, onConfirm }: Props) {
-  const [isConfirming, setIsConfirming] = useState(false);
+export function PostDetailAuthorBlockConfirmModal({
+  authorId,
+  authorName,
+  currentUserId,
+  overlayId,
+  isOpen,
+  onClose,
+  postId,
+}: Props) {
+  const { blockAuthor, isAuthorBlockPending } = usePostDetailAuthorBlock({
+    authorId,
+    currentUserId,
+    onError: () => {
+      toast.error(authorName ? `${authorName}님을 차단하지 못했어요` : '사용자를 차단하지 못했어요');
+    },
+    onSuccess: () => {
+      toast.blocked(authorName ? `${authorName}님을 차단했어요` : '사용자를 차단했어요');
+      onClose();
+    },
+    postId,
+  });
 
   const handleModalClose = () => {
-    if (isConfirming) return;
-
+    if (isAuthorBlockPending) return;
     onClose();
   };
 
-  const handleConfirmButtonClick = async () => {
-    if (isConfirming) return;
-
-    setIsConfirming(true);
-
-    try {
-      const shouldClose = await onConfirm();
-
-      if (shouldClose) {
-        setIsConfirming(false);
-        onClose();
-        return;
-      }
-
-      setIsConfirming(false);
-    } catch {
-      setIsConfirming(false);
-    }
+  const handleBlockAuthorClick = () => {
+    if (isAuthorBlockPending) return;
+    blockAuthor();
   };
 
   return (
@@ -61,7 +67,7 @@ export function PostDetailAuthorBlockConfirmModal({ overlayId, isOpen, onClose, 
           <Button
             variant="neutral"
             className="h-10 min-w-[136px] flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap"
-            disabled={isConfirming}
+            disabled={isAuthorBlockPending}
             onClick={handleModalClose}
           >
             {AUTHOR_BLOCK_CANCEL_ACTION}
@@ -69,10 +75,8 @@ export function PostDetailAuthorBlockConfirmModal({ overlayId, isOpen, onClose, 
           <Button
             variant="danger"
             className="h-10 min-w-[136px] flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold whitespace-nowrap"
-            disabled={isConfirming}
-            onClick={() => {
-              void handleConfirmButtonClick();
-            }}
+            disabled={isAuthorBlockPending}
+            onClick={handleBlockAuthorClick}
           >
             {AUTHOR_BLOCK_CONFIRM_ACTION}
           </Button>

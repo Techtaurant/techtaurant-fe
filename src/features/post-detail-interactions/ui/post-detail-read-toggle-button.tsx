@@ -15,11 +15,11 @@ type Props = {
   isAuthPending: boolean;
   isLoggedIn: boolean;
   isRead: boolean;
-  isReadPending: boolean;
-  onToggleRead: () => void;
+  onRequireLogin: () => void;
+  postId: string;
 };
 
-export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, isReadPending, onToggleRead }: Props) {
+export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, onRequireLogin, postId }: Props) {
   const showReadCheckedIconRef = useRef(isRead);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const readStatusLabel = getReadStatusLabel(isRead);
@@ -28,15 +28,17 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
     handleReadPointerUp,
     handleToggleRead,
     isPressingReadToggle,
+    isReadPending,
     isReadGuideVisible,
-    readToggleToastMessage,
   } = usePostDetailReadToggleFeedback({
+    isAuthPending,
     isLoggedIn,
     isRead,
     onMarkReadAnimationStart: () => {
       showReadCheckedIconRef.current = false;
     },
-    onToggleRead,
+    onRequireLogin,
+    postId,
   });
 
   const syncLottieToReadState = useCallback((nextState: boolean) => {
@@ -73,14 +75,9 @@ export function PostDetailReadToggleButton({ isAuthPending, isLoggedIn, isRead, 
 
   return (
     <div className="relative">
-      {isLoggedIn && isReadGuideVisible && !readToggleToastMessage && (
+      {isLoggedIn && isReadGuideVisible && (
         <p className="border-border bg-background text-foreground absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-full border px-3 py-1 text-[11px] whitespace-nowrap shadow-sm">
           {READ_TOGGLE_GUIDE_TEXT}
-        </p>
-      )}
-      {readToggleToastMessage && (
-        <p className="border-border bg-background text-foreground absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-2xl border px-3 py-1.5 text-[11px] whitespace-nowrap shadow-lg shadow-black/15">
-          {readToggleToastMessage}
         </p>
       )}
       <Button
