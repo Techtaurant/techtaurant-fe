@@ -1,0 +1,187 @@
+'use client';
+
+import type { SyntheticEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import type { CommentItem, CommentSort } from '@/entities/comment';
+import { COMMENT_SORT } from '@/entities/comment';
+import {
+  COMMENT_FOCUS_DELAY_MS,
+  COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
+  COMMENT_TEXTAREA_EXPANDED_HEIGHT,
+} from '@/features/post-comments/config/comment-composer';
+import { PostDetailCommentComposer } from '@/features/post-comments/ui/post-detail-comment-composer';
+import { PostDetailCommentItem } from '@/features/post-comments/ui/post-detail-comment-item';
+import { cn } from '@/shared/lib/cn';
+
+type Props = {
+  comments: CommentItem[];
+  commentsHasNext: boolean;
+  commentsSort: CommentSort;
+  createCommentErrorMessage: string | null;
+  focusRequestKey: number;
+  isCommentCreating: boolean;
+  isCommentsLoading: boolean;
+  isCommentsLoadingMore: boolean;
+  onClearCreateCommentError: () => void;
+  onCommentsSortChange: (sort: CommentSort) => void;
+  onCreateComment: (content: string) => Promise<boolean>;
+  onDislikeComment: (comment: CommentItem) => void;
+  onLikeComment: (comment: CommentItem) => void;
+  onLoadMoreComments: () => void;
+  postAuthorId?: string;
+};
+
+const EMPTY_COMMENT_LIST_MESSAGE = '아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요.';
+const COMMENTS_LOADING_MESSAGE = '댓글을 불러오는 중입니다.';
+const LOAD_MORE_COMMENTS_LABEL = '댓글 더보기';
+const LOAD_MORE_LOADING_LABEL = '불러오는 중';
+
+const COMMENT_SORT_OPTIONS = [
+  { label: '최신순', value: COMMENT_SORT.LATEST },
+  { label: '좋아요순', value: COMMENT_SORT.LIKE },
+  { label: '답글순', value: COMMENT_SORT.REPLY },
+] satisfies { label: string; value: CommentSort }[];
+
+export function PostDetailCommentsSection({
+  comments,
+  commentsHasNext,
+  commentsSort,
+  createCommentErrorMessage,
+  focusRequestKey,
+  isCommentCreating,
+  isCommentsLoading,
+  isCommentsLoadingMore,
+  onClearCreateCommentError,
+  onCommentsSortChange,
+  onCreateComment,
+  onDislikeComment,
+  onLikeComment,
+  onLoadMoreComments,
+  postAuthorId,
+}: Props) {
+  const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isCommentExpanded, setIsCommentExpanded] = useState(false);
+  const [commentValue, setCommentValue] = useState('');
+
+  const resetCommentForm = () => {
+    setCommentValue('');
+    setIsCommentExpanded(false);
+
+    if (commentTextareaRef.current) {
+      commentTextareaRef.current.style.height = COMMENT_TEXTAREA_COLLAPSED_HEIGHT;
+    }
+  };
+
+  const handleCommentTextareaInput = (event: SyntheticEvent<HTMLTextAreaElement>) => {
+    const textarea = event.currentTarget;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
+  const handleSubmitButtonClick = async () => {
+    const isCreated = await onCreateComment(commentValue);
+    if (isCreated) {
+      resetCommentForm();
+    }
+  };
+
+  const handleCommentValueChange = (nextCommentValue: string) => {
+    setCommentValue(nextCommentValue);
+    if (!createCommentErrorMessage) return;
+
+    onClearCreateCommentError();
+  };
+
+  const handleCommentTextareaFocus = () => {
+    setIsCommentExpanded(true);
+    if (!commentTextareaRef.current || commentValue) return;
+
+    commentTextareaRef.current.style.height = COMMENT_TEXTAREA_EXPANDED_HEIGHT;
+  };
+
+  const handleCommentSubmitButtonClick = () => {
+    void handleSubmitButtonClick();
+  };
+
+  useEffect(() => {
+    if (focusRequestKey <= 0) return;
+
+    commentTextareaRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+    const timeoutId = window.setTimeout(() => {
+      setIsCommentExpanded(true);
+      commentTextareaRef.current?.focus();
+    }, COMMENT_FOCUS_DELAY_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [focusRequestKey]);
+
+  return (
+    <section>
+      <PostDetailCommentComposer
+        commentTextareaRef={commentTextareaRef}
+        createCommentErrorMessage={createCommentErrorMessage}
+        isCommentCreating={isCommentCreating}
+        isCommentExpanded={isCommentExpanded}
+        value={commentValue}
+        onCancelButtonClick={resetCommentForm}
+        onChange={handleCommentValueChange}
+        onFocus={handleCommentTextareaFocus}
+        onInput={handleCommentTextareaInput}
+        onSubmitButtonClick={handleCommentSubmitButtonClick}
+      />
+
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center gap-2">
+          {COMMENT_SORT_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={cn(
+                'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-200',
+                commentsSort === option.value
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-comment-sort-button text-comment-sort-button-foreground hover:bg-comment-sort-button-hover hover:text-foreground',
+              )}
+              onClick={() => onCommentsSortChange(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {isCommentsLoading && comments.length === 0 ? (
+          <div className="text-muted-foreground py-4 text-sm">{COMMENTS_LOADING_MESSAGE}</div>
+        ) : comments.length > 0 ? (
+          comments.map((comment) => (
+            <PostDetailCommentItem
+              key={comment.id}
+              comment={comment}
+              postAuthorId={postAuthorId}
+              onDislikeComment={onDislikeComment}
+              onLikeComment={onLikeComment}
+            />
+          ))
+        ) : (
+          <p className="text-muted-foreground py-8 text-center">{EMPTY_COMMENT_LIST_MESSAGE}</p>
+        )}
+
+        {commentsHasNext ? (
+          <div className="flex justify-center pt-2">
+            <button
+              type="button"
+              disabled={isCommentsLoadingMore}
+              className="border-border text-muted-foreground hover:text-foreground hover:bg-muted/85 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={onLoadMoreComments}
+            >
+              {isCommentsLoadingMore ? LOAD_MORE_LOADING_LABEL : LOAD_MORE_COMMENTS_LABEL}
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}

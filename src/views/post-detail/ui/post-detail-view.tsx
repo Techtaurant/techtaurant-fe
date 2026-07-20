@@ -4,6 +4,7 @@ import { overlay } from 'overlay-kit';
 
 import { POST_LIKE_STATUS } from '@/entities/post-detail';
 import { startGoogleLogin } from '@/features/auth';
+import { PostDetailCommentsSection, usePostDetailComments } from '@/features/post-comments';
 import {
   PostDetailActionBar,
   usePostDetailAuthorFollow,
@@ -69,6 +70,21 @@ export function PostDetailView({ postId }: Props) {
     },
   });
   const { sharePostDetail } = usePostDetailShare();
+  const postDetailComments = usePostDetailComments({
+    isAuthPending,
+    isLoggedIn,
+    onNotify: toast.error,
+    onRequireLogin: startGoogleLogin,
+    postId,
+  });
+
+  const handleCommentLikeButtonClick = () => {
+    // TODO: 댓글 좋아요 API 연동은 다음 PR에서 useCommentReaction으로 연결
+  };
+
+  const handleCommentDislikeButtonClick = () => {
+    // TODO: 댓글 싫어요 API 연동은 다음 PR에서 useCommentReaction으로 연결
+  };
 
   useRecordPostViewOnce({
     enabled: !!post && isViewerStateResolved && !isAuthorBanned,
@@ -136,10 +152,28 @@ export function PostDetailView({ postId }: Props) {
           likeCount={likeCount}
           onRequireLogin={startGoogleLogin}
           viewCount={viewCount}
+          onCommentClick={postDetailComments.requestCommentFocus}
           onShare={sharePostDetail}
           onToggleDislike={toggleDislike}
           onToggleLike={toggleLike}
           postId={postId}
+        />
+        <PostDetailCommentsSection
+          comments={postDetailComments.comments}
+          commentsHasNext={postDetailComments.commentsHasNext}
+          commentsSort={postDetailComments.commentsSort}
+          createCommentErrorMessage={postDetailComments.createCommentErrorMessage}
+          focusRequestKey={postDetailComments.focusRequestKey}
+          isCommentCreating={postDetailComments.isCommentCreating}
+          isCommentsLoading={postDetailComments.isCommentsLoading}
+          isCommentsLoadingMore={postDetailComments.isCommentsLoadingMore}
+          postAuthorId={authorId}
+          onClearCreateCommentError={postDetailComments.clearCreateCommentError}
+          onCommentsSortChange={postDetailComments.handleCommentsSortChange}
+          onCreateComment={postDetailComments.handleCreateComment}
+          onDislikeComment={handleCommentDislikeButtonClick}
+          onLikeComment={handleCommentLikeButtonClick}
+          onLoadMoreComments={postDetailComments.handleLoadMoreComments}
         />
       </article>
     </PostDetailContainer>
