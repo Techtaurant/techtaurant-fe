@@ -14,6 +14,7 @@ type Props = {
   isRead: boolean;
   likeCount: number;
   onRequireLogin: () => void;
+  onCommentClick: () => void;
   onShare: () => void;
   onToggleDislike: () => void;
   onToggleLike: () => void;
@@ -31,6 +32,7 @@ export function PostDetailActionBar({
   isRead,
   likeCount,
   onRequireLogin,
+  onCommentClick,
   onShare,
   onToggleDislike,
   onToggleLike,
@@ -48,6 +50,7 @@ export function PostDetailActionBar({
           isLiked={isLiked}
           likeCount={likeCount}
           viewCount={viewCount}
+          onCommentClick={onCommentClick}
           onToggleDislike={onToggleDislike}
           onToggleLike={onToggleLike}
         />
