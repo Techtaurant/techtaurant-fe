@@ -1,0 +1,28 @@
+import { useGetCommentMetadatas } from '@/entities/comment/api/use-get-comment-metadatas';
+import { useGetCommentProfileImages } from '@/entities/comment/api/use-get-comment-profile-images';
+import { useGetCommentViewerStates } from '@/entities/comment/api/use-get-comment-viewer-states';
+import { mergeCommentItems } from '@/entities/comment/model/merge-comment-items';
+import type { CommentContentListResponse } from '@/shared/api/generated';
+
+type Params = {
+  contents: CommentContentListResponse[];
+  isViewerStateEnabled: boolean;
+};
+
+export const useMergedComments = ({ contents, isViewerStateEnabled }: Params) => {
+  const commentIds = contents.map((comment) => comment.id);
+  const authorIds = Array.from(new Set(contents.map((comment) => comment.authorId)));
+  const { data: metadatas } = useGetCommentMetadatas({ commentIds });
+  const { data: profileImages } = useGetCommentProfileImages({ authorIds });
+  const { data: viewerStates } = useGetCommentViewerStates({
+    commentIds,
+    enabled: isViewerStateEnabled,
+  });
+
+  return mergeCommentItems({
+    contents,
+    metadatas,
+    profileImages,
+    viewerStates,
+  });
+};
