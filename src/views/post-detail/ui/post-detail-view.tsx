@@ -162,6 +162,7 @@ export function PostDetailView({ postId }: Props) {
           comments={postDetailComments.comments}
           commentsHasNext={postDetailComments.commentsHasNext}
           commentsSort={postDetailComments.commentsSort}
+          commentCount={commentCount}
           createCommentErrorMessage={postDetailComments.createCommentErrorMessage}
           focusRequestKey={postDetailComments.focusRequestKey}
           isCommentCreating={postDetailComments.isCommentCreating}

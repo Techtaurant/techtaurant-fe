@@ -18,6 +18,7 @@ type Props = {
   comments: CommentItem[];
   commentsHasNext: boolean;
   commentsSort: CommentSort;
+  commentCount: number;
   createCommentErrorMessage: string | null;
   focusRequestKey: number;
   isCommentCreating: boolean;
@@ -33,7 +34,6 @@ type Props = {
 };
 
 const EMPTY_COMMENT_LIST_MESSAGE = '아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요.';
-const COMMENTS_LOADING_MESSAGE = '댓글을 불러오는 중입니다.';
 const LOAD_MORE_COMMENTS_LABEL = '댓글 더보기';
 const LOAD_MORE_LOADING_LABEL = '불러오는 중';
 
@@ -47,6 +47,7 @@ export function PostDetailCommentsSection({
   comments,
   commentsHasNext,
   commentsSort,
+  commentCount,
   createCommentErrorMessage,
   focusRequestKey,
   isCommentCreating,
@@ -63,6 +64,9 @@ export function PostDetailCommentsSection({
   const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isCommentExpanded, setIsCommentExpanded] = useState(false);
   const [commentValue, setCommentValue] = useState('');
+  const hasComments = comments.length > 0;
+  const hasKnownComments = commentCount > 0 || hasComments;
+  const shouldShowEmptyCommentList = !isCommentsLoading && !hasKnownComments;
 
   const resetCommentForm = () => {
     setCommentValue('');
@@ -153,21 +157,23 @@ export function PostDetailCommentsSection({
           ))}
         </div>
 
-        {isCommentsLoading && comments.length === 0 ? (
-          <div className="text-muted-foreground py-4 text-sm">{COMMENTS_LOADING_MESSAGE}</div>
-        ) : comments.length > 0 ? (
-          comments.map((comment) => (
-            <PostDetailCommentItem
-              key={comment.id}
-              comment={comment}
-              postAuthorId={postAuthorId}
-              onDislikeComment={onDislikeComment}
-              onLikeComment={onLikeComment}
-            />
-          ))
-        ) : (
-          <p className="text-muted-foreground py-8 text-center">{EMPTY_COMMENT_LIST_MESSAGE}</p>
-        )}
+        <div className="flex min-h-[5.5rem] flex-col gap-6">
+          {hasComments
+            ? comments.map((comment) => (
+                <PostDetailCommentItem
+                  key={comment.id}
+                  comment={comment}
+                  postAuthorId={postAuthorId}
+                  onDislikeComment={onDislikeComment}
+                  onLikeComment={onLikeComment}
+                />
+              ))
+            : null}
+
+          {shouldShowEmptyCommentList ? (
+            <p className="text-muted-foreground py-8 text-center">{EMPTY_COMMENT_LIST_MESSAGE}</p>
+          ) : null}
+        </div>
 
         {commentsHasNext ? (
           <div className="flex justify-center pt-2">

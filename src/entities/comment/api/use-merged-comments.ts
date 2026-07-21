@@ -10,8 +10,8 @@ type Params = {
 };
 
 export const useMergedComments = ({ contents, isViewerStateEnabled }: Params) => {
-  const commentIds = contents.map((comment) => comment.id);
-  const authorIds = Array.from(new Set(contents.map((comment) => comment.authorId)));
+  const commentIds = [...new Set(contents.map((comment) => comment.id))].sort();
+  const authorIds = [...new Set(contents.map((comment) => comment.authorId))].sort();
   const { data: metadatas } = useGetCommentMetadatas({ commentIds });
   const { data: profileImages } = useGetCommentProfileImages({ authorIds });
   const { data: viewerStates } = useGetCommentViewerStates({
