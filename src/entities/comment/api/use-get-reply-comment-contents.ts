@@ -20,7 +20,7 @@ const toReplyCommentContentsParams = (sort?: CommentSort) => {
   } satisfies GetReplyContentsApiParams;
 };
 
-export const getReplyCommentContentsQueryKey = ({ commentId, sort }: Pick<Params, 'commentId' | 'sort'>) => {
+const getReplyCommentContentsQueryKey = ({ commentId, sort }: Pick<Params, 'commentId' | 'sort'>) => {
   return [
     ...getCommentsQueryKey(),
     'replies',

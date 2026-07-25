@@ -34,11 +34,11 @@ export function PostDetailCommentItem({ comment, onDislikeComment, onLikeComment
         <div className="mb-1 flex items-center justify-between gap-2">
           <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
             <span className="text-foreground text-sm font-semibold">{authorName}</span>
-            {isPostAuthor ? (
+            {isPostAuthor && (
               <span className="bg-comment-author-badge-background text-comment-author-badge-foreground inline-flex items-center rounded-full px-2 py-0.5 text-[11px] leading-4 font-semibold">
                 작성자
               </span>
-            ) : null}
+            )}
             <span className="text-muted-foreground text-xs">{formatDisplayTime(comment.createdAt)}</span>
           </div>
         </div>
@@ -47,7 +47,7 @@ export function PostDetailCommentItem({ comment, onDislikeComment, onLikeComment
           {comment.isDeleted ? DELETED_COMMENT_MESSAGE : isBanned ? BANNED_COMMENT_CONTENT : comment.content}
         </p>
 
-        {shouldShowInteractionRow ? (
+        {shouldShowInteractionRow && (
           <div className="flex items-center gap-4">
             <div className="text-muted-foreground inline-flex items-center gap-1 text-xs">
               <button
@@ -77,7 +77,7 @@ export function PostDetailCommentItem({ comment, onDislikeComment, onLikeComment
               </button>
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

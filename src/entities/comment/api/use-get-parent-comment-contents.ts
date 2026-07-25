@@ -23,7 +23,7 @@ export const getCommentsQueryKey = () => {
   return ['comments'] as const;
 };
 
-export const getParentCommentContentsQueryKey = ({ postId, sort }: Pick<Params, 'postId' | 'sort'>) => {
+const getParentCommentContentsQueryKey = ({ postId, sort }: Pick<Params, 'postId' | 'sort'>) => {
   return [
     ...getCommentsQueryKey(),
     'parents',

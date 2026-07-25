@@ -69,7 +69,7 @@ export function PostDetailCommentComposer({
             onFocus={onFocus}
             onInput={onInput}
           />
-          {isCommentExpanded ? (
+          {isCommentExpanded && (
             <div className="absolute right-3 bottom-4 flex items-center gap-2">
               <button
                 type="button"
@@ -93,11 +93,11 @@ export function PostDetailCommentComposer({
                 {COMMENT_SUBMIT_LABEL}
               </button>
             </div>
-          ) : null}
+          )}
         </div>
-        {createCommentErrorMessage ? (
+        {createCommentErrorMessage && (
           <p className="text-form-error-foreground mt-2 px-2 text-sm font-medium">{createCommentErrorMessage}</p>
-        ) : null}
+        )}
       </div>
     </div>
   );

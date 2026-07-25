@@ -115,12 +115,12 @@ export function PostDetailCommentsSection({
       behavior: 'smooth',
       block: 'center',
     });
-    const timeoutId = window.setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setIsCommentExpanded(true);
       commentTextareaRef.current?.focus();
     }, COMMENT_FOCUS_DELAY_MS);
 
-    return () => window.clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
   }, [focusRequestKey]);
 
   return (
@@ -158,24 +158,23 @@ export function PostDetailCommentsSection({
         </div>
 
         <div className="flex min-h-[5.5rem] flex-col gap-6">
-          {hasComments
-            ? comments.map((comment) => (
-                <PostDetailCommentItem
-                  key={comment.id}
-                  comment={comment}
-                  postAuthorId={postAuthorId}
-                  onDislikeComment={onDislikeComment}
-                  onLikeComment={onLikeComment}
-                />
-              ))
-            : null}
+          {hasComments &&
+            comments.map((comment) => (
+              <PostDetailCommentItem
+                key={comment.id}
+                comment={comment}
+                postAuthorId={postAuthorId}
+                onDislikeComment={onDislikeComment}
+                onLikeComment={onLikeComment}
+              />
+            ))}
 
-          {shouldShowEmptyCommentList ? (
+          {shouldShowEmptyCommentList && (
             <p className="text-muted-foreground py-8 text-center">{EMPTY_COMMENT_LIST_MESSAGE}</p>
-          ) : null}
+          )}
         </div>
 
-        {commentsHasNext ? (
+        {commentsHasNext && (
           <div className="flex justify-center pt-2">
             <button
               type="button"
@@ -186,7 +185,7 @@ export function PostDetailCommentsSection({
               {isCommentsLoadingMore ? LOAD_MORE_LOADING_LABEL : LOAD_MORE_COMMENTS_LABEL}
             </button>
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );
