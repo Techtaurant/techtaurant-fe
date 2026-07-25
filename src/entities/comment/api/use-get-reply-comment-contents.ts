@@ -4,7 +4,7 @@ import { getCommentsQueryKey } from '@/entities/comment/api/use-get-parent-comme
 import { DEFAULT_COMMENT_LIST_SIZE } from '@/entities/comment/config/constants';
 import type { CommentSort } from '@/entities/comment/model/comment';
 import { COMMENT_SORT } from '@/entities/comment/model/comment';
-import type { CommentContentListResponse, GetReplyContentsApiParams } from '@/shared/api/generated';
+import type { GetReplyContentsApiParams } from '@/shared/api/generated';
 import { getReplyContentsApi } from '@/shared/api/generated';
 
 type Params = {
@@ -31,17 +31,8 @@ const getReplyCommentContentsQueryKey = ({ commentId, sort }: Pick<Params, 'comm
 export const useGetReplyCommentContents = ({ commentId, options, sort }: Params) => {
   const params = toReplyCommentContentsParams(sort);
 
-  return useInfiniteQuery<
-    Awaited<ReturnType<typeof getReplyContentsApi>>,
-    Error,
-    CommentContentListResponse[],
-    ReturnType<typeof getReplyCommentContentsQueryKey>,
-    string | undefined
-  >({
+  return useInfiniteQuery({
     enabled: !!commentId,
-    getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
-    initialPageParam: undefined as string | undefined,
-    placeholderData: keepPreviousData,
     queryFn: ({ pageParam, signal }) =>
       getReplyContentsApi(
         commentId,
@@ -51,6 +42,9 @@ export const useGetReplyCommentContents = ({ commentId, options, sort }: Params)
         },
         { signal, ...options },
       ),
+    getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
+    initialPageParam: undefined as string | undefined,
+    placeholderData: keepPreviousData,
     queryKey: getReplyCommentContentsQueryKey({ commentId, sort }),
     select: (data) => data.pages.flatMap((page) => page.data?.content ?? []),
   });

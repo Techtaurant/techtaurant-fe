@@ -3,7 +3,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { DEFAULT_COMMENT_LIST_SIZE } from '@/entities/comment/config/constants';
 import type { CommentSort } from '@/entities/comment/model/comment';
 import { COMMENT_SORT } from '@/entities/comment/model/comment';
-import type { CommentContentListResponse, GetParentCommentContentsApiParams } from '@/shared/api/generated';
+import type { GetParentCommentContentsApiParams } from '@/shared/api/generated';
 import { getParentCommentContentsApi } from '@/shared/api/generated';
 
 type Params = {
@@ -34,17 +34,8 @@ const getParentCommentContentsQueryKey = ({ postId, sort }: Pick<Params, 'postId
 export const useGetParentCommentContents = ({ options, postId, sort }: Params) => {
   const params = toParentCommentContentsParams(sort);
 
-  return useInfiniteQuery<
-    Awaited<ReturnType<typeof getParentCommentContentsApi>>,
-    Error,
-    CommentContentListResponse[],
-    ReturnType<typeof getParentCommentContentsQueryKey>,
-    string | undefined
-  >({
+  return useInfiniteQuery({
     enabled: !!postId,
-    getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
-    initialPageParam: undefined as string | undefined,
-    placeholderData: keepPreviousData,
     queryFn: ({ pageParam, signal }) =>
       getParentCommentContentsApi(
         postId,
@@ -54,6 +45,9 @@ export const useGetParentCommentContents = ({ options, postId, sort }: Params) =
         },
         { signal, ...options },
       ),
+    getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
+    initialPageParam: undefined as string | undefined,
+    placeholderData: keepPreviousData,
     queryKey: getParentCommentContentsQueryKey({ postId, sort }),
     select: (data) => data.pages.flatMap((page) => page.data?.content ?? []),
   });
