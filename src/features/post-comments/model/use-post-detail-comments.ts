@@ -15,11 +15,11 @@ import {
 } from '@/entities/comment';
 import { getPostDetailMetadataQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
+import { toast } from '@/shared/ui/toast';
 
 type Params = {
   isAuthPending: boolean;
   isLoggedIn: boolean;
-  onNotify?: (message: string) => void;
   onRequireLogin: () => void;
   postId: string;
 };
@@ -27,7 +27,7 @@ type Params = {
 const COMMENT_CONTENT_REQUIRED_MESSAGE = '댓글 내용을 입력해주세요.';
 const COMMENT_CREATE_FAILED_MESSAGE = '댓글 작성에 실패했습니다.';
 
-export const usePostDetailComments = ({ isAuthPending, isLoggedIn, onNotify, onRequireLogin, postId }: Params) => {
+export const usePostDetailComments = ({ isAuthPending, isLoggedIn, onRequireLogin, postId }: Params) => {
   const queryClient = useQueryClient();
   const [commentsSort, setCommentsSort] = useState<CommentSort>(COMMENT_SORT.LATEST);
   const [createCommentErrorMessage, setCreateCommentErrorMessage] = useState<string | null>(null);
@@ -94,7 +94,7 @@ export const usePostDetailComments = ({ isAuthPending, isLoggedIn, onNotify, onR
       return true;
     } catch {
       setCreateCommentErrorMessage(COMMENT_CREATE_FAILED_MESSAGE);
-      onNotify?.(COMMENT_CREATE_FAILED_MESSAGE);
+      toast.error(COMMENT_CREATE_FAILED_MESSAGE);
       return false;
     }
   };

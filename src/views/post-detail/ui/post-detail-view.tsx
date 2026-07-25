@@ -73,7 +73,6 @@ export function PostDetailView({ postId }: Props) {
   const postDetailComments = usePostDetailComments({
     isAuthPending,
     isLoggedIn,
-    onNotify: toast.error,
     onRequireLogin: startGoogleLogin,
     postId,
   });
