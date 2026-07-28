@@ -3,6 +3,7 @@
 import { overlay } from 'overlay-kit';
 
 import { POST_LIKE_STATUS } from '@/entities/post-detail';
+import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
 import { PostDetailCommentsSection, usePostDetailComments } from '@/features/post-comments';
 import {
@@ -29,16 +30,11 @@ const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
 const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
 
 export function PostDetailView({ postId }: Props) {
-  const {
-    authorProfile,
-    currentUserId,
-    isAuthPending,
-    isLoggedIn,
-    isViewerStateResolved,
-    metadata,
-    post,
-    viewerState,
-  } = usePostDetailViewData(postId);
+  const { authorProfile, isViewerStateResolved, metadata, post, viewerState } = usePostDetailViewData(postId);
+
+  const { data: me, isPending: isAuthPending } = useGetMe();
+  const isLoggedIn = !!me;
+
   const authorId = post?.author.id;
   const authorName = authorProfile?.authorName ?? UNKNOWN_AUTHOR_NAME;
   const likeStatus = viewerState?.likeStatus ?? POST_LIKE_STATUS.NONE;
@@ -50,17 +46,12 @@ export function PostDetailView({ postId }: Props) {
   const likeCount = metadata?.likeCount ?? 0;
   const commentCount = metadata?.commentCount ?? 0;
   const { isLikePending, toggleDislike, toggleLike } = usePostDetailInteractions({
-    isAuthPending,
-    isLoggedIn,
     likeStatus,
     onRequireLogin: startGoogleLogin,
     postId,
   });
   const { isFollowingAuthor, isFollowingUpdating, isOwnAuthor, toggleAuthorFollow } = usePostDetailAuthorFollow({
     authorId,
-    currentUserId,
-    isAuthPending,
-    isLoggedIn,
     onError: (nextFollowingState) => {
       toast.error(nextFollowingState ? FOLLOW_ERROR_MESSAGE : UNFOLLOW_ERROR_MESSAGE);
     },
@@ -71,8 +62,6 @@ export function PostDetailView({ postId }: Props) {
   });
   const { sharePostDetail } = usePostDetailShare();
   const postDetailComments = usePostDetailComments({
-    isAuthPending,
-    isLoggedIn,
     onRequireLogin: startGoogleLogin,
     postId,
   });
@@ -102,7 +91,6 @@ export function PostDetailView({ postId }: Props) {
       <PostDetailAuthorBlockConfirmModal
         authorId={authorId}
         authorName={authorProfile?.authorName}
-        currentUserId={currentUserId}
         overlayId={overlayId}
         isOpen={isOpen}
         onClose={unmount}
@@ -144,7 +132,6 @@ export function PostDetailView({ postId }: Props) {
           commentCount={commentCount}
           isDisliked={isDisliked}
           isAuthPending={isAuthPending}
-          isLoggedIn={isLoggedIn}
           isLikePending={isLikePending}
           isLiked={isLiked}
           isRead={isRead}

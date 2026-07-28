@@ -8,7 +8,6 @@ type Props = {
   commentCount: number;
   isDisliked: boolean;
   isAuthPending: boolean;
-  isLoggedIn: boolean;
   isLikePending: boolean;
   isLiked: boolean;
   isRead: boolean;
@@ -26,7 +25,6 @@ export function PostDetailActionBar({
   commentCount,
   isDisliked,
   isAuthPending,
-  isLoggedIn,
   isLikePending,
   isLiked,
   isRead,
@@ -57,13 +55,7 @@ export function PostDetailActionBar({
       </div>
 
       <div className="flex shrink-0 items-center justify-end gap-1 md:gap-3">
-        <PostDetailReadToggleButton
-          isAuthPending={isAuthPending}
-          isLoggedIn={isLoggedIn}
-          isRead={isRead}
-          onRequireLogin={onRequireLogin}
-          postId={postId}
-        />
+        <PostDetailReadToggleButton isRead={isRead} onRequireLogin={onRequireLogin} postId={postId} />
         <PostDetailShareButton onShare={onShare} />
       </div>
     </div>

@@ -10,24 +10,19 @@ import {
   useUpdatePostLikeStatus,
 } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
+import { useGetMe } from '@/entities/user';
 
 type Params = {
   postId: string;
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   likeStatus: PostLikeStatus;
   onRequireLogin: () => void;
 };
 
-export const usePostDetailInteractions = ({
-  postId,
-  isAuthPending,
-  isLoggedIn,
-  likeStatus,
-  onRequireLogin,
-}: Params) => {
+export const usePostDetailInteractions = ({ postId, likeStatus, onRequireLogin }: Params) => {
   const queryClient = useQueryClient();
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const likeMutation = useUpdatePostLikeStatus();
+  const isLoggedIn = !!me;
 
   const ensureLoggedIn = () => {
     if (isAuthPending) return false;

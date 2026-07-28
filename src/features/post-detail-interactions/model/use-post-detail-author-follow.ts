@@ -2,30 +2,28 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getUserFollowingsQueryKey, useFollowUser, useGetUserFollowings, useUnfollowUser } from '@/entities/user';
+import {
+  getUserFollowingsQueryKey,
+  useFollowUser,
+  useGetMe,
+  useGetUserFollowings,
+  useUnfollowUser,
+} from '@/entities/user';
 
 type Params = {
   authorId?: string;
-  currentUserId?: string;
-  isAuthPending: boolean;
-  isLoggedIn: boolean;
   onError?: (nextFollowingState: boolean) => void;
   onRequireLogin: () => void;
   onSuccess?: (nextFollowingState: boolean) => void;
 };
 
-export const usePostDetailAuthorFollow = ({
-  authorId,
-  currentUserId,
-  isAuthPending,
-  isLoggedIn,
-  onError,
-  onRequireLogin,
-  onSuccess,
-}: Params) => {
+export const usePostDetailAuthorFollow = ({ authorId, onError, onRequireLogin, onSuccess }: Params) => {
   const queryClient = useQueryClient();
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const followMutation = useFollowUser();
   const unfollowMutation = useUnfollowUser();
+  const currentUserId = me?.id;
+  const isLoggedIn = !!me;
   const followingsQuery = useGetUserFollowings({
     enabled: Boolean(currentUserId && authorId),
     userId: currentUserId,
