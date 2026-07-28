@@ -33,5 +33,6 @@ export const useGetCommentViewerStates = ({ commentIds, enabled, options }: Para
 
   return {
     data: queries.flatMap((query) => query.data?.data ?? []),
+    isPending: enabled && queries.some((query) => query.isPending),
   };
 };

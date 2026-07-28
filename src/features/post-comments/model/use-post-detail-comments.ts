@@ -38,10 +38,12 @@ export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
     sort: commentsSort,
   });
   const commentContents = parentCommentsQuery.data ?? [];
-  const comments = useMergedComments({
+  const mergedComments = useMergedComments({
     contents: commentContents,
     isViewerStateEnabled: isLoggedIn && !isAuthPending,
   });
+  const isMergedCommentsPending = isAuthPending || mergedComments.isPending;
+  const comments = isMergedCommentsPending ? [] : mergedComments.data;
   const createCommentMutation = useCreateComment();
 
   const ensureLoggedIn = () => {
@@ -119,7 +121,7 @@ export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
     handleCreateComment,
     handleLoadMoreComments,
     isCommentCreating: createCommentMutation.isPending,
-    isCommentsLoading: parentCommentsQuery.isPending,
+    isCommentsLoading: parentCommentsQuery.isPending || isMergedCommentsPending,
     isCommentsLoadingMore: parentCommentsQuery.isFetchingNextPage,
     requestCommentFocus,
   };

@@ -12,17 +12,20 @@ type Params = {
 export const useMergedComments = ({ contents, isViewerStateEnabled }: Params) => {
   const commentIds = [...new Set(contents.map((comment) => comment.id))].sort();
   const authorIds = [...new Set(contents.map((comment) => comment.authorId))].sort();
-  const { data: metadatas } = useGetCommentMetadatas({ commentIds });
+  const { data: metadatas, isPending: isMetadatasPending } = useGetCommentMetadatas({ commentIds });
   const { data: profileImages } = useGetCommentProfileImages({ authorIds });
-  const { data: viewerStates } = useGetCommentViewerStates({
+  const { data: viewerStates, isPending: isViewerStatesPending } = useGetCommentViewerStates({
     commentIds,
     enabled: isViewerStateEnabled,
   });
 
-  return mergeCommentItems({
-    contents,
-    metadatas,
-    profileImages,
-    viewerStates,
-  });
+  return {
+    data: mergeCommentItems({
+      contents,
+      metadatas,
+      profileImages,
+      viewerStates,
+    }),
+    isPending: isMetadatasPending || isViewerStatesPending,
+  };
 };
