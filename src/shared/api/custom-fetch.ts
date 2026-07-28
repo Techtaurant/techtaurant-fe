@@ -41,7 +41,7 @@ export const customFetch = async <T>(url: string, init: CustomFetchInit = {}): P
   const httpStatus = response.status;
   const bodyStatusCode = (await response.clone().json())?.status;
 
-  if (!IS_SERVER && httpStatus === 401 && [3001, 3008].includes(bodyStatusCode)) {
+  if (!IS_SERVER && httpStatus === 401 && [3003, 3008].includes(bodyStatusCode)) {
     if (!isRefreshing) {
       isRefreshing = fetch(`${API_BASE_URL}/open-api/auth/refresh`, {
         method: 'POST',
