@@ -39,19 +39,27 @@ export const customFetch = async <T>(url: string, init: CustomFetchInit = {}): P
   let response = await fetch(url, requestInit);
 
   if (!IS_SERVER && response.status === 401) {
-    if (!isRefreshing) {
-      isRefreshing = fetch(`${API_BASE_URL}/open-api/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-        .then((refreshResponse) => refreshResponse.ok)
-        .finally(() => {
-          isRefreshing = null;
-        });
-    }
+    const bodyStatusCode = await response
+      .clone()
+      .json()
+      .then((body) => body?.status)
+      .catch(() => undefined);
 
-    if (await isRefreshing) {
-      response = await fetch(url, requestInit);
+    if ([3003, 3008].includes(bodyStatusCode)) {
+      if (!isRefreshing) {
+        isRefreshing = fetch(`${API_BASE_URL}/open-api/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+        })
+          .then((refreshResponse) => refreshResponse.ok)
+          .finally(() => {
+            isRefreshing = null;
+          });
+      }
+
+      if (await isRefreshing) {
+        response = await fetch(url, requestInit);
+      }
     }
   }
 
