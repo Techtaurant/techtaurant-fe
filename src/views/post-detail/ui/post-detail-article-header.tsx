@@ -4,44 +4,75 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 import { PostTagList } from '@/entities/post-list';
-import { UserAvatar } from '@/entities/user';
+import { useGetMe, UserAvatar } from '@/entities/user';
+import { startGoogleLogin } from '@/features/auth';
+import { usePostDetailAuthorFollow } from '@/features/post-detail-interactions';
 import type { PostListTagResponse } from '@/shared/api/generated';
 import { cn } from '@/shared/lib/cn';
 import { formatAbsoluteDate } from '@/shared/lib/format-date';
+import { toast } from '@/shared/ui/toast';
+import { useOpenPostDetailAuthorBlockConfirmModal } from '@/views/post-detail/model/use-open-post-detail-author-block-confirm-modal';
 import { PostDetailHeaderActions } from '@/views/post-detail/ui/post-detail-header-actions';
 
 type Props = {
-  authorName: string;
+  authorId?: string;
+  authorName?: string;
   categoryName?: string;
   createdAt: string;
-  isAuthPending: boolean;
-  isFollowingAuthor: boolean;
-  isFollowingUpdating: boolean;
-  isOwnAuthor: boolean;
-  onRequestBlockAuthor: () => void;
-  onToggleAuthorFollow: () => void;
-  profileImageUrl: string;
+  postId: string;
+  profileImageUrl?: string;
   tags: PostListTagResponse[];
   title: string;
   updatedAt: string;
 };
 
+const UNKNOWN_AUTHOR_NAME = '알 수 없음';
+const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
+const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
+
 export function PostDetailArticleHeader({
+  authorId,
   authorName,
   categoryName,
   createdAt,
-  isAuthPending,
-  isFollowingAuthor,
-  isFollowingUpdating,
-  isOwnAuthor,
-  onRequestBlockAuthor,
-  onToggleAuthorFollow,
+  postId,
   profileImageUrl,
   tags,
   title,
   updatedAt,
 }: Props) {
+  const { data: me, isPending: isAuthPending } = useGetMe();
+  const displayAuthorName = authorName ?? UNKNOWN_AUTHOR_NAME;
+  const isLoggedIn = !!me;
+  const { isFollowingAuthor, isFollowingUpdating, isOwnAuthor, toggleAuthorFollow } = usePostDetailAuthorFollow({
+    authorId,
+    onError: (nextFollowingState) => {
+      toast.error(nextFollowingState ? FOLLOW_ERROR_MESSAGE : UNFOLLOW_ERROR_MESSAGE);
+    },
+    onRequireLogin: startGoogleLogin,
+    onSuccess: (nextFollowingState) => {
+      toast.success(
+        nextFollowingState ? `${displayAuthorName}님을 팔로우했어요` : `${displayAuthorName}님 팔로우를 해제했어요`,
+      );
+    },
+  });
+  const openPostDetailAuthorBlockConfirmModal = useOpenPostDetailAuthorBlockConfirmModal({
+    authorId,
+    authorName,
+    postId,
+  });
   const shouldShowUpdatedAt = Date.parse(updatedAt) > Date.parse(createdAt);
+
+  const handleBlockAuthorButtonClick = () => {
+    if (isAuthPending) return;
+
+    if (!isLoggedIn) {
+      startGoogleLogin();
+      return;
+    }
+
+    openPostDetailAuthorBlockConfirmModal();
+  };
 
   return (
     <header className="mb-8">
@@ -63,9 +94,9 @@ export function PostDetailArticleHeader({
       </h1>
       <div className="mb-1 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="h-6 w-6 shrink-0" />
+          <UserAvatar name={displayAuthorName} profileImageUrl={profileImageUrl ?? ''} className="h-6 w-6 shrink-0" />
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-sm">
-            <span className="text-foreground truncate font-medium">{authorName}</span>
+            <span className="text-foreground truncate font-medium">{displayAuthorName}</span>
             <span>•</span>
             <time className="shrink-0" dateTime={createdAt}>
               {formatAbsoluteDate(createdAt)}
@@ -85,8 +116,8 @@ export function PostDetailArticleHeader({
           isFollowingAuthor={isFollowingAuthor}
           isFollowingUpdating={isFollowingUpdating}
           isOwnAuthor={isOwnAuthor}
-          onRequestBlockAuthor={onRequestBlockAuthor}
-          onToggleAuthorFollow={onToggleAuthorFollow}
+          onRequestBlockAuthor={handleBlockAuthorButtonClick}
+          onToggleAuthorFollow={toggleAuthorFollow}
         />
       </div>
       <PostTagList tags={tags} variant="detail" />
