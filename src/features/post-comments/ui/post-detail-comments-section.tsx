@@ -3,34 +3,24 @@
 import type { SyntheticEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import type { CommentItem, CommentSort } from '@/entities/comment';
+import type { CommentSort } from '@/entities/comment';
 import { COMMENT_SORT } from '@/entities/comment';
 import {
   COMMENT_FOCUS_DELAY_MS,
   COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
   COMMENT_TEXTAREA_EXPANDED_HEIGHT,
 } from '@/features/post-comments/config/comment-composer';
+import { usePostDetailComments } from '@/features/post-comments/model/use-post-detail-comments';
 import { PostDetailCommentComposer } from '@/features/post-comments/ui/post-detail-comment-composer';
 import { PostDetailCommentItem } from '@/features/post-comments/ui/post-detail-comment-item';
 import { cn } from '@/shared/lib/cn';
 
 type Props = {
-  comments: CommentItem[];
-  commentsHasNext: boolean;
-  commentsSort: CommentSort;
   commentCount: number;
-  createCommentErrorMessage: string | null;
   focusRequestKey: number;
-  isCommentCreating: boolean;
-  isCommentsLoading: boolean;
-  isCommentsLoadingMore: boolean;
-  onClearCreateCommentError: () => void;
-  onCommentsSortChange: (sort: CommentSort) => void;
-  onCreateComment: (content: string) => Promise<boolean>;
-  onDislikeComment: (comment: CommentItem) => void;
-  onLikeComment: (comment: CommentItem) => void;
-  onLoadMoreComments: () => void;
+  onRequireLogin: () => void;
   postAuthorId?: string;
+  postId: string;
 };
 
 const EMPTY_COMMENT_LIST_MESSAGE = '아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요.';
@@ -44,29 +34,22 @@ const COMMENT_SORT_OPTIONS = [
 ] satisfies { label: string; value: CommentSort }[];
 
 export function PostDetailCommentsSection({
-  comments,
-  commentsHasNext,
-  commentsSort,
   commentCount,
-  createCommentErrorMessage,
   focusRequestKey,
-  isCommentCreating,
-  isCommentsLoading,
-  isCommentsLoadingMore,
-  onClearCreateCommentError,
-  onCommentsSortChange,
-  onCreateComment,
-  onDislikeComment,
-  onLikeComment,
-  onLoadMoreComments,
+  onRequireLogin,
   postAuthorId,
+  postId,
 }: Props) {
   const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isCommentExpanded, setIsCommentExpanded] = useState(false);
   const [commentValue, setCommentValue] = useState('');
-  const hasComments = comments.length > 0;
+  const postDetailComments = usePostDetailComments({
+    onRequireLogin,
+    postId,
+  });
+  const hasComments = postDetailComments.comments.length > 0;
   const hasKnownComments = commentCount > 0 || hasComments;
-  const shouldShowEmptyCommentList = !isCommentsLoading && !hasKnownComments;
+  const shouldShowEmptyCommentList = !postDetailComments.isCommentsLoading && !hasKnownComments;
 
   const resetCommentForm = () => {
     setCommentValue('');
@@ -84,7 +67,7 @@ export function PostDetailCommentsSection({
   };
 
   const handleSubmitButtonClick = async () => {
-    const isCreated = await onCreateComment(commentValue);
+    const isCreated = await postDetailComments.handleCreateComment(commentValue);
     if (isCreated) {
       resetCommentForm();
     }
@@ -92,9 +75,9 @@ export function PostDetailCommentsSection({
 
   const handleCommentValueChange = (nextCommentValue: string) => {
     setCommentValue(nextCommentValue);
-    if (!createCommentErrorMessage) return;
+    if (!postDetailComments.createCommentErrorMessage) return;
 
-    onClearCreateCommentError();
+    postDetailComments.clearCreateCommentError();
   };
 
   const handleCommentTextareaFocus = () => {
@@ -106,6 +89,14 @@ export function PostDetailCommentsSection({
 
   const handleCommentSubmitButtonClick = () => {
     void handleSubmitButtonClick();
+  };
+
+  const handleCommentLikeButtonClick = () => {
+    // TODO: 댓글 좋아요 API 연동은 다음 PR에서 useCommentReaction으로 연결
+  };
+
+  const handleCommentDislikeButtonClick = () => {
+    // TODO: 댓글 싫어요 API 연동은 다음 PR에서 useCommentReaction으로 연결
   };
 
   useEffect(() => {
@@ -127,8 +118,8 @@ export function PostDetailCommentsSection({
     <section>
       <PostDetailCommentComposer
         commentTextareaRef={commentTextareaRef}
-        createCommentErrorMessage={createCommentErrorMessage}
-        isCommentCreating={isCommentCreating}
+        createCommentErrorMessage={postDetailComments.createCommentErrorMessage}
+        isCommentCreating={postDetailComments.isCommentCreating}
         isCommentExpanded={isCommentExpanded}
         value={commentValue}
         onCancelButtonClick={resetCommentForm}
@@ -146,11 +137,11 @@ export function PostDetailCommentsSection({
               type="button"
               className={cn(
                 'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-200',
-                commentsSort === option.value
+                postDetailComments.commentsSort === option.value
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-comment-sort-button text-comment-sort-button-foreground hover:bg-comment-sort-button-hover hover:text-foreground',
               )}
-              onClick={() => onCommentsSortChange(option.value)}
+              onClick={() => postDetailComments.handleCommentsSortChange(option.value)}
             >
               {option.label}
             </button>
@@ -159,13 +150,13 @@ export function PostDetailCommentsSection({
 
         <div className="flex min-h-[5.5rem] flex-col gap-6">
           {hasComments &&
-            comments.map((comment) => (
+            postDetailComments.comments.map((comment) => (
               <PostDetailCommentItem
                 key={comment.id}
                 comment={comment}
                 postAuthorId={postAuthorId}
-                onDislikeComment={onDislikeComment}
-                onLikeComment={onLikeComment}
+                onDislikeComment={handleCommentDislikeButtonClick}
+                onLikeComment={handleCommentLikeButtonClick}
               />
             ))}
 
@@ -174,15 +165,15 @@ export function PostDetailCommentsSection({
           )}
         </div>
 
-        {commentsHasNext && (
+        {postDetailComments.commentsHasNext && (
           <div className="flex justify-center pt-2">
             <button
               type="button"
-              disabled={isCommentsLoadingMore}
+              disabled={postDetailComments.isCommentsLoadingMore}
               className="border-border text-muted-foreground hover:text-foreground hover:bg-muted/85 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-              onClick={onLoadMoreComments}
+              onClick={postDetailComments.handleLoadMoreComments}
             >
-              {isCommentsLoadingMore ? LOAD_MORE_LOADING_LABEL : LOAD_MORE_COMMENTS_LABEL}
+              {postDetailComments.isCommentsLoadingMore ? LOAD_MORE_LOADING_LABEL : LOAD_MORE_COMMENTS_LABEL}
             </button>
           </div>
         )}

@@ -1,11 +1,12 @@
 'use client';
 
 import { overlay } from 'overlay-kit';
+import { useState } from 'react';
 
 import { POST_LIKE_STATUS } from '@/entities/post-detail';
 import { useGetMe } from '@/entities/user';
 import { startGoogleLogin } from '@/features/auth';
-import { PostDetailCommentsSection, usePostDetailComments } from '@/features/post-comments';
+import { PostDetailCommentsSection } from '@/features/post-comments';
 import {
   PostDetailActionBar,
   usePostDetailAuthorFollow,
@@ -30,6 +31,7 @@ const FOLLOW_ERROR_MESSAGE = '팔로우에 실패했어요';
 const UNFOLLOW_ERROR_MESSAGE = '팔로우 취소에 실패했어요';
 
 export function PostDetailView({ postId }: Props) {
+  const [commentFocusRequestKey, setCommentFocusRequestKey] = useState(0);
   const { authorProfile, isViewerStateResolved, metadata, post, viewerState } = usePostDetailViewData(postId);
 
   const { data: me, isPending: isAuthPending } = useGetMe();
@@ -61,23 +63,15 @@ export function PostDetailView({ postId }: Props) {
     },
   });
   const { sharePostDetail } = usePostDetailShare();
-  const postDetailComments = usePostDetailComments({
-    onRequireLogin: startGoogleLogin,
-    postId,
-  });
-
-  const handleCommentLikeButtonClick = () => {
-    // TODO: 댓글 좋아요 API 연동은 다음 PR에서 useCommentReaction으로 연결
-  };
-
-  const handleCommentDislikeButtonClick = () => {
-    // TODO: 댓글 싫어요 API 연동은 다음 PR에서 useCommentReaction으로 연결
-  };
 
   useRecordPostViewOnce({
     enabled: !!post && isViewerStateResolved && !isAuthorBanned,
     postId,
   });
+
+  const handleCommentButtonClick = () => {
+    setCommentFocusRequestKey((currentKey) => currentKey + 1);
+  };
 
   const handleBlockAuthorButtonClick = () => {
     if (isAuthPending) return;
@@ -138,29 +132,18 @@ export function PostDetailView({ postId }: Props) {
           likeCount={likeCount}
           onRequireLogin={startGoogleLogin}
           viewCount={viewCount}
-          onCommentClick={postDetailComments.requestCommentFocus}
+          onCommentClick={handleCommentButtonClick}
           onShare={sharePostDetail}
           onToggleDislike={toggleDislike}
           onToggleLike={toggleLike}
           postId={postId}
         />
         <PostDetailCommentsSection
-          comments={postDetailComments.comments}
-          commentsHasNext={postDetailComments.commentsHasNext}
-          commentsSort={postDetailComments.commentsSort}
           commentCount={commentCount}
-          createCommentErrorMessage={postDetailComments.createCommentErrorMessage}
-          focusRequestKey={postDetailComments.focusRequestKey}
-          isCommentCreating={postDetailComments.isCommentCreating}
-          isCommentsLoading={postDetailComments.isCommentsLoading}
-          isCommentsLoadingMore={postDetailComments.isCommentsLoadingMore}
+          focusRequestKey={commentFocusRequestKey}
+          onRequireLogin={startGoogleLogin}
           postAuthorId={authorId}
-          onClearCreateCommentError={postDetailComments.clearCreateCommentError}
-          onCommentsSortChange={postDetailComments.handleCommentsSortChange}
-          onCreateComment={postDetailComments.handleCreateComment}
-          onDislikeComment={handleCommentDislikeButtonClick}
-          onLikeComment={handleCommentLikeButtonClick}
-          onLoadMoreComments={postDetailComments.handleLoadMoreComments}
+          postId={postId}
         />
       </article>
     </PostDetailContainer>

@@ -31,7 +31,6 @@ export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
   const { data: me, isPending: isAuthPending } = useGetMe();
   const [commentsSort, setCommentsSort] = useState<CommentSort>(COMMENT_SORT.LATEST);
   const [createCommentErrorMessage, setCreateCommentErrorMessage] = useState<string | null>(null);
-  const [focusRequestKey, setFocusRequestKey] = useState(0);
   const isLoggedIn = !!me;
   const parentCommentsQuery = useGetParentCommentContents({
     postId,
@@ -106,23 +105,17 @@ export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
     setCreateCommentErrorMessage(null);
   };
 
-  const requestCommentFocus = () => {
-    setFocusRequestKey((currentKey) => currentKey + 1);
-  };
-
   return {
     clearCreateCommentError,
     comments,
     commentsHasNext: !!parentCommentsQuery.hasNextPage,
     commentsSort,
     createCommentErrorMessage,
-    focusRequestKey,
     handleCommentsSortChange,
     handleCreateComment,
     handleLoadMoreComments,
     isCommentCreating: createCommentMutation.isPending,
     isCommentsLoading: parentCommentsQuery.isPending || isMergedCommentsPending,
     isCommentsLoadingMore: parentCommentsQuery.isFetchingNextPage,
-    requestCommentFocus,
   };
 };
