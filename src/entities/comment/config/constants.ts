@@ -1,0 +1,2 @@
+export const DEFAULT_COMMENT_LIST_SIZE = 20;
+export const COMMENT_REQUEST_BATCH_SIZE = 100;

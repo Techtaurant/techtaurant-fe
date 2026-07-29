@@ -8,7 +8,6 @@ import { toast } from '@/shared/ui/toast';
 type Props = {
   authorId?: string;
   authorName?: string;
-  currentUserId?: string;
   overlayId: string;
   isOpen: boolean;
   onClose: () => void;
@@ -20,18 +19,9 @@ const AUTHOR_BLOCK_CONFIRM_DESCRIPTION = '이 사용자를 차단한 계정 목�
 const AUTHOR_BLOCK_CONFIRM_ACTION = '차단하기';
 const AUTHOR_BLOCK_CANCEL_ACTION = '취소';
 
-export function PostDetailAuthorBlockConfirmModal({
-  authorId,
-  authorName,
-  currentUserId,
-  overlayId,
-  isOpen,
-  onClose,
-  postId,
-}: Props) {
+export function PostDetailAuthorBlockConfirmModal({ authorId, authorName, overlayId, isOpen, onClose, postId }: Props) {
   const { blockAuthor, isAuthorBlockPending } = usePostDetailAuthorBlock({
     authorId,
-    currentUserId,
     onError: () => {
       toast.error(authorName ? `${authorName}님을 차단하지 못했어요` : '사용자를 차단하지 못했어요');
     },

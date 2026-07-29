@@ -4,19 +4,20 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { getPostDetailViewerStateQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
-import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser } from '@/entities/user';
+import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser, useGetMe } from '@/entities/user';
 
 type Params = {
   postId: string;
   authorId?: string;
-  currentUserId?: string;
   onSuccess?: () => void;
   onError?: () => void;
 };
 
-export const usePostDetailAuthorBlock = ({ postId, authorId, currentUserId, onSuccess, onError }: Params) => {
+export const usePostDetailAuthorBlock = ({ postId, authorId, onSuccess, onError }: Params) => {
   const queryClient = useQueryClient();
+  const { data: me } = useGetMe();
   const banMutation = useBanUser();
+  const currentUserId = me?.id;
 
   const blockAuthor = () => {
     if (!authorId || !currentUserId || authorId === currentUserId) return;
