@@ -6,6 +6,7 @@
   "scripts": {
     "setup:https": "sh scripts/setup-local-https.sh",
     "dev:https": "node scripts/start-local-https.mjs",
+    "start:https": "pnpm build && NODE_ENV=production node scripts/start-local-https.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
