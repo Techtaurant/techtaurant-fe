@@ -1,48 +1,96 @@
 'use client';
 
-import type { CSSProperties, RefObject, SyntheticEvent } from 'react';
+import type { CSSProperties, SyntheticEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
+  COMMENT_FOCUS_DELAY_MS,
   COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
   COMMENT_TEXTAREA_EXPANDED_HEIGHT,
   COMMENT_TEXTAREA_EXPANDED_MAX_HEIGHT,
 } from '@/features/post-comments/config/comment-composer';
+import { useCreatePostDetailComment } from '@/features/post-comments/model/use-create-post-detail-comment';
 import { cn } from '@/shared/lib/cn';
 
 type Props = {
-  commentTextareaRef: RefObject<HTMLTextAreaElement | null>;
-  createCommentErrorMessage: string | null;
-  isCommentCreating: boolean;
-  isCommentExpanded: boolean;
-  value: string;
-  onCancelButtonClick: () => void;
-  onChange: (value: string) => void;
-  onFocus: () => void;
-  onInput: (event: SyntheticEvent<HTMLTextAreaElement>) => void;
-  onSubmitButtonClick: () => void;
+  focusRequestKey: number;
+  onRequireLogin: () => void;
+  postId: string;
 };
 
 const COMMENT_PLACEHOLDER = '의견을 나눠주세요!';
 const COMMENT_SUBMIT_LABEL = '댓글';
 const COMMENT_CANCEL_LABEL = '취소';
 
-export function PostDetailCommentComposer({
-  commentTextareaRef,
-  createCommentErrorMessage,
-  isCommentCreating,
-  isCommentExpanded,
-  value,
-  onCancelButtonClick,
-  onChange,
-  onFocus,
-  onInput,
-  onSubmitButtonClick,
-}: Props) {
+export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, postId }: Props) {
+  const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isCommentExpanded, setIsCommentExpanded] = useState(false);
+  const [commentValue, setCommentValue] = useState('');
+  const { clearCreateCommentError, createComment, createCommentErrorMessage, isCommentCreating } =
+    useCreatePostDetailComment({
+      onRequireLogin,
+      postId,
+    });
   const textareaSizeStyle = {
     height: isCommentExpanded ? undefined : COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
     maxHeight: isCommentExpanded ? COMMENT_TEXTAREA_EXPANDED_MAX_HEIGHT : COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
     minHeight: isCommentExpanded ? COMMENT_TEXTAREA_EXPANDED_HEIGHT : COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
   } satisfies CSSProperties;
+
+  const resetCommentForm = () => {
+    setCommentValue('');
+    setIsCommentExpanded(false);
+
+    if (commentTextareaRef.current) {
+      commentTextareaRef.current.style.height = COMMENT_TEXTAREA_COLLAPSED_HEIGHT;
+    }
+  };
+
+  const handleCommentTextareaInput = (event: SyntheticEvent<HTMLTextAreaElement>) => {
+    const textarea = event.currentTarget;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
+  const handleSubmitButtonClick = async () => {
+    const isCreated = await createComment(commentValue);
+    if (!isCreated) return;
+
+    resetCommentForm();
+  };
+
+  const handleCommentValueChange = (nextCommentValue: string) => {
+    setCommentValue(nextCommentValue);
+    if (!createCommentErrorMessage) return;
+
+    clearCreateCommentError();
+  };
+
+  const handleCommentTextareaFocus = () => {
+    setIsCommentExpanded(true);
+    if (!commentTextareaRef.current || commentValue) return;
+
+    commentTextareaRef.current.style.height = COMMENT_TEXTAREA_EXPANDED_HEIGHT;
+  };
+
+  const handleCommentSubmitButtonClick = () => {
+    void handleSubmitButtonClick();
+  };
+
+  useEffect(() => {
+    if (focusRequestKey <= 0) return;
+
+    commentTextareaRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+    const timeoutId = setTimeout(() => {
+      setIsCommentExpanded(true);
+      commentTextareaRef.current?.focus();
+    }, COMMENT_FOCUS_DELAY_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [focusRequestKey]);
 
   return (
     <div className="mb-3">
@@ -51,7 +99,7 @@ export function PostDetailCommentComposer({
           <textarea
             ref={commentTextareaRef}
             placeholder={isCommentExpanded ? '' : COMMENT_PLACEHOLDER}
-            value={value}
+            value={commentValue}
             className={cn(
               'border-border bg-background scrollbar-hidden w-full resize-none rounded-xl border px-4 text-base transition-colors duration-200',
               'placeholder:text-base focus:outline-none',
@@ -65,9 +113,9 @@ export function PostDetailCommentComposer({
             )}
             rows={1}
             style={textareaSizeStyle}
-            onChange={(event) => onChange(event.target.value)}
-            onFocus={onFocus}
-            onInput={onInput}
+            onChange={(event) => handleCommentValueChange(event.target.value)}
+            onFocus={handleCommentTextareaFocus}
+            onInput={handleCommentTextareaInput}
           />
           {isCommentExpanded && (
             <div className="absolute right-3 bottom-4 flex items-center gap-2">
@@ -77,7 +125,7 @@ export function PostDetailCommentComposer({
                   'border-border h-8 rounded-md border px-4 text-sm font-semibold transition-colors duration-200',
                   'text-comment-cancel-button-foreground hover:bg-muted/85 hover:text-foreground',
                 )}
-                onClick={onCancelButtonClick}
+                onClick={resetCommentForm}
               >
                 {COMMENT_CANCEL_LABEL}
               </button>
@@ -88,7 +136,7 @@ export function PostDetailCommentComposer({
                   'bg-comment-submit-button h-8 rounded-md px-4 text-sm font-semibold text-white transition-colors duration-200',
                   'hover:bg-comment-submit-button-hover disabled:cursor-not-allowed disabled:opacity-60',
                 )}
-                onClick={onSubmitButtonClick}
+                onClick={handleCommentSubmitButtonClick}
               >
                 {COMMENT_SUBMIT_LABEL}
               </button>

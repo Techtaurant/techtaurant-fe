@@ -12,7 +12,7 @@ type Props = {
   comment: CommentItem;
   onDislikeComment: (comment: CommentItem) => void;
   onLikeComment: (comment: CommentItem) => void;
-  postAuthorId?: string;
+  postAuthorId: string;
 };
 
 const DELETED_COMMENT_MESSAGE = '삭제된 댓글입니다.';
