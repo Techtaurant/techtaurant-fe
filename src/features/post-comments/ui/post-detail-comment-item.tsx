@@ -10,6 +10,7 @@ import { formatDisplayTime } from '@/shared/lib/format-date';
 
 type Props = {
   comment: CommentItem;
+  isCommentReactionUpdating: boolean;
   onDislikeComment: (comment: CommentItem) => void;
   onLikeComment: (comment: CommentItem) => void;
   postAuthorId: string;
@@ -19,7 +20,13 @@ const DELETED_COMMENT_MESSAGE = '삭제된 댓글입니다.';
 const BANNED_COMMENT_AUTHOR_NAME = '차단한 사용자';
 const BANNED_COMMENT_CONTENT = '차단한 사용자의 댓글입니다.';
 
-export function PostDetailCommentItem({ comment, onDislikeComment, onLikeComment, postAuthorId }: Props) {
+export function PostDetailCommentItem({
+  comment,
+  isCommentReactionUpdating,
+  onDislikeComment,
+  onLikeComment,
+  postAuthorId,
+}: Props) {
   const isBanned = comment.isBanned;
   const isPostAuthor = postAuthorId === comment.author.id;
   const shouldShowInteractionRow = !comment.isDeleted && !isBanned;
@@ -54,10 +61,11 @@ export function PostDetailCommentItem({ comment, onDislikeComment, onLikeComment
                 type="button"
                 aria-pressed={comment.likeStatus === COMMENT_LIKE_STATUS.LIKE}
                 className={cn(
-                  'hover:text-foreground rounded-full p-1 transition-colors',
+                  'hover:text-foreground rounded-full p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-60',
                   comment.likeStatus === COMMENT_LIKE_STATUS.LIKE &&
                     'text-button-danger-surface hover:text-button-danger-surface',
                 )}
+                disabled={isCommentReactionUpdating}
                 onClick={() => onLikeComment(comment)}
               >
                 <ThumbsUp className="h-3.5 w-3.5" />
@@ -67,10 +75,11 @@ export function PostDetailCommentItem({ comment, onDislikeComment, onLikeComment
                 type="button"
                 aria-pressed={comment.likeStatus === COMMENT_LIKE_STATUS.DISLIKE}
                 className={cn(
-                  'hover:text-foreground rounded-full p-1 transition-colors',
+                  'hover:text-foreground rounded-full p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-60',
                   comment.likeStatus === COMMENT_LIKE_STATUS.DISLIKE &&
                     'text-button-primary-surface hover:text-button-primary-surface',
                 )}
+                disabled={isCommentReactionUpdating}
                 onClick={() => onDislikeComment(comment)}
               >
                 <ThumbsDown className="h-3.5 w-3.5" />
