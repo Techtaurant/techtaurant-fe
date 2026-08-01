@@ -3,6 +3,7 @@
 import type { CommentSort } from '@/entities/comment';
 import { COMMENT_SORT } from '@/entities/comment';
 import { useGetMe } from '@/entities/user';
+import { useOpenCommentDeleteConfirmModal } from '@/features/post-comments/lib/use-open-comment-delete-confirm-modal';
 import { useCommentReaction } from '@/features/post-comments/model/use-comment-reaction';
 import { usePostDetailCommentList } from '@/features/post-comments/model/use-post-detail-comment-list';
 import { PostDetailCommentComposer } from '@/features/post-comments/ui/post-detail-comment-composer';
@@ -37,6 +38,7 @@ export function PostDetailCommentsSection({
   const { data: me } = useGetMe();
   const commentList = usePostDetailCommentList({ postId });
   const commentReaction = useCommentReaction({ onRequireLogin });
+  const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId });
   const currentUserId = me?.id;
   const hasComments = commentList.comments.length > 0;
   const hasKnownComments = commentCount > 0 || hasComments;
@@ -74,6 +76,7 @@ export function PostDetailCommentsSection({
                 currentUserId={currentUserId}
                 isCommentReactionUpdating={commentReaction.isCommentReactionUpdating(comment.id)}
                 postAuthorId={postAuthorId}
+                onDeleteComment={openCommentDeleteConfirmModal}
                 onDislikeComment={commentReaction.handleDislikeComment}
                 onLikeComment={commentReaction.handleLikeComment}
               />

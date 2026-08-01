@@ -15,6 +15,7 @@ type Props = {
   comment: CommentItem;
   currentUserId?: string;
   isCommentReactionUpdating: boolean;
+  onDeleteComment: (comment: CommentItem) => void;
   onDislikeComment: (comment: CommentItem) => void;
   onLikeComment: (comment: CommentItem) => void;
   postAuthorId: string;
@@ -28,6 +29,7 @@ export function PostDetailCommentItem({
   comment,
   currentUserId,
   isCommentReactionUpdating,
+  onDeleteComment,
   onDislikeComment,
   onLikeComment,
   postAuthorId,
@@ -65,7 +67,13 @@ export function PostDetailCommentItem({
             )}
             <span className="text-muted-foreground text-xs">{formatDisplayTime(comment.createdAt)}</span>
           </div>
-          {shouldShowCommentActions && <PostDetailCommentActions onEditComment={handleEditComment} />}
+          {shouldShowCommentActions && (
+            <PostDetailCommentActions
+              comment={comment}
+              onDeleteComment={onDeleteComment}
+              onEditComment={handleEditComment}
+            />
+          )}
         </div>
 
         {isEditing ? (

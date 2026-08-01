@@ -1,4 +1,5 @@
 export { useCreateComment } from '@/entities/comment/api/use-create-comment';
+export { useDeleteComment } from '@/entities/comment/api/use-delete-comment';
 export { getCommentMetadatasQueryKey } from '@/entities/comment/api/use-get-comment-metadatas';
 export { getCommentViewerStatesQueryKey } from '@/entities/comment/api/use-get-comment-viewer-states';
 export {

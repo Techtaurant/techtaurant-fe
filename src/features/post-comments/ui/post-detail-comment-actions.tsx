@@ -1,16 +1,24 @@
 'use client';
 
-import { MoreVertical, Pencil } from 'lucide-react';
+import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
+import type { CommentItem } from '@/entities/comment';
 import { DropdownContent, DropdownItem, DropdownProvider, DropdownTrigger } from '@/shared/ui/dropdown';
 
 type Props = {
+  comment: CommentItem;
+  onDeleteComment: (comment: CommentItem) => void;
   onEditComment: () => void;
 };
 
 const EDIT_COMMENT_LABEL = '수정';
+const DELETE_COMMENT_LABEL = '삭제';
 
-export function PostDetailCommentActions({ onEditComment }: Props) {
+export function PostDetailCommentActions({ comment, onDeleteComment, onEditComment }: Props) {
+  const handleDeleteCommentButtonClick = () => {
+    onDeleteComment(comment);
+  };
+
   return (
     <DropdownProvider className="relative shrink-0">
       <DropdownTrigger
@@ -23,6 +31,13 @@ export function PostDetailCommentActions({ onEditComment }: Props) {
         <DropdownItem onClick={onEditComment}>
           <Pencil className="h-3.5 w-3.5" />
           {EDIT_COMMENT_LABEL}
+        </DropdownItem>
+        <DropdownItem
+          className="text-button-danger-surface hover:text-button-danger-surface"
+          onClick={handleDeleteCommentButtonClick}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          {DELETE_COMMENT_LABEL}
         </DropdownItem>
       </DropdownContent>
     </DropdownProvider>
