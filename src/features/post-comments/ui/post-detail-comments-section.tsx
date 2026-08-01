@@ -3,6 +3,7 @@
 import type { CommentSort } from '@/entities/comment';
 import { COMMENT_SORT } from '@/entities/comment';
 import { useGetMe } from '@/entities/user';
+import { useOpenCommentAuthorBlockConfirmModal } from '@/features/post-comments/lib/use-open-comment-author-block-confirm-modal';
 import { useOpenCommentDeleteConfirmModal } from '@/features/post-comments/lib/use-open-comment-delete-confirm-modal';
 import { useCommentReaction } from '@/features/post-comments/model/use-comment-reaction';
 import { usePostDetailCommentList } from '@/features/post-comments/model/use-post-detail-comment-list';
@@ -38,6 +39,7 @@ export function PostDetailCommentsSection({
   const { data: me } = useGetMe();
   const commentList = usePostDetailCommentList({ postId });
   const commentReaction = useCommentReaction({ onRequireLogin });
+  const openCommentAuthorBlockConfirmModal = useOpenCommentAuthorBlockConfirmModal({ postId });
   const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId });
   const currentUserId = me?.id;
   const hasComments = commentList.comments.length > 0;
@@ -76,6 +78,7 @@ export function PostDetailCommentsSection({
                 currentUserId={currentUserId}
                 isCommentReactionUpdating={commentReaction.isCommentReactionUpdating(comment.id)}
                 postAuthorId={postAuthorId}
+                onBlockCommentAuthor={openCommentAuthorBlockConfirmModal}
                 onDeleteComment={openCommentDeleteConfirmModal}
                 onDislikeComment={commentReaction.handleDislikeComment}
                 onLikeComment={commentReaction.handleLikeComment}

@@ -15,6 +15,7 @@ type Props = {
   comment: CommentItem;
   currentUserId?: string;
   isCommentReactionUpdating: boolean;
+  onBlockCommentAuthor: (comment: CommentItem) => void;
   onDeleteComment: (comment: CommentItem) => void;
   onDislikeComment: (comment: CommentItem) => void;
   onLikeComment: (comment: CommentItem) => void;
@@ -29,6 +30,7 @@ export function PostDetailCommentItem({
   comment,
   currentUserId,
   isCommentReactionUpdating,
+  onBlockCommentAuthor,
   onDeleteComment,
   onDislikeComment,
   onLikeComment,
@@ -39,7 +41,7 @@ export function PostDetailCommentItem({
   const isOwnComment = !!currentUserId && currentUserId === comment.author.id;
   const isPostAuthor = postAuthorId === comment.author.id;
   const shouldShowInteractionRow = !comment.isDeleted && !isBanned;
-  const shouldShowCommentActions = shouldShowInteractionRow && isOwnComment && !isEditing;
+  const shouldShowCommentActions = shouldShowInteractionRow && !!currentUserId && !isEditing;
   const authorName = isBanned ? BANNED_COMMENT_AUTHOR_NAME : comment.author.name;
   const profileImageUrl = isBanned ? '' : comment.author.profileImageUrl;
   const commentContent = getCommentContent(comment);
@@ -54,7 +56,7 @@ export function PostDetailCommentItem({
 
   return (
     <div className="relative flex gap-3">
-      <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="z-30 h-[30px] w-[30px] shrink-0" />
+      <UserAvatar name={authorName} profileImageUrl={profileImageUrl} className="z-30 h-7.5 w-7.5 shrink-0" />
 
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center justify-between gap-2">
@@ -70,6 +72,8 @@ export function PostDetailCommentItem({
           {shouldShowCommentActions && (
             <PostDetailCommentActions
               comment={comment}
+              isOwnComment={isOwnComment}
+              onBlockCommentAuthor={onBlockCommentAuthor}
               onDeleteComment={onDeleteComment}
               onEditComment={handleEditComment}
             />

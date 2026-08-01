@@ -1,0 +1,60 @@
+'use client';
+
+import { useQueryClient } from '@tanstack/react-query';
+
+import { getCommentViewerStatesQueryKey } from '@/entities/comment';
+import { getPostDetailViewerStateQueryKey } from '@/entities/post-detail';
+import { getPostListQueryKey, getPostListViewerStatesQueryKey } from '@/entities/post-list';
+import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser, useGetMe } from '@/entities/user';
+
+type Params = {
+  postId: string;
+};
+
+type BlockCommentAuthorParams = {
+  targetUserId: string;
+  onError?: () => void;
+  onSuccess?: () => void;
+};
+
+export const useCommentAuthorBlock = ({ postId }: Params) => {
+  const queryClient = useQueryClient();
+  const { data: me } = useGetMe();
+  const currentUserId = me?.id;
+  const banUserMutation = useBanUser();
+
+  const invalidateCommentAuthorBlockQueries = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: getMyBannedUsersQueryKey() }),
+      queryClient.invalidateQueries({ queryKey: getCommentViewerStatesQueryKey() }),
+      queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
+      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+      queryClient.invalidateQueries({ queryKey: getPostListViewerStatesQueryKey() }),
+      ...(currentUserId ? [queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) })] : []),
+    ]);
+  };
+
+  const blockCommentAuthor = ({ targetUserId, onError, onSuccess }: BlockCommentAuthorParams) => {
+    if (!currentUserId || currentUserId === targetUserId) return;
+
+    banUserMutation.mutate(
+      {
+        targetUserId,
+      },
+      {
+        onError: () => {
+          onError?.();
+        },
+        onSuccess: async () => {
+          await invalidateCommentAuthorBlockQueries();
+          onSuccess?.();
+        },
+      },
+    );
+  };
+
+  return {
+    blockCommentAuthor,
+    isCommentAuthorBlocking: banUserMutation.isPending,
+  };
+};
