@@ -7,6 +7,7 @@ export {
 } from '@/entities/comment/api/use-get-parent-comment-contents';
 export { useGetReplyCommentContents } from '@/entities/comment/api/use-get-reply-comment-contents';
 export { useMergedComments } from '@/entities/comment/api/use-merged-comments';
+export { useUpdateComment } from '@/entities/comment/api/use-update-comment';
 export { useUpdateCommentLikeStatus } from '@/entities/comment/api/use-update-comment-like-status';
 export type { CommentItem, CommentLikeStatus, CommentSort } from '@/entities/comment/model/comment';
 export { COMMENT_LIKE_STATUS, COMMENT_SORT } from '@/entities/comment/model/comment';

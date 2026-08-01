@@ -1,15 +1,19 @@
 'use client';
 
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useState } from 'react';
 
 import type { CommentItem } from '@/entities/comment';
 import { COMMENT_LIKE_STATUS } from '@/entities/comment';
 import { UserAvatar } from '@/entities/user';
+import { PostDetailCommentActions } from '@/features/post-comments/ui/post-detail-comment-actions';
+import { PostDetailCommentEditor } from '@/features/post-comments/ui/post-detail-comment-editor';
 import { cn } from '@/shared/lib/cn';
 import { formatDisplayTime } from '@/shared/lib/format-date';
 
 type Props = {
   comment: CommentItem;
+  currentUserId?: string;
   isCommentReactionUpdating: boolean;
   onDislikeComment: (comment: CommentItem) => void;
   onLikeComment: (comment: CommentItem) => void;
@@ -22,16 +26,29 @@ const BANNED_COMMENT_CONTENT = '차단한 사용자의 댓글입니다.';
 
 export function PostDetailCommentItem({
   comment,
+  currentUserId,
   isCommentReactionUpdating,
   onDislikeComment,
   onLikeComment,
   postAuthorId,
 }: Props) {
+  const [isEditing, setIsEditing] = useState(false);
   const isBanned = comment.isBanned;
+  const isOwnComment = !!currentUserId && currentUserId === comment.author.id;
   const isPostAuthor = postAuthorId === comment.author.id;
   const shouldShowInteractionRow = !comment.isDeleted && !isBanned;
+  const shouldShowCommentActions = shouldShowInteractionRow && isOwnComment && !isEditing;
   const authorName = isBanned ? BANNED_COMMENT_AUTHOR_NAME : comment.author.name;
   const profileImageUrl = isBanned ? '' : comment.author.profileImageUrl;
+  const commentContent = getCommentContent(comment);
+
+  const handleEditComment = () => {
+    setIsEditing(true);
+  };
+
+  const handleCloseCommentEditor = () => {
+    setIsEditing(false);
+  };
 
   return (
     <div className="relative flex gap-3">
@@ -48,13 +65,22 @@ export function PostDetailCommentItem({
             )}
             <span className="text-muted-foreground text-xs">{formatDisplayTime(comment.createdAt)}</span>
           </div>
+          {shouldShowCommentActions && <PostDetailCommentActions onEditComment={handleEditComment} />}
         </div>
 
-        <p className="text-foreground mb-2 text-sm leading-relaxed break-words whitespace-pre-wrap">
-          {comment.isDeleted ? DELETED_COMMENT_MESSAGE : isBanned ? BANNED_COMMENT_CONTENT : comment.content}
-        </p>
+        {isEditing ? (
+          <PostDetailCommentEditor
+            comment={comment}
+            onCancelEdit={handleCloseCommentEditor}
+            onEditSuccess={handleCloseCommentEditor}
+          />
+        ) : (
+          <p className="text-foreground mb-2 text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+            {commentContent}
+          </p>
+        )}
 
-        {shouldShowInteractionRow && (
+        {shouldShowInteractionRow && !isEditing && (
           <div className="flex items-center gap-4">
             <div className="text-muted-foreground inline-flex items-center gap-1 text-xs">
               <button
@@ -91,3 +117,10 @@ export function PostDetailCommentItem({
     </div>
   );
 }
+
+const getCommentContent = (comment: CommentItem) => {
+  if (comment.isDeleted) return DELETED_COMMENT_MESSAGE;
+  if (comment.isBanned) return BANNED_COMMENT_CONTENT;
+
+  return comment.content;
+};
