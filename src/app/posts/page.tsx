@@ -1,12 +1,10 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { cookies } from 'next/headers';
 
 import {
   fetchPostList,
   parsePostListFilters,
   prefetchGetPostListMetadatas,
   prefetchGetPostListProfileImages,
-  prefetchGetPostListViewerStates,
   toPostListApiParams,
 } from '@/entities/post-list';
 import { PostListView } from '@/views/post-list';
@@ -22,7 +20,6 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const queryClient = new QueryClient();
   const filters = parsePostListFilters(await searchParams);
-  const cookieHeader = (await cookies()).toString();
 
   const postContents = await fetchPostList(queryClient, {
     params: toPostListApiParams(filters),
@@ -52,13 +49,13 @@ export default async function Page({ searchParams }: Props) {
     // TODO: 현재 accessToken이 cookieHeader에 없기 때문에 해당 prefetch는 항상 401임.
     // discord에서 쿠키 domain 논의 후 유지하거나 삭제 예정
     // https://discord.com/channels/1500805723960119316/1532021898131537962/1532383869242703973
-    prefetchGetPostListViewerStates(queryClient, {
-      postIds,
-      options: {
-        cache: 'no-store',
-        cookieHeader,
-      },
-    }),
+    // prefetchGetPostListViewerStates(queryClient, {
+    //   postIds,
+    //   options: {
+    //     cache: 'no-store',
+    //     cookieHeader,
+    //   },
+    // }),
   ]);
 
   return (
