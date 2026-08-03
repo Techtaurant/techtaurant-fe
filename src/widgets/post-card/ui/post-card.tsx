@@ -24,7 +24,7 @@ export function PostCard({ post }: Props) {
     >
       <Link
         href={`/posts/${post.id}`}
-        className={cn('flex flex-col-reverse items-start gap-3', 'md:flex-row md:gap-6')}
+        className={cn('flex flex-col-reverse items-start gap-3 wrap-anywhere', 'md:flex-row md:gap-6')}
       >
         <div className="min-w-0 flex-1">
           <div className={cn('mb-2 flex flex-wrap items-center gap-2', 'md:mb-3')}>
