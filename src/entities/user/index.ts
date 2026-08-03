@@ -2,7 +2,7 @@ export { updateMe } from '@/entities/user/api/update-me';
 export { useBanUser } from '@/entities/user/api/use-ban-user';
 export { useDeleteMyBannedUser } from '@/entities/user/api/use-delete-my-banned-user';
 export { useFollowUser } from '@/entities/user/api/use-follow-user';
-export { getMeQueryKey, prefetchGetMe, useGetMe } from '@/entities/user/api/use-get-me';
+export { getMeQueryKey, useGetMe } from '@/entities/user/api/use-get-me';
 export { getMyBannedUsersQueryKey, useGetMyBannedUsers } from '@/entities/user/api/use-get-my-banned-users';
 export { getUserFollowingsQueryKey, useGetUserFollowings } from '@/entities/user/api/use-get-user-followings';
 export { prefetchGetUserProfileImage, useGetUserProfileImage } from '@/entities/user/api/use-get-user-profile-image';
