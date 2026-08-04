@@ -4,7 +4,7 @@ import type { SyntheticEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import type { CommentItem } from '@/entities/comment';
-import { useUpdateCommentMutation } from '@/features/post-comments/model/use-update-comment-mutation';
+import { useUpdateComment } from '@/entities/comment';
 import { cn } from '@/shared/lib/cn';
 import { toast } from '@/shared/ui/toast';
 
@@ -25,7 +25,9 @@ export function PostDetailCommentEditor({ comment, onCancelEdit, onEditSuccess }
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [commentContent, setCommentContent] = useState(comment.content);
   const [isEditingActionsBelow, setIsEditingActionsBelow] = useState(false);
-  const { isCommentUpdating, updateComment } = useUpdateCommentMutation();
+
+  const updateCommentMutation = useUpdateComment();
+  const isCommentUpdating = updateCommentMutation.isPending;
   const trimmedCommentContent = commentContent.trim();
 
   const resizeTextarea = (textarea: HTMLTextAreaElement) => {
@@ -56,17 +58,23 @@ export function PostDetailCommentEditor({ comment, onCancelEdit, onEditSuccess }
 
     if (isCommentUpdating) return;
 
-    updateComment({
-      commentId: comment.id,
-      content: trimmedCommentContent,
-      onError: () => {
-        toast.error(COMMENT_UPDATE_FAILED_MESSAGE);
+    updateCommentMutation.mutate(
+      {
+        commentId: comment.id,
+        data: {
+          content: trimmedCommentContent,
+        },
       },
-      onSuccess: () => {
-        toast.success(COMMENT_UPDATE_SUCCESS_MESSAGE);
-        onEditSuccess();
+      {
+        onError: () => {
+          toast.error(COMMENT_UPDATE_FAILED_MESSAGE);
+        },
+        onSuccess: () => {
+          toast.success(COMMENT_UPDATE_SUCCESS_MESSAGE);
+          onEditSuccess();
+        },
       },
-    });
+    );
   };
 
   useEffect(() => {
@@ -99,7 +107,10 @@ export function PostDetailCommentEditor({ comment, onCancelEdit, onEditSuccess }
       >
         <button
           type="button"
-          className="border-border text-muted-foreground hover:text-foreground hover:bg-muted/85 flex h-6 min-w-9.25 items-center justify-center rounded-md border px-2 text-[11px] leading-none font-semibold whitespace-nowrap transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+          className={cn(
+            'border-border text-muted-foreground flex h-6 min-w-9.25 items-center justify-center rounded-md border px-2 text-[11px] leading-none font-semibold whitespace-nowrap transition-colors duration-200',
+            'hover:bg-muted/85 hover:text-foreground disabled:opacity-60',
+          )}
           disabled={isCommentUpdating}
           onClick={handleCancelButtonClick}
         >
@@ -108,7 +119,10 @@ export function PostDetailCommentEditor({ comment, onCancelEdit, onEditSuccess }
         <button
           type="button"
           disabled={isCommentUpdating}
-          className="bg-save-button hover:bg-save-button-hover flex h-6 min-w-9.25 items-center justify-center rounded-md px-2 text-[11px] leading-none font-bold whitespace-nowrap text-white transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+          className={cn(
+            'bg-save-button flex h-6 min-w-9.25 items-center justify-center rounded-md px-2 text-[11px] leading-none font-bold whitespace-nowrap text-white transition-colors duration-200',
+            'hover:bg-save-button-hover disabled:opacity-60',
+          )}
           onClick={handleSubmitButtonClick}
         >
           {COMMENT_EDIT_SUBMIT_LABEL}
