@@ -3,9 +3,6 @@
 import type { CommentSort } from '@/entities/comment';
 import { COMMENT_SORT } from '@/entities/comment';
 import { useGetMe } from '@/entities/user';
-import { useOpenCommentAuthorBlockConfirmModal } from '@/features/post-comments/lib/use-open-comment-author-block-confirm-modal';
-import { useOpenCommentDeleteConfirmModal } from '@/features/post-comments/lib/use-open-comment-delete-confirm-modal';
-import { useCommentReaction } from '@/features/post-comments/model/use-comment-reaction';
 import { usePostDetailCommentList } from '@/features/post-comments/model/use-post-detail-comment-list';
 import { PostDetailCommentComposer } from '@/features/post-comments/ui/post-detail-comment-composer';
 import { PostDetailCommentItem } from '@/features/post-comments/ui/post-detail-comment-item';
@@ -38,9 +35,6 @@ export function PostDetailCommentsSection({
 }: Props) {
   const { data: me } = useGetMe();
   const commentList = usePostDetailCommentList({ postId });
-  const commentReaction = useCommentReaction({ onRequireLogin });
-  const openCommentAuthorBlockConfirmModal = useOpenCommentAuthorBlockConfirmModal({ postId });
-  const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId });
   const currentUserId = me?.id;
   const hasComments = commentList.comments.length > 0;
   const hasKnownComments = commentCount > 0 || hasComments;
@@ -76,12 +70,9 @@ export function PostDetailCommentsSection({
                 key={comment.id}
                 comment={comment}
                 currentUserId={currentUserId}
-                isCommentReactionUpdating={commentReaction.isCommentReactionUpdating(comment.id)}
+                onRequireLogin={onRequireLogin}
                 postAuthorId={postAuthorId}
-                onBlockCommentAuthor={openCommentAuthorBlockConfirmModal}
-                onDeleteComment={openCommentDeleteConfirmModal}
-                onDislikeComment={commentReaction.handleDislikeComment}
-                onLikeComment={commentReaction.handleLikeComment}
+                postId={postId}
               />
             ))}
 

@@ -6,6 +6,9 @@ import { useState } from 'react';
 import type { CommentItem } from '@/entities/comment';
 import { COMMENT_LIKE_STATUS } from '@/entities/comment';
 import { UserAvatar } from '@/entities/user';
+import { useOpenCommentAuthorBlockConfirmModal } from '@/features/post-comments/lib/use-open-comment-author-block-confirm-modal';
+import { useOpenCommentDeleteConfirmModal } from '@/features/post-comments/lib/use-open-comment-delete-confirm-modal';
+import { useCommentReaction } from '@/features/post-comments/model/use-comment-reaction';
 import { PostDetailCommentActions } from '@/features/post-comments/ui/post-detail-comment-actions';
 import { PostDetailCommentEditor } from '@/features/post-comments/ui/post-detail-comment-editor';
 import { cn } from '@/shared/lib/cn';
@@ -14,29 +17,20 @@ import { formatDisplayTime } from '@/shared/lib/format-date';
 type Props = {
   comment: CommentItem;
   currentUserId?: string;
-  isCommentReactionUpdating: boolean;
-  onBlockCommentAuthor: (comment: CommentItem) => void;
-  onDeleteComment: (comment: CommentItem) => void;
-  onDislikeComment: (comment: CommentItem) => void;
-  onLikeComment: (comment: CommentItem) => void;
+  onRequireLogin: () => void;
   postAuthorId: string;
+  postId: string;
 };
 
 const DELETED_COMMENT_MESSAGE = '삭제된 댓글입니다.';
 const BANNED_COMMENT_AUTHOR_NAME = '차단한 사용자';
 const BANNED_COMMENT_CONTENT = '차단한 사용자의 댓글입니다.';
 
-export function PostDetailCommentItem({
-  comment,
-  currentUserId,
-  isCommentReactionUpdating,
-  onBlockCommentAuthor,
-  onDeleteComment,
-  onDislikeComment,
-  onLikeComment,
-  postAuthorId,
-}: Props) {
+export function PostDetailCommentItem({ comment, currentUserId, onRequireLogin, postAuthorId, postId }: Props) {
   const [isEditing, setIsEditing] = useState(false);
+  const commentReaction = useCommentReaction({ comment, onRequireLogin });
+  const openCommentAuthorBlockConfirmModal = useOpenCommentAuthorBlockConfirmModal({ postId });
+  const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId });
   const isBanned = comment.isBanned;
   const isOwnComment = !!currentUserId && currentUserId === comment.author.id;
   const isPostAuthor = postAuthorId === comment.author.id;
@@ -73,8 +67,8 @@ export function PostDetailCommentItem({
             <PostDetailCommentActions
               comment={comment}
               isOwnComment={isOwnComment}
-              onBlockCommentAuthor={onBlockCommentAuthor}
-              onDeleteComment={onDeleteComment}
+              onBlockCommentAuthor={openCommentAuthorBlockConfirmModal}
+              onDeleteComment={openCommentDeleteConfirmModal}
               onEditComment={handleEditComment}
             />
           )}
@@ -103,8 +97,8 @@ export function PostDetailCommentItem({
                   comment.likeStatus === COMMENT_LIKE_STATUS.LIKE &&
                     'text-button-danger-surface hover:text-button-danger-surface',
                 )}
-                disabled={isCommentReactionUpdating}
-                onClick={() => onLikeComment(comment)}
+                disabled={commentReaction.isPending}
+                onClick={commentReaction.handleLikeComment}
               >
                 <ThumbsUp className="h-3.5 w-3.5" />
               </button>
@@ -117,8 +111,8 @@ export function PostDetailCommentItem({
                   comment.likeStatus === COMMENT_LIKE_STATUS.DISLIKE &&
                     'text-button-primary-surface hover:text-button-primary-surface',
                 )}
-                disabled={isCommentReactionUpdating}
-                onClick={() => onDislikeComment(comment)}
+                disabled={commentReaction.isPending}
+                onClick={commentReaction.handleDislikeComment}
               >
                 <ThumbsDown className="h-3.5 w-3.5" />
               </button>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 
 import type { CommentItem, CommentLikeStatus } from '@/entities/comment';
 import {
@@ -14,13 +13,13 @@ import { useGetMe } from '@/entities/user';
 import { toast } from '@/shared/ui/toast';
 
 type Params = {
+  comment: CommentItem;
   onRequireLogin: () => void;
 };
 
 const COMMENT_REACTION_FAILED_MESSAGE = '댓글 반응 업데이트에 실패했습니다.';
 
-export const useCommentReaction = ({ onRequireLogin }: Params) => {
-  const [updatingCommentIds, setUpdatingCommentIds] = useState(() => new Set<string>());
+export const useCommentReaction = ({ comment, onRequireLogin }: Params) => {
   const queryClient = useQueryClient();
   const { data: me, isPending: isAuthPending } = useGetMe();
   const isLoggedIn = !!me;
@@ -41,52 +40,43 @@ export const useCommentReaction = ({ onRequireLogin }: Params) => {
     ]);
   };
 
-  const handleCommentReaction = async (comment: CommentItem, targetLikeStatus: CommentLikeStatus) => {
+  const handleCommentReaction = (targetLikeStatus: CommentLikeStatus) => {
     if (!ensureLoggedIn()) return;
-    if (updatingCommentIds.has(comment.id)) return;
+    if (commentLikeMutation.isPending) return;
 
     const nextLikeStatus = getNextCommentLikeStatus({
       currentLikeStatus: comment.likeStatus,
       targetLikeStatus,
     });
 
-    setUpdatingCommentIds((currentIds) => new Set(currentIds).add(comment.id));
-
-    try {
-      await commentLikeMutation.mutateAsync({
+    commentLikeMutation.mutate(
+      {
         commentId: comment.id,
         data: {
           likeStatus: nextLikeStatus,
         },
-      });
-      await invalidateCommentReactionQueries();
-    } catch {
-      toast.error(COMMENT_REACTION_FAILED_MESSAGE);
-    } finally {
-      setUpdatingCommentIds((currentIds) => {
-        const nextIds = new Set(currentIds);
-        nextIds.delete(comment.id);
-        return nextIds;
-      });
-    }
+      },
+      {
+        onError: () => {
+          toast.error(COMMENT_REACTION_FAILED_MESSAGE);
+        },
+        onSuccess: invalidateCommentReactionQueries,
+      },
+    );
   };
 
-  const handleLikeComment = (comment: CommentItem) => {
-    void handleCommentReaction(comment, COMMENT_LIKE_STATUS.LIKE);
+  const handleLikeComment = () => {
+    handleCommentReaction(COMMENT_LIKE_STATUS.LIKE);
   };
 
-  const handleDislikeComment = (comment: CommentItem) => {
-    void handleCommentReaction(comment, COMMENT_LIKE_STATUS.DISLIKE);
-  };
-
-  const isCommentReactionUpdating = (commentId: string) => {
-    return updatingCommentIds.has(commentId);
+  const handleDislikeComment = () => {
+    handleCommentReaction(COMMENT_LIKE_STATUS.DISLIKE);
   };
 
   return {
     handleDislikeComment,
     handleLikeComment,
-    isCommentReactionUpdating,
+    isPending: commentLikeMutation.isPending,
   };
 };
 
