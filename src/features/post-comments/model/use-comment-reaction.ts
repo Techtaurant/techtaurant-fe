@@ -6,6 +6,7 @@ import type { CommentItem, CommentLikeStatus } from '@/entities/comment';
 import {
   COMMENT_LIKE_STATUS,
   getCommentMetadatasQueryKey,
+  getCommentsQueryKey,
   getCommentViewerStatesQueryKey,
   useUpdateCommentLikeStatus,
 } from '@/entities/comment';
@@ -35,6 +36,7 @@ export const useCommentReaction = ({ comment, onRequireLogin }: Params) => {
 
   const invalidateCommentReactionQueries = async () => {
     await Promise.all([
+      queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
       queryClient.invalidateQueries({ queryKey: getCommentMetadatasQueryKey() }),
       queryClient.invalidateQueries({ queryKey: getCommentViewerStatesQueryKey() }),
     ]);

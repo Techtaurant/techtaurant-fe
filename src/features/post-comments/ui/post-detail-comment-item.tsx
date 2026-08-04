@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import type { CommentItem } from '@/entities/comment';
 import { COMMENT_LIKE_STATUS } from '@/entities/comment';
-import { UserAvatar } from '@/entities/user';
+import { useGetMe, UserAvatar } from '@/entities/user';
 import { useOpenCommentAuthorBlockConfirmModal } from '@/features/post-comments/lib/use-open-comment-author-block-confirm-modal';
 import { useOpenCommentDeleteConfirmModal } from '@/features/post-comments/lib/use-open-comment-delete-confirm-modal';
 import { useCommentReaction } from '@/features/post-comments/model/use-comment-reaction';
@@ -16,7 +16,6 @@ import { formatDisplayTime } from '@/shared/lib/format-date';
 
 type Props = {
   comment: CommentItem;
-  currentUserId?: string;
   onRequireLogin: () => void;
   postAuthorId: string;
   postId: string;
@@ -26,11 +25,13 @@ const DELETED_COMMENT_MESSAGE = '삭제된 댓글입니다.';
 const BANNED_COMMENT_AUTHOR_NAME = '차단한 사용자';
 const BANNED_COMMENT_CONTENT = '차단한 사용자의 댓글입니다.';
 
-export function PostDetailCommentItem({ comment, currentUserId, onRequireLogin, postAuthorId, postId }: Props) {
+export function PostDetailCommentItem({ comment, onRequireLogin, postAuthorId, postId }: Props) {
   const [isEditing, setIsEditing] = useState(false);
+  const { data: me } = useGetMe();
   const commentReaction = useCommentReaction({ comment, onRequireLogin });
   const openCommentAuthorBlockConfirmModal = useOpenCommentAuthorBlockConfirmModal({ postId });
   const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId });
+  const currentUserId = me?.id;
   const isBanned = comment.isBanned;
   const isOwnComment = !!currentUserId && currentUserId === comment.author.id;
   const isPostAuthor = postAuthorId === comment.author.id;
