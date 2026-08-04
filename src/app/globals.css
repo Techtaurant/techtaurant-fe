@@ -129,8 +129,8 @@
     cursor: pointer;
   }
 
-  button:disabled {
-    cursor: not-allowed;
+  :disabled {
+    cursor: default;
   }
 
   * {
