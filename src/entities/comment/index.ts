@@ -4,9 +4,13 @@ export { getCommentMetadatasQueryKey } from '@/entities/comment/api/use-get-comm
 export { getCommentViewerStatesQueryKey } from '@/entities/comment/api/use-get-comment-viewer-states';
 export {
   getCommentsQueryKey,
+  getPostCommentsQueryKey,
   useGetParentCommentContents,
 } from '@/entities/comment/api/use-get-parent-comment-contents';
-export { useGetReplyCommentContents } from '@/entities/comment/api/use-get-reply-comment-contents';
+export {
+  getCommentRepliesQueryKey,
+  useGetReplyCommentContents,
+} from '@/entities/comment/api/use-get-reply-comment-contents';
 export { useMergedComments } from '@/entities/comment/api/use-merged-comments';
 export { useUpdateComment } from '@/entities/comment/api/use-update-comment';
 export { useUpdateCommentLikeStatus } from '@/entities/comment/api/use-update-comment-like-status';

@@ -20,26 +20,26 @@ const REPLY_ACTION_LABEL = '답글 달기';
 const HIDE_REPLIES_LABEL = '답글 접기';
 
 export function PostDetailCommentList({ comments, commentsSort, onRequireLogin, postAuthorId }: Props) {
-  const [closedRepliesByCommentId, setClosedRepliesByCommentId] = useState<Record<string, boolean>>({});
+  const [replyThreadOpenByCommentId, setReplyThreadOpenByCommentId] = useState<Record<string, boolean>>({});
   const replyComposer = usePostDetailReplyComposer({
     onReplyCreated: (commentId) => {
-      setClosedRepliesByCommentId((current) => ({
+      setReplyThreadOpenByCommentId((current) => ({
         ...current,
-        [commentId]: false,
+        [commentId]: true,
       }));
     },
     onRequireLogin,
   });
 
-  const handleReplyThreadToggle = (commentId: string) => {
-    setClosedRepliesByCommentId((current) => ({
+  const handleReplyThreadToggle = (commentId: string, isOpen: boolean) => {
+    setReplyThreadOpenByCommentId((current) => ({
       ...current,
-      [commentId]: !current[commentId],
+      [commentId]: !isOpen,
     }));
   };
 
   return comments.map((comment) => {
-    const isReplyThreadOpen = comment.replyCount > 0 && !closedRepliesByCommentId[comment.id];
+    const isReplyThreadOpen = replyThreadOpenByCommentId[comment.id] ?? comment.replyCount > 0;
     const isReplyingCurrentComment = replyComposer.isReplyingToComment(comment.id);
 
     return (
@@ -66,7 +66,7 @@ export function PostDetailCommentList({ comments, commentsSort, onRequireLogin, 
                 <button
                   type="button"
                   className={cn('text-muted-foreground text-xs transition-colors', 'hover:text-foreground')}
-                  onClick={() => handleReplyThreadToggle(comment.id)}
+                  onClick={() => handleReplyThreadToggle(comment.id, isReplyThreadOpen)}
                 >
                   {isReplyThreadOpen ? HIDE_REPLIES_LABEL : `답글 ${comment.replyCount}개`}
                 </button>

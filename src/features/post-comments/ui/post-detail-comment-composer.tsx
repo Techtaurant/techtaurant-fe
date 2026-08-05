@@ -3,6 +3,7 @@
 import type { CSSProperties, SyntheticEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useGetMe } from '@/entities/user';
 import {
   COMMENT_FOCUS_DELAY_MS,
   COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
@@ -26,6 +27,7 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [isCommentExpanded, setIsCommentExpanded] = useState(false);
   const [commentValue, setCommentValue] = useState('');
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const { clearCreateCommentError, createComment, createCommentErrorMessage, isCommentCreating } =
     useCreatePostDetailComment({ onRequireLogin });
   const textareaSizeStyle = {
@@ -71,6 +73,16 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   };
 
   const handleCommentTextareaFocus = () => {
+    if (isAuthPending) {
+      commentTextareaRef.current?.blur();
+      return;
+    }
+    if (!me) {
+      commentTextareaRef.current?.blur();
+      onRequireLogin();
+      return;
+    }
+
     setIsCommentExpanded(true);
     if (!commentTextareaRef.current || commentValue) return;
 
@@ -89,7 +101,6 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
       block: 'center',
     });
     const timeoutId = setTimeout(() => {
-      setIsCommentExpanded(true);
       commentTextareaRef.current?.focus();
     }, COMMENT_FOCUS_DELAY_MS);
 
