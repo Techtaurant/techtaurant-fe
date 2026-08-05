@@ -23,8 +23,8 @@ const COMMENT_REACTION_FAILED_MESSAGE = '댓글 반응 업데이트에 실패했
 export const useCommentReaction = ({ comment, onRequireLogin }: Params) => {
   const queryClient = useQueryClient();
   const { data: me, isPending: isAuthPending } = useGetMe();
-  const isLoggedIn = !!me;
   const commentLikeMutation = useUpdateCommentLikeStatus();
+  const isLoggedIn = !!me;
 
   const ensureLoggedIn = () => {
     if (isAuthPending) return false;
