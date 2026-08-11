@@ -4,7 +4,7 @@ import type { CommentSort } from '@/entities/comment';
 import { COMMENT_SORT } from '@/entities/comment';
 import { usePostDetailCommentList } from '@/features/post-comments/model/use-post-detail-comment-list';
 import { PostDetailCommentComposer } from '@/features/post-comments/ui/post-detail-comment-composer';
-import { PostDetailCommentItem } from '@/features/post-comments/ui/post-detail-comment-item';
+import { PostDetailCommentList } from '@/features/post-comments/ui/post-detail-comment-list';
 import { cn } from '@/shared/lib/cn';
 
 type Props = {
@@ -39,7 +39,7 @@ export function PostDetailCommentsSection({
 
   return (
     <section>
-      <PostDetailCommentComposer focusRequestKey={focusRequestKey} postId={postId} onRequireLogin={onRequireLogin} />
+      <PostDetailCommentComposer focusRequestKey={focusRequestKey} onRequireLogin={onRequireLogin} postId={postId} />
 
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-2">
@@ -60,17 +60,13 @@ export function PostDetailCommentsSection({
           ))}
         </div>
 
-        <div className="flex min-h-[5.5rem] flex-col gap-6">
-          {hasComments &&
-            commentList.comments.map((comment) => (
-              <PostDetailCommentItem
-                key={comment.id}
-                comment={comment}
-                onRequireLogin={onRequireLogin}
-                postAuthorId={postAuthorId}
-                postId={postId}
-              />
-            ))}
+        <div className="flex min-h-22 flex-col gap-6">
+          <PostDetailCommentList
+            comments={commentList.comments}
+            commentsSort={commentList.commentsSort}
+            onRequireLogin={onRequireLogin}
+            postAuthorId={postAuthorId}
+          />
 
           {shouldShowEmptyCommentList && (
             <p className="text-muted-foreground py-8 text-center">{EMPTY_COMMENT_LIST_MESSAGE}</p>
@@ -82,7 +78,10 @@ export function PostDetailCommentsSection({
             <button
               type="button"
               disabled={commentList.isCommentsLoadingMore}
-              className="border-border text-muted-foreground hover:text-foreground hover:bg-muted/85 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className={cn(
+                'border-border text-muted-foreground rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200',
+                'hover:bg-muted/85 hover:text-foreground disabled:opacity-60',
+              )}
               onClick={commentList.handleLoadMoreComments}
             >
               {commentList.isCommentsLoadingMore ? LOAD_MORE_LOADING_LABEL : LOAD_MORE_COMMENTS_LABEL}

@@ -1,5 +1,14 @@
+import { useQueryClient } from '@tanstack/react-query';
+
+import { getCommentsQueryKey } from '@/entities/comment/api/use-get-parent-comment-contents';
 import { useUpdateCommentApi } from '@/shared/api/generated';
 
 export const useUpdateComment = () => {
-  return useUpdateCommentApi();
+  const queryClient = useQueryClient();
+
+  return useUpdateCommentApi({
+    mutation: {
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
+    },
+  });
 };

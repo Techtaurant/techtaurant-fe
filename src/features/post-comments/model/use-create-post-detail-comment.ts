@@ -3,30 +3,40 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import {
-  getCommentMetadatasQueryKey,
-  getCommentsQueryKey,
-  getCommentViewerStatesQueryKey,
-  useCreateComment,
-} from '@/entities/comment';
+import { getCommentRepliesQueryKey, getPostCommentsQueryKey, useCreateComment } from '@/entities/comment';
 import { getPostDetailMetadataQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
 import { useGetMe } from '@/entities/user';
+import type { CreateCommentRequest } from '@/shared/api/generated';
 import { toast } from '@/shared/ui/toast';
 
 type Params = {
   onRequireLogin: () => void;
-  postId: string;
 };
 
 const COMMENT_CONTENT_REQUIRED_MESSAGE = '댓글 내용을 입력해주세요.';
 const COMMENT_CREATE_FAILED_MESSAGE = '댓글 작성에 실패했습니다.';
 
-export const useCreatePostDetailComment = ({ onRequireLogin, postId }: Params) => {
+export const useCreatePostDetailComment = ({ onRequireLogin }: Params) => {
   const [createCommentErrorMessage, setCreateCommentErrorMessage] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
   const { data: me, isPending: isAuthPending } = useGetMe();
-  const createCommentMutation = useCreateComment();
+  const createCommentMutation = useCreateComment({
+    onSuccess: async ({ parentId, postId }) => {
+      const invalidateQueries = [
+        queryClient.invalidateQueries({ queryKey: getPostCommentsQueryKey(postId) }),
+        queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
+        queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
+      ];
+
+      if (parentId) {
+        invalidateQueries.push(queryClient.invalidateQueries({ queryKey: getCommentRepliesQueryKey(parentId) }));
+      }
+
+      await Promise.all(invalidateQueries);
+    },
+  });
   const isLoggedIn = !!me;
 
   const ensureLoggedIn = () => {
@@ -37,18 +47,9 @@ export const useCreatePostDetailComment = ({ onRequireLogin, postId }: Params) =
     return false;
   };
 
-  const invalidateCommentQueries = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getCommentMetadatasQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getCommentViewerStatesQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getPostDetailMetadataQueryKey(postId) }),
-      queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-    ]);
-  };
-
-  const createComment = async (content: string) => {
+  const createComment = async ({ content, parentId, postId }: CreateCommentRequest) => {
     if (!ensureLoggedIn()) return false;
+    if (createCommentMutation.isPending) return false;
 
     const trimmedContent = content.trim();
     if (!trimmedContent) {
@@ -63,9 +64,9 @@ export const useCreatePostDetailComment = ({ onRequireLogin, postId }: Params) =
         data: {
           content: trimmedContent,
           postId,
+          ...(parentId && { parentId }),
         },
       });
-      await invalidateCommentQueries();
       return true;
     } catch {
       setCreateCommentErrorMessage(COMMENT_CREATE_FAILED_MESSAGE);

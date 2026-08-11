@@ -3,6 +3,7 @@
 import type { CSSProperties, SyntheticEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useGetMe } from '@/entities/user';
 import {
   COMMENT_FOCUS_DELAY_MS,
   COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
@@ -26,11 +27,9 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
   const [isCommentExpanded, setIsCommentExpanded] = useState(false);
   const [commentValue, setCommentValue] = useState('');
+  const { data: me, isPending: isAuthPending } = useGetMe();
   const { clearCreateCommentError, createComment, createCommentErrorMessage, isCommentCreating } =
-    useCreatePostDetailComment({
-      onRequireLogin,
-      postId,
-    });
+    useCreatePostDetailComment({ onRequireLogin });
   const textareaSizeStyle = {
     height: isCommentExpanded ? undefined : COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
     maxHeight: isCommentExpanded ? COMMENT_TEXTAREA_EXPANDED_MAX_HEIGHT : COMMENT_TEXTAREA_COLLAPSED_HEIGHT,
@@ -38,12 +37,19 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   } satisfies CSSProperties;
 
   const resetCommentForm = () => {
+    clearCreateCommentError();
     setCommentValue('');
     setIsCommentExpanded(false);
 
     if (commentTextareaRef.current) {
       commentTextareaRef.current.style.height = COMMENT_TEXTAREA_COLLAPSED_HEIGHT;
     }
+  };
+
+  const handleCancelButtonClick = () => {
+    if (isCommentCreating) return;
+
+    resetCommentForm();
   };
 
   const handleCommentTextareaInput = (event: SyntheticEvent<HTMLTextAreaElement>) => {
@@ -53,7 +59,7 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   };
 
   const handleSubmitButtonClick = async () => {
-    const isCreated = await createComment(commentValue);
+    const isCreated = await createComment({ content: commentValue, postId });
     if (!isCreated) return;
 
     resetCommentForm();
@@ -67,6 +73,16 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
   };
 
   const handleCommentTextareaFocus = () => {
+    if (isAuthPending) {
+      commentTextareaRef.current?.blur();
+      return;
+    }
+    if (!me) {
+      commentTextareaRef.current?.blur();
+      onRequireLogin();
+      return;
+    }
+
     setIsCommentExpanded(true);
     if (!commentTextareaRef.current || commentValue) return;
 
@@ -85,7 +101,6 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
       block: 'center',
     });
     const timeoutId = setTimeout(() => {
-      setIsCommentExpanded(true);
       commentTextareaRef.current?.focus();
     }, COMMENT_FOCUS_DELAY_MS);
 
@@ -98,6 +113,7 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
         <div className="relative">
           <textarea
             ref={commentTextareaRef}
+            disabled={isCommentCreating}
             placeholder={isCommentExpanded ? '' : COMMENT_PLACEHOLDER}
             value={commentValue}
             className={cn(
@@ -109,7 +125,7 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
                 : 'border-border focus:border-border',
               isCommentExpanded
                 ? 'overflow-y-auto pt-3 pb-14 text-left'
-                : 'overflow-hidden pt-[10px] pb-[10px] text-left leading-[22px]',
+                : 'overflow-hidden pt-2.5 pb-2.5 text-left leading-5.5',
             )}
             rows={1}
             style={textareaSizeStyle}
@@ -121,11 +137,12 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
             <div className="absolute right-3 bottom-4 flex items-center gap-2">
               <button
                 type="button"
+                disabled={isCommentCreating}
                 className={cn(
                   'border-border h-8 rounded-md border px-4 text-sm font-semibold transition-colors duration-200',
-                  'text-comment-cancel-button-foreground hover:bg-muted/85 hover:text-foreground',
+                  'text-comment-cancel-button-foreground hover:bg-muted/85 hover:text-foreground disabled:opacity-60',
                 )}
-                onClick={resetCommentForm}
+                onClick={handleCancelButtonClick}
               >
                 {COMMENT_CANCEL_LABEL}
               </button>
@@ -134,7 +151,7 @@ export function PostDetailCommentComposer({ focusRequestKey, onRequireLogin, pos
                 disabled={isCommentCreating}
                 className={cn(
                   'bg-comment-submit-button h-8 rounded-md px-4 text-sm font-semibold text-white transition-colors duration-200',
-                  'hover:bg-comment-submit-button-hover disabled:cursor-not-allowed disabled:opacity-60',
+                  'hover:bg-comment-submit-button-hover disabled:opacity-60',
                 )}
                 onClick={handleCommentSubmitButtonClick}
               >

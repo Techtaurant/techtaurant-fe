@@ -20,11 +20,14 @@ const toReplyCommentContentsParams = (sort?: CommentSort) => {
   } satisfies GetReplyContentsApiParams;
 };
 
+export const getCommentRepliesQueryKey = (commentId: string) => {
+  return [...getCommentsQueryKey(), 'replies', commentId] as const;
+};
+
 const getReplyCommentContentsQueryKey = ({ commentId, sort }: Pick<Params, 'commentId' | 'sort'>) => {
   return [
-    ...getCommentsQueryKey(),
-    'replies',
-    { commentId, size: DEFAULT_COMMENT_LIST_SIZE, sort: sort ?? COMMENT_SORT.LATEST },
+    ...getCommentRepliesQueryKey(commentId),
+    { size: DEFAULT_COMMENT_LIST_SIZE, sort: sort ?? COMMENT_SORT.LATEST },
   ] as const;
 };
 
