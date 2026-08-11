@@ -20,7 +20,6 @@ export function PostDetailView({ postId }: Props) {
   const [commentFocusRequestKey, setCommentFocusRequestKey] = useState(0);
   const { authorProfile, isViewerStateResolved, metadata, post, viewerState } = usePostDetailViewData(postId);
 
-  const authorId = post?.author.id;
   const isAuthorBanned = viewerState?.isBanned ?? false;
   const viewCount = metadata?.viewCount ?? 0;
   const likeCount = metadata?.likeCount ?? 0;
@@ -38,6 +37,8 @@ export function PostDetailView({ postId }: Props) {
   if (!post) {
     return null;
   }
+
+  const authorId = post.author.id;
 
   if (isAuthorBanned) {
     return <PostDetailBlockedFallback />;

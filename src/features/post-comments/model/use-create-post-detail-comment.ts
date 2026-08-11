@@ -3,15 +3,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import type { CommentSort } from '@/entities/comment';
 import {
-  COMMENT_SORT,
   getCommentMetadatasQueryKey,
   getCommentsQueryKey,
   getCommentViewerStatesQueryKey,
   useCreateComment,
-  useGetParentCommentContents,
-  useMergedComments,
 } from '@/entities/comment';
 import { getPostDetailMetadataQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey } from '@/entities/post-list';
@@ -26,24 +22,12 @@ type Params = {
 const COMMENT_CONTENT_REQUIRED_MESSAGE = '댓글 내용을 입력해주세요.';
 const COMMENT_CREATE_FAILED_MESSAGE = '댓글 작성에 실패했습니다.';
 
-export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
+export const useCreatePostDetailComment = ({ onRequireLogin, postId }: Params) => {
+  const [createCommentErrorMessage, setCreateCommentErrorMessage] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { data: me, isPending: isAuthPending } = useGetMe();
-  const [commentsSort, setCommentsSort] = useState<CommentSort>(COMMENT_SORT.LATEST);
-  const [createCommentErrorMessage, setCreateCommentErrorMessage] = useState<string | null>(null);
-  const isLoggedIn = !!me;
-  const parentCommentsQuery = useGetParentCommentContents({
-    postId,
-    sort: commentsSort,
-  });
-  const commentContents = parentCommentsQuery.data ?? [];
-  const mergedComments = useMergedComments({
-    contents: commentContents,
-    isViewerStateEnabled: isLoggedIn && !isAuthPending,
-  });
-  const isMergedCommentsPending = isAuthPending || mergedComments.isPending;
-  const comments = isMergedCommentsPending ? [] : mergedComments.data;
   const createCommentMutation = useCreateComment();
+  const isLoggedIn = !!me;
 
   const ensureLoggedIn = () => {
     if (isAuthPending) return false;
@@ -63,18 +47,7 @@ export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
     ]);
   };
 
-  const handleLoadMoreComments = async () => {
-    if (!parentCommentsQuery.hasNextPage || parentCommentsQuery.isFetchingNextPage) return;
-
-    await parentCommentsQuery.fetchNextPage();
-  };
-
-  const handleCommentsSortChange = (sort: CommentSort) => {
-    setCreateCommentErrorMessage(null);
-    setCommentsSort(sort);
-  };
-
-  const handleCreateComment = async (content: string) => {
+  const createComment = async (content: string) => {
     if (!ensureLoggedIn()) return false;
 
     const trimmedContent = content.trim();
@@ -107,15 +80,8 @@ export const usePostDetailComments = ({ onRequireLogin, postId }: Params) => {
 
   return {
     clearCreateCommentError,
-    comments,
-    commentsHasNext: !!parentCommentsQuery.hasNextPage,
-    commentsSort,
+    createComment,
     createCommentErrorMessage,
-    handleCommentsSortChange,
-    handleCreateComment,
-    handleLoadMoreComments,
     isCommentCreating: createCommentMutation.isPending,
-    isCommentsLoading: parentCommentsQuery.isPending || isMergedCommentsPending,
-    isCommentsLoadingMore: parentCommentsQuery.isFetchingNextPage,
   };
 };
