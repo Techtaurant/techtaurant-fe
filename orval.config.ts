@@ -49,6 +49,18 @@ export default defineConfig({
               useInfiniteQueryParam: 'cursor',
             },
           },
+          getParentComments: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
+          getReplies: {
+            query: {
+              useInfinite: true,
+              useInfiniteQueryParam: 'cursor',
+            },
+          },
         },
       },
     },
