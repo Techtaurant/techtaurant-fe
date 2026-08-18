@@ -1,8 +1,7 @@
 'use client';
 
 import type { CommentSort } from '@/entities/comment';
-import { useGetReplyCommentContents, useMergedComments } from '@/entities/comment';
-import { useGetMe } from '@/entities/user';
+import { useGetReplies } from '@/entities/comment';
 
 type Params = {
   commentsSort: CommentSort;
@@ -10,20 +9,10 @@ type Params = {
 };
 
 export const usePostDetailReplyList = ({ commentsSort, parentCommentId }: Params) => {
-  const { data: me, isPending: isAuthPending } = useGetMe();
-  const repliesQuery = useGetReplyCommentContents({
+  const repliesQuery = useGetReplies({
     commentId: parentCommentId,
     sort: commentsSort,
   });
-
-  const isLoggedIn = !!me;
-  const replyContents = repliesQuery.data ?? [];
-  const mergedReplies = useMergedComments({
-    contents: replyContents,
-    isViewerStateEnabled: isLoggedIn && !isAuthPending,
-  });
-  const isMergedRepliesPending = isAuthPending || mergedReplies.isPending;
-  const replies = isMergedRepliesPending ? [] : mergedReplies.data;
 
   const handleLoadMoreReplies = () => {
     if (!repliesQuery.hasNextPage || repliesQuery.isFetchingNextPage) return;
@@ -34,9 +23,9 @@ export const usePostDetailReplyList = ({ commentsSort, parentCommentId }: Params
   return {
     handleLoadMoreReplies,
     isRepliesError: repliesQuery.isError,
-    isRepliesLoading: repliesQuery.isPending || isMergedRepliesPending,
+    isRepliesLoading: repliesQuery.isPending,
     isRepliesLoadingMore: repliesQuery.isFetchingNextPage,
-    replies,
+    replies: repliesQuery.data ?? [],
     repliesHasNext: !!repliesQuery.hasNextPage,
   };
 };

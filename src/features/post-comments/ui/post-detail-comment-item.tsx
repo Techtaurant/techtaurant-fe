@@ -43,12 +43,12 @@ export function PostDetailCommentItem({
   const openCommentDeleteConfirmModal = useOpenCommentDeleteConfirmModal({ postId: comment.postId });
   const currentUserId = me?.id;
   const isBanned = comment.isBanned;
-  const isOwnComment = !!currentUserId && currentUserId === comment.author.id;
-  const isPostAuthor = postAuthorId === comment.author.id;
+  const isOwnComment = !!currentUserId && currentUserId === comment.authorId;
+  const isPostAuthor = postAuthorId === comment.authorId;
   const shouldShowInteractionRow = !comment.isDeleted && !isBanned;
   const shouldShowCommentActions = shouldShowInteractionRow && !!currentUserId && !isEditing;
-  const authorName = isBanned ? BANNED_COMMENT_AUTHOR_NAME : comment.author.name;
-  const profileImageUrl = isBanned ? '' : comment.author.profileImageUrl;
+  const authorName = isBanned ? BANNED_COMMENT_AUTHOR_NAME : comment.authorName;
+  const profileImageUrl = isBanned ? '' : (comment.authorProfileImageUrl ?? '');
   const commentContent = getCommentContent(comment);
   const isCompact = variant === 'compact';
 

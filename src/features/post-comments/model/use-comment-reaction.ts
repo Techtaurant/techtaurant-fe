@@ -3,13 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import type { CommentItem, CommentLikeStatus } from '@/entities/comment';
-import {
-  COMMENT_LIKE_STATUS,
-  getCommentMetadatasQueryKey,
-  getCommentsQueryKey,
-  getCommentViewerStatesQueryKey,
-  useUpdateCommentLikeStatus,
-} from '@/entities/comment';
+import { COMMENT_LIKE_STATUS, getCommentsQueryKey, useUpdateCommentLikeStatus } from '@/entities/comment';
 import { useGetMe } from '@/entities/user';
 import { toast } from '@/shared/ui/toast';
 
@@ -35,11 +29,7 @@ export const useCommentReaction = ({ comment, onRequireLogin }: Params) => {
   };
 
   const invalidateCommentReactionQueries = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getCommentMetadatasQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getCommentViewerStatesQueryKey() }),
-    ]);
+    await queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() });
   };
 
   const handleCommentReaction = (targetLikeStatus: CommentLikeStatus) => {

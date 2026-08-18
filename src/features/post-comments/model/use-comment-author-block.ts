@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getCommentViewerStatesQueryKey } from '@/entities/comment';
+import { getCommentsQueryKey } from '@/entities/comment';
 import { getPostDetailViewerStateQueryKey } from '@/entities/post-detail';
 import { getPostListQueryKey, getPostListViewerStatesQueryKey } from '@/entities/post-list';
 import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser, useGetMe } from '@/entities/user';
@@ -26,7 +26,7 @@ export const useCommentAuthorBlock = ({ postId }: Params) => {
   const invalidateCommentAuthorBlockQueries = async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: getMyBannedUsersQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getCommentViewerStatesQueryKey() }),
+      queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
       queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
       queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
       queryClient.invalidateQueries({ queryKey: getPostListViewerStatesQueryKey() }),
@@ -38,9 +38,7 @@ export const useCommentAuthorBlock = ({ postId }: Params) => {
     if (!currentUserId || currentUserId === targetUserId) return;
 
     banUserMutation.mutate(
-      {
-        targetUserId,
-      },
+      { targetUserId },
       {
         onError: () => {
           onError?.();
