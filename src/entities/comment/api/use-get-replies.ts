@@ -9,7 +9,6 @@ import { useGetRepliesApiInfinite } from '@/shared/api/generated';
 
 type Params = {
   commentId: string;
-  options?: RequestInit;
   sort?: CommentSort;
 };
 
@@ -31,11 +30,10 @@ const getRepliesQueryKey = ({ commentId, sort }: Pick<Params, 'commentId' | 'sor
   ] as const;
 };
 
-export const useGetReplies = ({ commentId, options, sort }: Params) => {
+export const useGetReplies = ({ commentId, sort }: Params) => {
   const params = toRepliesParams(sort);
 
   return useGetRepliesApiInfinite(commentId, params, {
-    request: options,
     query: {
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       initialPageParam: undefined as string | undefined,

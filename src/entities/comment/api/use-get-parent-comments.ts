@@ -7,7 +7,6 @@ import type { GetParentCommentsApiParams } from '@/shared/api/generated';
 import { useGetParentCommentsApiInfinite } from '@/shared/api/generated';
 
 type Params = {
-  options?: RequestInit;
   postId: string;
   sort?: CommentSort;
 };
@@ -34,11 +33,10 @@ const getParentCommentsQueryKey = ({ postId, sort }: Pick<Params, 'postId' | 'so
   ] as const;
 };
 
-export const useGetParentComments = ({ options, postId, sort }: Params) => {
+export const useGetParentComments = ({ postId, sort }: Params) => {
   const params = toParentCommentsParams(sort);
 
   return useGetParentCommentsApiInfinite(postId, params, {
-    request: options,
     query: {
       getNextPageParam: (lastPage) => lastPage.data?.nextCursor ?? undefined,
       initialPageParam: undefined as string | undefined,
