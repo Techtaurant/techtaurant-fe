@@ -13,12 +13,12 @@ export const useOpenCommentAuthorBlockConfirmModal = ({ postId }: Params) => {
   const openCommentAuthorBlockConfirmModal = (comment: CommentItem) => {
     overlay.open(({ overlayId, isOpen, unmount }) => (
       <PostDetailCommentAuthorBlockConfirmModal
-        authorName={comment.author.name}
+        authorName={comment.authorName}
         overlayId={overlayId}
         isOpen={isOpen}
         onClose={unmount}
         postId={postId}
-        targetUserId={comment.author.id}
+        targetUserId={comment.authorId}
       />
     ));
   };

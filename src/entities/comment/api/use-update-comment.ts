@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getCommentsQueryKey } from '@/entities/comment/api/use-get-parent-comment-contents';
+import { getCommentsQueryKey } from '@/entities/comment/api/use-get-parent-comments';
 import { useUpdateCommentApi } from '@/shared/api/generated';
 
 export const useUpdateComment = () => {
