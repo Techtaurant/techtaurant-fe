@@ -1,11 +1,12 @@
-import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
+import { type PostMarkdownAttachment, renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 
 type Props = {
+  attachmentPresignedUrls?: readonly PostMarkdownAttachment[];
   content: string;
 };
 
-export function PostDetailContent({ content }: Props) {
-  const html = renderPostMarkdown(content);
+export function PostDetailContent({ attachmentPresignedUrls, content }: Props) {
+  const html = renderPostMarkdown(content, attachmentPresignedUrls);
 
   return (
     <section

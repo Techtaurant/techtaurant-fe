@@ -100,6 +100,10 @@ pnpm test
 \`\`\`
 `;
 
+const attachmentId = '01a02e3d-be7a-7c8e-8206-5f5a3979888a';
+const attachmentPresignedUrl =
+  'https://techtaurant-media-dev.s3.ap-northeast-2.amazonaws.com/posts/post-id/image.png?X-Amz-Expires=900&X-Amz-Signature=test';
+
 describe('게시물 마크다운 렌더러', () => {
   afterEach(() => {
     document.body.replaceChildren();
@@ -159,6 +163,25 @@ describe('게시물 마크다운 렌더러', () => {
       expect(hasCodeBlock(container, 'bash', 'pnpm test')).toBe(true);
       expect(hasCodeBlock(container, 'mermaid', '<br/>')).toBe(true);
       expect(container.querySelector('pre code.language-mermaid br')).not.toBeInTheDocument();
+    });
+
+    it('본문 이미지의 attachment ID를 메타데이터의 presigned URL로 치환한다', () => {
+      const container = document.createElement('div');
+      container.innerHTML = renderPostMarkdown(`![첨부 이미지](${attachmentId})`, [
+        {
+          attachmentId,
+          presignedUrl: attachmentPresignedUrl,
+        },
+      ]);
+
+      expect(container.querySelector('img')).toHaveAttribute('alt', '첨부 이미지');
+      expect(container.querySelector('img')).toHaveAttribute('src', attachmentPresignedUrl);
+    });
+
+    it('메타데이터에 없는 attachment ID는 안전하지 않은 상대 URI로 노출하지 않는다', () => {
+      const container = renderHtml(`![누락된 첨부 이미지](${attachmentId})`);
+
+      expect(container.querySelector('img')).not.toHaveAttribute('src');
     });
   });
 });

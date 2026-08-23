@@ -21,6 +21,12 @@ jest.mock('@/shared/lib/markdown/render-post-markdown', () => {
 
 const rendererModule = jest.requireActual<typeof MarkdownRendererModule>('@/shared/lib/markdown/render-post-markdown');
 const mockedRenderPostMarkdown = jest.mocked(renderPostMarkdown);
+const attachmentPresignedUrls = [
+  {
+    attachmentId: '01a02e3d-be7a-7c8e-8206-5f5a3979888a',
+    presignedUrl: 'https://techtaurant-media-dev.s3.ap-northeast-2.amazonaws.com/image.png',
+  },
+];
 
 const markdownContent = `
 ## HTTP 메시지
@@ -70,9 +76,9 @@ describe('게시물 상세 본문', () => {
   it('본문 원문을 마크다운 렌더러에 전달하고 반환 HTML을 렌더링한다', () => {
     mockedRenderPostMarkdown.mockReturnValue('<h2>렌더러 결과</h2><p>정제된 본문</p>');
 
-    render(<PostDetailContent content="원문" />);
+    render(<PostDetailContent attachmentPresignedUrls={attachmentPresignedUrls} content="원문" />);
 
-    expect(mockedRenderPostMarkdown).toHaveBeenCalledWith('원문');
+    expect(mockedRenderPostMarkdown).toHaveBeenCalledWith('원문', attachmentPresignedUrls);
     expect(screen.getByRole('heading', { level: 2, name: '렌더러 결과' })).toBeInTheDocument();
     expect(screen.getByText('정제된 본문')).toBeInTheDocument();
   });

@@ -7,6 +7,34 @@ const markdown = new MarkdownIt({
   linkify: true,
 });
 
+export type PostMarkdownAttachment = {
+  attachmentId: string;
+  presignedUrl: string;
+};
+
+type MarkdownRenderEnvironment = {
+  attachmentImageSources?: ReadonlyMap<string, string>;
+};
+
+const defaultImageRenderer = markdown.renderer.rules.image;
+
+markdown.renderer.rules.image = (tokens, index, options, environment, renderer) => {
+  const imageToken = tokens[index];
+  const imageSource = imageToken.attrGet('src');
+  const attachmentImageSources = (environment as MarkdownRenderEnvironment).attachmentImageSources;
+  const resolvedImageSource = imageSource ? attachmentImageSources?.get(imageSource) : undefined;
+
+  if (resolvedImageSource) {
+    imageToken.attrSet('src', resolvedImageSource);
+  }
+
+  if (defaultImageRenderer) {
+    return defaultImageRenderer(tokens, index, options, environment, renderer);
+  }
+
+  return renderer.renderToken(tokens, index, options);
+};
+
 const ALLOWED_TAGS = [
   'a',
   'abbr',
@@ -104,8 +132,14 @@ const ALLOWED_URI = /^(?:(?:https?|mailto):|(?:\/|#|\?))/i;
  * Converts untrusted post markdown to HTML that is safe for the post-detail
  * rendering boundary.
  */
-export function renderPostMarkdown(markdownSource: string): string {
-  const renderedHtml = markdown.render(markdownSource);
+export function renderPostMarkdown(
+  markdownSource: string,
+  attachments: readonly PostMarkdownAttachment[] = [],
+): string {
+  const attachmentImageSources = new Map(
+    attachments.map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
+  );
+  const renderedHtml = markdown.render(markdownSource, { attachmentImageSources });
 
   return DOMPurify.sanitize(renderedHtml, {
     ALLOWED_ATTR: ALLOWED_ATTRIBUTES,
