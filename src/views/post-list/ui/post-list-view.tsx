@@ -1,16 +1,24 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
+
+import { parsePostListFilters, toPostListApiParams, useGetPostList } from '@/entities/post-list';
 import { cn } from '@/shared/lib/cn';
 import { Observer } from '@/shared/ui/intersection-observer';
-import { usePostListViewData } from '@/views/post-list/model/use-post-list-view-data';
 import { PostList } from '@/views/post-list/ui/post-list';
-import { PostListBlockedItem } from '@/views/post-list/ui/post-list-blocked-item';
 import { PostCard } from '@/widgets/post-card';
 import { PostListFilterBar } from '@/widgets/post-list-filter-bar';
 import { PostListSidebar } from '@/widgets/post-list-sidebar';
 
 export function PostListView() {
-  const { fetchNextPage, hasNextPage, isFetchingNextPage, isRefreshingPostList, posts } = usePostListViewData();
+  const searchParams = useSearchParams();
+  const filters = parsePostListFilters(searchParams);
+
+  const { isFetching, isFetchingNextPage, data, fetchNextPage, hasNextPage } = useGetPostList({
+    params: toPostListApiParams(filters),
+  });
+
+  const isRefreshingPostList = isFetching && !isFetchingNextPage;
 
   const handleObserverEnter = () => {
     if (!hasNextPage || isRefreshingPostList || isFetchingNextPage) return;
@@ -24,18 +32,14 @@ export function PostListView() {
       <section className="mx-auto w-full max-w-182 min-w-0">
         <PostListFilterBar />
         <PostList
-          posts={posts}
+          posts={data ?? []}
           isRefreshing={isRefreshingPostList}
           renderPosts={(posts, { isRefreshing }) => (
             <>
               <div className={cn('transition-opacity', isRefreshing && 'opacity-60')}>
-                {posts.map((post) => {
-                  if (post.isBanned) {
-                    return <PostListBlockedItem key={post.id} />;
-                  }
-
-                  return <PostCard key={post.id} post={post} />;
-                })}
+                {posts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
               </div>
               {hasNextPage && <Observer onEnter={handleObserverEnter} />}
             </>

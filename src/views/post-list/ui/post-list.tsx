@@ -1,14 +1,12 @@
 import type { ReactNode } from 'react';
 
-import type { usePostListViewData } from '@/views/post-list/model/use-post-list-view-data';
-
-type PostListItem = ReturnType<typeof usePostListViewData>['posts'][number];
+import type { PostListItemResponse } from '@/shared/api/generated';
 
 type Props = {
   isRefreshing: boolean;
-  posts: PostListItem[];
+  posts: PostListItemResponse[];
   renderEmpty: () => ReactNode;
-  renderPosts: (posts: PostListItem[], state: { isRefreshing: boolean }) => ReactNode;
+  renderPosts: (posts: PostListItemResponse[], state: { isRefreshing: boolean }) => ReactNode;
 };
 
 export function PostList({ isRefreshing, posts, renderEmpty, renderPosts }: Props) {
