@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Ban } from 'lucide-react';
 
 import { getCommentsQueryKey } from '@/entities/comment';
-import { getPostListQueryKey, getPostListViewerStatesQueryKey } from '@/entities/post-list';
+import { getPostListQueryKey } from '@/entities/post-list';
 import { useDeleteMyBannedUser, useGetMyBannedUsers } from '@/entities/user';
 import { BannedUserItem } from '@/features/setting/ui/banned-user-item';
 
@@ -28,7 +28,6 @@ export function BannedUsersContent() {
           Promise.all([
             queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
             queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-            queryClient.invalidateQueries({ queryKey: getPostListViewerStatesQueryKey() }),
           ]),
       },
     );

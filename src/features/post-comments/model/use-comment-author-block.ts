@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { getCommentsQueryKey } from '@/entities/comment';
 import { getPostDetailViewerStateQueryKey } from '@/entities/post-detail';
-import { getPostListQueryKey, getPostListViewerStatesQueryKey } from '@/entities/post-list';
+import { getPostListQueryKey } from '@/entities/post-list';
 import { getMyBannedUsersQueryKey, getUserFollowingsQueryKey, useBanUser, useGetMe } from '@/entities/user';
 
 type Params = {
@@ -29,7 +29,6 @@ export const useCommentAuthorBlock = ({ postId }: Params) => {
       queryClient.invalidateQueries({ queryKey: getCommentsQueryKey() }),
       queryClient.invalidateQueries({ queryKey: getPostDetailViewerStateQueryKey(postId) }),
       queryClient.invalidateQueries({ queryKey: getPostListQueryKey() }),
-      queryClient.invalidateQueries({ queryKey: getPostListViewerStatesQueryKey() }),
       ...(currentUserId ? [queryClient.invalidateQueries({ queryKey: getUserFollowingsQueryKey(currentUserId) })] : []),
     ]);
   };
