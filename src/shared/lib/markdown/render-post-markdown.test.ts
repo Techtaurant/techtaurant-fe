@@ -1,5 +1,6 @@
 import mockDOMPurify from 'dompurify';
 
+import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 
 jest.mock('isomorphic-dompurify', () => ({
@@ -7,9 +8,9 @@ jest.mock('isomorphic-dompurify', () => ({
   default: mockDOMPurify,
 }));
 
-function renderHtml(markdown: string) {
+function renderHtml(markdown: string, attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[] = []) {
   const container = document.createElement('div');
-  container.innerHTML = renderPostMarkdown(markdown);
+  container.innerHTML = renderPostMarkdown(markdown, attachmentPresignedUrls);
   document.body.append(container);
 
   return container;
@@ -100,6 +101,33 @@ pnpm test
 \`\`\`
 `;
 
+const FIRST_ATTACHMENT_ID = '11111111-1111-4111-8111-111111111111';
+const SECOND_ATTACHMENT_ID = '22222222-2222-4222-8222-222222222222';
+const UNMAPPED_ATTACHMENT_ID = '33333333-3333-4333-8333-333333333333';
+const FIRST_PRESIGNED_URL = 'https://storage.example.com/posts/first.png?signature=first';
+const SECOND_PRESIGNED_URL = 'https://storage.example.com/posts/second.png?signature=second';
+
+const attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[] = [
+  { attachmentId: FIRST_ATTACHMENT_ID, presignedUrl: FIRST_PRESIGNED_URL },
+  { attachmentId: SECOND_ATTACHMENT_ID, presignedUrl: SECOND_PRESIGNED_URL },
+];
+
+const attachmentImageContent = `
+![본문 이미지](${FIRST_ATTACHMENT_ID})
+
+- ![목록 안 이미지](${SECOND_ATTACHMENT_ID})
+`;
+
+const unmappedAttachmentImageContent = `![삭제된 이미지](${UNMAPPED_ATTACHMENT_ID})`;
+
+const attachmentIdInCodeContent = `
+\`![인라인 코드 이미지](${FIRST_ATTACHMENT_ID})\`
+
+\`\`\`md
+![코드 블록 이미지](${FIRST_ATTACHMENT_ID})
+\`\`\`
+`;
+
 describe('게시물 마크다운 렌더러', () => {
   afterEach(() => {
     document.body.replaceChildren();
@@ -159,6 +187,38 @@ describe('게시물 마크다운 렌더러', () => {
       expect(hasCodeBlock(container, 'bash', 'pnpm test')).toBe(true);
       expect(hasCodeBlock(container, 'mermaid', '<br/>')).toBe(true);
       expect(container.querySelector('pre code.language-mermaid br')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('첨부 이미지', () => {
+    it('본문의 attachmentId를 presigned URL로 치환하고 alt를 유지한다', () => {
+      const container = renderHtml(attachmentImageContent, attachmentPresignedUrls);
+
+      expect(container.querySelector(`img[src="${FIRST_PRESIGNED_URL}"]`)).toHaveAttribute('alt', '본문 이미지');
+      expect(container.querySelector(`li img[src="${SECOND_PRESIGNED_URL}"]`)).toHaveAttribute('alt', '목록 안 이미지');
+    });
+
+    it('매핑에 없는 attachmentId는 src를 남기지 않는다', () => {
+      const container = renderHtml(unmappedAttachmentImageContent, attachmentPresignedUrls);
+
+      expect(container.querySelector('img')).toHaveAttribute('alt', '삭제된 이미지');
+      expect(container.querySelector('img')).not.toHaveAttribute('src');
+    });
+
+    it('코드 블록과 인라인 코드 안의 attachmentId는 치환하지 않는다', () => {
+      const container = renderHtml(attachmentIdInCodeContent, attachmentPresignedUrls);
+
+      expect(container.querySelector('code')).toHaveTextContent(FIRST_ATTACHMENT_ID);
+      expect(container.querySelector('pre code')).toHaveTextContent(FIRST_ATTACHMENT_ID);
+      expect(container.querySelector('img')).not.toBeInTheDocument();
+    });
+
+    it('치환한 URL도 sanitize 대상이므로 허용되지 않은 스킴은 제거한다', () => {
+      const container = renderHtml(`![위험 이미지](${FIRST_ATTACHMENT_ID})`, [
+        { attachmentId: FIRST_ATTACHMENT_ID, presignedUrl: "javascript:alert('attachment')" },
+      ]);
+
+      expect(container.querySelector('img')).not.toHaveAttribute('src');
     });
   });
 });

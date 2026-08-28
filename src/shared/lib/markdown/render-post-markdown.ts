@@ -1,5 +1,8 @@
 import DOMPurify from 'isomorphic-dompurify';
 import MarkdownIt from 'markdown-it';
+import type Token from 'markdown-it/lib/token.mjs';
+
+import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 
 const markdown = new MarkdownIt({
   html: true,
@@ -100,12 +103,27 @@ const ALLOWED_ATTRIBUTES = [
 
 const ALLOWED_URI = /^(?:(?:https?|mailto):|(?:\/|#|\?))/i;
 
+const IMAGE_TOKEN_TYPE = 'image';
+
 /**
  * Converts untrusted post markdown to HTML that is safe for the post-detail
  * rendering boundary.
  */
-export function renderPostMarkdown(markdownSource: string): string {
-  const renderedHtml = markdown.render(markdownSource);
+export function renderPostMarkdown(
+  markdownSource: string,
+  attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[],
+): string {
+  const presignedUrlByAttachmentId = new Map(
+    attachmentPresignedUrls.map(({ attachmentId, presignedUrl }) => [attachmentId, presignedUrl]),
+  );
+
+  // parse와 render는 같은 env를 공유해야 참조 링크 정의가 유지된다.
+  const env = {};
+  const tokens = markdown.parse(markdownSource, env);
+
+  replaceAttachmentImageSources(tokens, presignedUrlByAttachmentId);
+
+  const renderedHtml = markdown.renderer.render(tokens, markdown.options, env);
 
   return DOMPurify.sanitize(renderedHtml, {
     ALLOWED_ATTR: ALLOWED_ATTRIBUTES,
@@ -115,3 +133,22 @@ export function renderPostMarkdown(markdownSource: string): string {
     ALLOW_DATA_ATTR: false,
   });
 }
+
+// 본문은 이미지를 `![alt](attachmentId)`로 참조한다. attachmentId는 URI 형태가 아니라
+// ALLOWED_URI를 통과하지 못해 sanitize 단계에서 지워지므로, 그 전에 토큰의 src를 바꾼다.
+const replaceAttachmentImageSources = (tokens: Token[], presignedUrlByAttachmentId: Map<string, string>) => {
+  for (const token of tokens) {
+    if (token.children) {
+      replaceAttachmentImageSources(token.children, presignedUrlByAttachmentId);
+    }
+
+    if (token.type !== IMAGE_TOKEN_TYPE) continue;
+
+    const attachmentId = token.attrGet('src');
+    const presignedUrl = attachmentId && presignedUrlByAttachmentId.get(attachmentId);
+
+    if (!presignedUrl) continue;
+
+    token.attrSet('src', presignedUrl);
+  }
+};

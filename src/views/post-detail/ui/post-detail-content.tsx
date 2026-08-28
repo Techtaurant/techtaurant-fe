@@ -1,11 +1,13 @@
+import type { PostDetailAttachmentPresignedUrlResponse } from '@/shared/api/generated';
 import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
 
 type Props = {
+  attachmentPresignedUrls: PostDetailAttachmentPresignedUrlResponse[];
   content: string;
 };
 
-export function PostDetailContent({ content }: Props) {
-  const html = renderPostMarkdown(content);
+export function PostDetailContent({ attachmentPresignedUrls, content }: Props) {
+  const html = renderPostMarkdown(content, attachmentPresignedUrls);
 
   return (
     <section
