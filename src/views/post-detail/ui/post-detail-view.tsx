@@ -24,6 +24,7 @@ export function PostDetailView({ postId }: Props) {
   const viewCount = metadata?.viewCount ?? 0;
   const likeCount = metadata?.likeCount ?? 0;
   const commentCount = metadata?.commentCount ?? 0;
+  const attachmentPresignedUrls = metadata?.attachmentPresignedUrls ?? [];
 
   useRecordPostViewOnce({
     enabled: !!post && isViewerStateResolved && !isAuthorBanned,
@@ -58,7 +59,7 @@ export function PostDetailView({ postId }: Props) {
           title={post.title}
           updatedAt={post.updatedAt}
         />
-        <PostDetailContent content={post.content} />
+        <PostDetailContent attachmentPresignedUrls={attachmentPresignedUrls} content={post.content} />
         <PostDetailActionBar
           commentCount={commentCount}
           isRead={viewerState?.isRead}
