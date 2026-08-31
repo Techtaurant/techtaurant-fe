@@ -49,7 +49,7 @@ export function PostWriteView() {
         >
           <input
             className={cn(
-              'text-foreground w-full border-0 bg-transparent px-0 py-0 text-3xl font-semibold tracking-[-0.04em] transition-colors duration-200',
+              'text-foreground w-full border-0 bg-transparent px-0 py-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
               'placeholder:text-muted-foreground focus:outline-none',
             )}
             maxLength={TITLE_MAX_LENGTH}
@@ -73,7 +73,7 @@ export function PostWriteView() {
         {/* xl 이상에서는 하단바 행까지 걸쳐 오른쪽 전체를 미리보기가 차지합니다. */}
         <div
           className={cn(
-            'bg-muted min-h-[50dvh] min-w-0 px-8 pt-8 pb-16',
+            'bg-post-write-preview-surface min-h-[50dvh] min-w-0 px-8 pt-8 pb-16',
             'xl:col-start-2 xl:row-span-2 xl:row-start-1 xl:min-h-0 xl:overflow-y-auto',
           )}
         >
@@ -87,7 +87,12 @@ export function PostWriteView() {
         </div>
       </div>
 
-      <div className={cn('border-border bg-background min-w-0 border-t px-8 py-3', 'xl:col-start-1 xl:row-start-2')}>
+      <div
+        className={cn(
+          'border-border bg-background shadow-floating-top min-w-0 border-t px-8 py-3',
+          'xl:col-start-1 xl:row-start-2',
+        )}
+      >
         <PostWriteActions
           isDraftSaving={isDraftSaving}
           onDraftSaveClick={handleDraftSaveClick}
