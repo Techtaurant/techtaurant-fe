@@ -2,7 +2,9 @@
 
 import { useGetMe } from '@/entities/user';
 import { LoginButton } from '@/features/auth/ui/login-button';
+import { cn } from '@/shared/lib/cn';
 import { HeaderAuthSkeleton } from '@/widgets/header/ui/header-auth-skeleton';
+import { PostWriteLink } from '@/widgets/header/ui/post-write-link';
 import { UserMenu } from '@/widgets/header/ui/user-menu';
 
 export function AuthSection() {
@@ -16,5 +18,10 @@ export function AuthSection() {
     return <LoginButton />;
   }
 
-  return <UserMenu user={me} />;
+  return (
+    <div className={cn('flex items-center gap-4')}>
+      <PostWriteLink />
+      <UserMenu user={me} />
+    </div>
+  );
 }
