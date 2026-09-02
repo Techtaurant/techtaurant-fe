@@ -1,0 +1,104 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { useGetMe } from '@/entities/user';
+import { startGoogleLogin } from '@/features/auth';
+import { cn } from '@/shared/lib/cn';
+import { renderPostMarkdown } from '@/shared/lib/markdown/render-post-markdown';
+import { usePostWriteForm } from '@/views/post-write/model/use-post-write-form';
+import { PostWriteActions } from '@/views/post-write/ui/post-write-actions';
+
+const TITLE_MAX_LENGTH = 200;
+
+export function PostWriteView() {
+  const router = useRouter();
+
+  const { data: me, isPending: isAuthPending } = useGetMe();
+  const { content, handleContentChange, handleDraftSaveClick, handleTitleChange, isDraftSaving, title } =
+    usePostWriteForm();
+
+  const isLoggedIn = !!me;
+  // 본문 첨부 이미지는 업로드 작업(#45)에서 붙일 예정입니다. 지금은 참조를 치환할 presigned URL이 없습니다.
+  const previewHtml = renderPostMarkdown(content, []);
+
+  const handleExitClick = () => {
+    router.push('/');
+  };
+
+  useEffect(() => {
+    if (isAuthPending || isLoggedIn) return;
+
+    startGoogleLogin();
+  }, [isAuthPending, isLoggedIn]);
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  return (
+    <div className={cn('grid h-dvh min-w-90 grid-cols-1 grid-rows-[minmax(0,1fr)_auto]', 'xl:grid-cols-2')}>
+      {/* xl 미만에서는 작성창과 미리보기가 한 스크롤 영역에 이어지고, xl 이상에서는 contents로 풀려 각각 독립 컬럼이 됩니다. */}
+      <div className={cn('min-h-0 overflow-y-auto', 'xl:contents')}>
+        <div
+          className={cn(
+            'bg-background min-w-0 px-8 pt-8 pb-16',
+            'xl:col-start-1 xl:row-start-1 xl:min-h-0 xl:overflow-y-auto',
+          )}
+        >
+          <input
+            className={cn(
+              'text-foreground w-full border-0 bg-transparent px-0 py-0 text-3xl font-semibold tracking-tight transition-colors duration-200',
+              'placeholder:text-muted-foreground focus:outline-none',
+            )}
+            maxLength={TITLE_MAX_LENGTH}
+            onChange={(event) => handleTitleChange(event.target.value)}
+            placeholder="제목을 입력해주세요"
+            type="text"
+            value={title}
+          />
+
+          <textarea
+            className={cn(
+              'text-foreground mt-6 field-sizing-content min-h-100 w-full resize-none overflow-hidden border-0 bg-transparent px-0 pt-2 font-mono text-base leading-8',
+              'placeholder:text-muted-foreground focus:outline-none',
+            )}
+            onChange={(event) => handleContentChange(event.target.value)}
+            placeholder="내용을 입력해주세요"
+            value={content}
+          />
+        </div>
+
+        {/* xl 이상에서는 하단바 행까지 걸쳐 오른쪽 전체를 미리보기가 차지합니다. */}
+        <div
+          className={cn(
+            'bg-post-write-preview-surface min-h-[50dvh] min-w-0 px-8 pt-8 pb-16',
+            'xl:col-start-2 xl:row-span-2 xl:row-start-1 xl:min-h-0 xl:overflow-y-auto',
+          )}
+        >
+          <div
+            className={cn(
+              'text-foreground text-base leading-8 wrap-break-word whitespace-pre-wrap',
+              '[&_pre]:whitespace-pre-wrap',
+            )}
+            dangerouslySetInnerHTML={{ __html: previewHtml }}
+          />
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          'border-border bg-background shadow-floating-top min-w-0 border-t px-8 py-3',
+          'xl:col-start-1 xl:row-start-2',
+        )}
+      >
+        <PostWriteActions
+          isDraftSaving={isDraftSaving}
+          onDraftSaveClick={handleDraftSaveClick}
+          onExitClick={handleExitClick}
+        />
+      </div>
+    </div>
+  );
+}

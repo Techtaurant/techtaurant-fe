@@ -7,6 +7,7 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-muted: var(--muted);
+  --color-post-write-preview-surface: var(--post-write-preview-surface);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-button-primary: var(--button-primary);
@@ -43,6 +44,7 @@
   --color-toast-success-icon-surface: var(--toast-success-icon-surface);
   --shadow-floating-sm: var(--floating-shadow-sm);
   --shadow-floating-lg: var(--floating-shadow-lg);
+  --shadow-floating-top: var(--floating-shadow-top);
 }
 
 :root {
@@ -57,8 +59,9 @@
   --button-primary-hover: #1f2937;
   --button-primary-surface: rgb(56, 139, 252);
   --button-primary-surface-hover: rgb(43, 124, 235);
-  --button-neutral-surface: #eef1f4;
-  --button-neutral-surface-hover: #e5e9ee;
+  --button-neutral-surface: #e6e8ea;
+  --button-neutral-surface-hover: #dcdfe3;
+  --post-write-preview-surface: #f0f5f0;
   --button-danger-surface: #f04452;
   --button-danger-surface-hover: #d92d3a;
   --save-button: #2879f0;
@@ -87,6 +90,7 @@
   --toast-success-icon-surface: #03a87c;
   --floating-shadow-sm: 0 16px 36px rgb(15 23 42 / 0.12);
   --floating-shadow-lg: 0 24px 70px rgb(15 23 42 / 0.16);
+  --floating-shadow-top: 0 -6px 20px rgb(15 23 42 / 0.14);
 }
 
 [data-mode='dark'] {
@@ -95,11 +99,12 @@
   --primary-foreground: #3c3c3c;
   --muted: #262626;
   --muted-foreground: #b7b7b7;
+  --post-write-preview-surface: #262626;
   --border: #4a4a4a;
   --button-primary: #f2f2f2;
   --button-primary-hover: #dfdfdf;
-  --button-neutral-surface: #3a3a3a;
-  --button-neutral-surface-hover: #454545;
+  --button-neutral-surface: #454545;
+  --button-neutral-surface-hover: #4f4f4f;
   --save-button: #3585fa;
   --save-button-hover: #3b8ffd;
   --follow-button-surface: #1e2d49;
@@ -122,6 +127,7 @@
   --toast-surface: #2c2c35;
   --floating-shadow-sm: 0 16px 36px rgb(0 0 0 / 0.24);
   --floating-shadow-lg: 0 24px 70px rgb(0 0 0 / 0.28);
+  --floating-shadow-top: 0 -6px 20px rgb(0 0 0 / 0.36);
 }
 
 @layer base {
