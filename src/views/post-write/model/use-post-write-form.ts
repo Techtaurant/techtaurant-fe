@@ -26,17 +26,7 @@ export const usePostWriteForm = () => {
 
   const { draftId, replaceDraftId } = useDraftIdSearchParam();
   const { data: savedDraft } = useGetDraftDetail({ postId: draftId });
-  const saveDraftMutation = useSaveDraft({
-    onSuccess: async (savedDraftId) => {
-      const invalidateQueries = [queryClient.invalidateQueries({ queryKey: getPostListQueryKey() })];
-
-      if (savedDraftId) {
-        invalidateQueries.push(queryClient.invalidateQueries({ queryKey: getDraftDetailQueryKey(savedDraftId) }));
-      }
-
-      await Promise.all(invalidateQueries);
-    },
-  });
+  const saveDraftMutation = useSaveDraft();
 
   // 편집을 시작하면 편집본이, 그전에는 불러온 임시저장 글이 화면을 담당합니다.
   const { content, title } = editedDraft ?? savedDraft ?? EMPTY_DRAFT;
@@ -50,26 +40,35 @@ export const usePostWriteForm = () => {
     setEditedDraft({ content: nextContent, title });
   };
 
-  const handleDraftSaveClick = async () => {
+  const applyDraftSaveResult = async (savedDraftId?: string) => {
+    if (savedDraftId && !draftId) {
+      replaceDraftId(savedDraftId);
+    }
+
+    const invalidateQueries = [queryClient.invalidateQueries({ queryKey: getPostListQueryKey() })];
+
+    if (savedDraftId) {
+      invalidateQueries.push(queryClient.invalidateQueries({ queryKey: getDraftDetailQueryKey(savedDraftId) }));
+    }
+
+    await Promise.all(invalidateQueries);
+
+    toast.success(DRAFT_SAVE_SUCCESS_MESSAGE);
+  };
+
+  const handleDraftSaveClick = () => {
     if (!title.trim() && !content.trim()) {
       toast.error(DRAFT_EMPTY_MESSAGE);
       return;
     }
 
-    try {
-      const savedDraftId = await saveDraftMutation.mutateAsync({
-        data: { content, status: CreatePostRequestStatus.DRAFT, title },
-        draftId,
-      });
-
-      if (savedDraftId && !draftId) {
-        replaceDraftId(savedDraftId);
-      }
-
-      toast.success(DRAFT_SAVE_SUCCESS_MESSAGE);
-    } catch {
-      toast.error(DRAFT_SAVE_FAILED_MESSAGE);
-    }
+    saveDraftMutation.mutate(
+      { data: { content, status: CreatePostRequestStatus.DRAFT, title }, draftId },
+      {
+        onSuccess: applyDraftSaveResult,
+        onError: () => toast.error(DRAFT_SAVE_FAILED_MESSAGE),
+      },
+    );
   };
 
   return {

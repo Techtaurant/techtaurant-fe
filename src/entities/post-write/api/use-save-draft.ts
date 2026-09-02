@@ -8,10 +8,6 @@ type SaveDraftVariables = {
   draftId?: string;
 };
 
-type Params = {
-  onSuccess: (savedDraftId?: string) => Promise<void> | void;
-};
-
 const saveDraft = async ({ data, draftId }: SaveDraftVariables) => {
   if (draftId) {
     await updatePostApi(draftId, data);
@@ -24,9 +20,6 @@ const saveDraft = async ({ data, draftId }: SaveDraftVariables) => {
   return response.data?.id;
 };
 
-export const useSaveDraft = ({ onSuccess }: Params) => {
-  return useMutation({
-    mutationFn: saveDraft,
-    onSuccess: (savedDraftId) => onSuccess(savedDraftId),
-  });
+export const useSaveDraft = () => {
+  return useMutation({ mutationFn: saveDraft });
 };
