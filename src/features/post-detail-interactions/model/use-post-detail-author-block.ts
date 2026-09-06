@@ -37,7 +37,7 @@ export const usePostDetailAuthorBlock = ({ postId, authorId, onSuccess, onError 
           ]);
           queryClient.removeQueries({ exact: true, queryKey: getPostDetailQueryKey(postId) });
           onSuccess?.();
-          router.back();
+          router.replace('/posts');
         },
         onError: () => {
           onError?.();
